@@ -8,4 +8,4 @@
 - `Любая OS:` docker compose -f docker-compose.dev.yml up
 
 ### Остановка серверов:
-- `Любая OS:` docker compose -f docker-compose.dev.yml down или Ctrl+C
+- `Любая OS:` docker compose -f docker-compose.dev.yml down
