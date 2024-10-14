@@ -7,21 +7,23 @@ services:
       context: ./LLMServerDev
       dockerfile: Dockerfile
       args:
-        GOOS: linux
+        GOOS: $GOOS
     image: llm_server
     container_name: llm_server
+    ports:
+        - "5000:5000"
     restart: unless-stopped
 
-    backend:
-      build:
-        context: ./ChatBackend
-        dockerfile: Dockerfile
-        args:
-          GOOS: linux
-      image: backend
-      container_name: backend
-      ports:
-        - "5050:5050"
-      restart: unless-stopped
-      depends_on:
-        - llm_server
+  backend:
+    build:
+      context: ./ChatBackend
+      dockerfile: Dockerfile
+      args:
+        GOOS: $GOOS
+    image: backend
+    container_name: backend
+    ports:
+      - "5050:5050"
+    restart: unless-stopped
+    depends_on:
+      - llm_server
