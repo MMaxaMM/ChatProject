@@ -10,6 +10,7 @@ import (
 type Config struct {
 	Env        string `yaml:"env"`
 	HTTPServer `yaml:"http_server"`
+	Database   `yaml:"database"`
 }
 
 type HTTPServer struct {
@@ -17,11 +18,11 @@ type HTTPServer struct {
 }
 
 type Database struct {
-	Host     string `yaml:"username"`
-	Port     string `yaml:"host"`
-	Username string `yaml:"port"`
+	Host     string `yaml:"host"`
+	Port     string `yaml:"port"`
+	Username string `yaml:"username"`
 	DBName   string `yaml:"dbname"`
-	SSLMode  string `yaml:"disable"`
+	SSLMode  string `yaml:"sslmode"`
 }
 
 func MustLoad() Config {
