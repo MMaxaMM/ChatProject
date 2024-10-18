@@ -7,14 +7,21 @@ import (
 	"github.com/ilyakaznacheev/cleanenv"
 )
 
-// env-required:"true"
 type Config struct {
-	Env        string `yaml:"env" env-default:"prod"`
+	Env        string `yaml:"env"`
 	HTTPServer `yaml:"http_server"`
 }
 
 type HTTPServer struct {
-	Address string `yaml:"address" env-default:"127.0.0.1:5050"`
+	Address string `yaml:"address"`
+}
+
+type Database struct {
+	Host     string `yaml:"username"`
+	Port     string `yaml:"host"`
+	Username string `yaml:"port"`
+	DBName   string `yaml:"dbname"`
+	SSLMode  string `yaml:"disable"`
 }
 
 func MustLoad() Config {
