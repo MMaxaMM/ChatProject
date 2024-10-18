@@ -1,7 +1,7 @@
 package chat
 
 type User struct {
-	UserId   int    `json:"user_id"`
+	UserId   int    `json:"user_id" db:"id"`
 	Username string `json:"username"`
 	Password string `json:"password"`
 }
@@ -13,8 +13,8 @@ const (
 )
 
 type Message struct {
-	Role    string `json:"role"`
-	Content string `json:"content"`
+	Role    string `json:"role" db:"role"`
+	Content string `json:"content" db:"content"`
 }
 
 type HistoryRequest struct {
