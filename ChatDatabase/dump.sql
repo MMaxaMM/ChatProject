@@ -115,8 +115,8 @@ CREATE TABLE public.messages (
     user_id integer NOT NULL,
     chat_id integer NOT NULL,
     date date NOT NULL,
-    is_user boolean NOT NULL,
-    message text NOT NULL
+    role character varying(10) NOT NULL,
+    content text NOT NULL
 );
 
 
@@ -150,8 +150,8 @@ ALTER SEQUENCE public.messages_id_seq OWNED BY public.messages.id;
 
 CREATE TABLE public.users (
     id integer NOT NULL,
-    username character varying(100) NOT NULL,
-    password character varying(100) NOT NULL
+    username character varying(255) NOT NULL,
+    password character varying(255) NOT NULL
 );
 
 
@@ -197,7 +197,7 @@ ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_
 -- Data for Name: messages; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.messages (id, user_id, chat_id, date, is_user, message) FROM stdin;
+COPY public.messages (id, user_id, chat_id, date, role, content) FROM stdin;
 \.
 
 
