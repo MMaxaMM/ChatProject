@@ -40,7 +40,7 @@ func (client *Client) Generate(req *Request) (*chat.Message, error) {
 		return nil, fmt.Errorf("failed to read response body: %w", err)
 	}
 
-	var message *chat.Message
+	message := new(chat.Message)
 	err = json.Unmarshal(jsonResponse, message)
 	if err != nil {
 		return nil, fmt.Errorf("failed to unserialize response: %w", err)
