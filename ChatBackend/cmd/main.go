@@ -1,8 +1,10 @@
 package main
 
 import (
+	"chat/internal/api/llmapi"
 	"chat/internal/config"
 	"chat/internal/repository"
+	"chat/internal/service"
 	"log"
 	"os"
 
@@ -32,5 +34,11 @@ func main() {
 		log.Fatalf("failed to initialize db: %s", err.Error())
 	}
 
-	_ = repository.NewPostgresRepository(db)
+	// Инициализация репозитория
+	rep := repository.NewPostgresRepository(db)
+
+	// Инициализация внутренних сервисов
+	client := llmapi.NewClient(cfg.URL)
+	services := service.NewService(rep, client)
+	_ = services
 }
