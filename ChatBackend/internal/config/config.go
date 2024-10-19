@@ -11,6 +11,7 @@ type Config struct {
 	Env        string `yaml:"env"`
 	HTTPServer `yaml:"http_server"`
 	Database   `yaml:"database"`
+	LLM        `yaml:"llm"`
 }
 
 type HTTPServer struct {
@@ -23,6 +24,10 @@ type Database struct {
 	Username string `yaml:"username"`
 	DBName   string `yaml:"dbname"`
 	SSLMode  string `yaml:"sslmode"`
+}
+
+type LLM struct {
+	URL string `yaml:"url"`
 }
 
 func MustLoad() Config {

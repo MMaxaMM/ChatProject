@@ -7,3 +7,5 @@ database:
   port: "5432"
   dbname: "Chat"
   sslmode: "disable"
+llm:
+  url: "localhost:5000/chat"
