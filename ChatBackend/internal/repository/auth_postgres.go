@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"chat"
 	"fmt"
 
 	"github.com/jmoiron/sqlx"
@@ -27,10 +26,10 @@ func (r *AuthPostgres) CreateUser(username, password string) (int, error) {
 	return userId, nil
 }
 
-func (r *AuthPostgres) GetUser(username, password string) (*chat.User, error) {
-	user := new(chat.User)
+func (r *AuthPostgres) GetUserId(username, password string) (int, error) {
+	var userId int
 	query := fmt.Sprintf("SELECT id FROM %s WHERE username=$1 AND password=$2", usersTable)
-	err := r.db.Get(user, query, username, password)
+	err := r.db.Get(&userId, query, username, password)
 
-	return user, err
+	return userId, err
 }

@@ -8,7 +8,7 @@ import (
 
 type Authorization interface {
 	CreateUser(username, password string) (int, error)
-	GetUser(username, password string) (*chat.User, error)
+	GetUserId(username, password string) (int, error)
 }
 
 type ChatInterface interface {
