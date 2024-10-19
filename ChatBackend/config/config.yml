@@ -8,4 +8,4 @@ database:
   dbname: "Chat"
   sslmode: "disable"
 llm:
-  url: "localhost:5000/chat"
+  url: "http://localhost:5000/chat"
