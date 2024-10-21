@@ -1,8 +1,10 @@
 package main
 
 import (
+	"chat"
 	"chat/internal/api/llmapi"
 	"chat/internal/config"
+	"chat/internal/handler"
 	"chat/internal/repository"
 	"chat/internal/service"
 	"log"
@@ -37,8 +39,15 @@ func main() {
 	// Инициализация репозитория
 	rep := repository.NewPostgresRepository(db)
 
-	// Инициализация внутренних сервисов
+	// Инициализация сервисов
 	client := llmapi.NewClient(cfg.URL)
 	services := service.NewService(rep, client)
-	_ = services
+
+	// Инициализация обработчиков
+	handlers := handler.NewHandler(services)
+
+	srv := new(chat.Server)
+	if err = srv.Run(cfg.Address, handlers.InitRoutes()); err != nil {
+		log.Fatalf("failed to run HTTP server: %s", err.Error())
+	}
 }
