@@ -1,7 +1,6 @@
 package chat
 
 type User struct {
-	UserId   int    `json:"user_id" db:"id"`
 	Username string `json:"username"`
 	Password string `json:"password"`
 }
@@ -29,7 +28,7 @@ type HistoryResponse struct {
 }
 
 type ChatItem struct {
-	UserId int `json:"user_id"`
-	ChatId int `json:"chat_id"`
-	Message
+	UserId  int `json:"user_id"`
+	ChatId  int `json:"chat_id"`
+	Message `json:"message"`
 }
