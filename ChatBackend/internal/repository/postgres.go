@@ -39,12 +39,12 @@ func NewPostgresDB(cfg *Config) (*sqlx.DB, error) {
 	return db, nil
 }
 
-func PostgresNewError(err error, op string) error {
+func PostgresNewError(err error) error {
 	if err, ok := err.(*pq.Error); ok {
 		switch err.Code {
 		case "23505":
-			return chat.NewError(chat.EDUPLICATE, err, op)
+			return chat.NewError(chat.EDUPLICATE, err)
 		}
 	}
-	return chat.NewError(chat.EINTERNAL, err, op)
+	return chat.NewError(chat.EINTERNAL, err)
 }
