@@ -107,6 +107,40 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
+-- Name: chats; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.chats (
+    id integer NOT NULL,
+    user_id integer NOT NULL,
+    chat_id integer NOT NULL
+);
+
+
+ALTER TABLE public.chats OWNER TO postgres;
+
+--
+-- Name: chats_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.chats_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.chats_id_seq OWNER TO postgres;
+
+--
+-- Name: chats_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.chats_id_seq OWNED BY public.chats.id;
+
+--
 -- Name: messages; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -178,6 +212,11 @@ ALTER TABLE public.users_id_seq OWNER TO postgres;
 
 ALTER SEQUENCE public.users_id_seq OWNED BY public.users.id;
 
+--
+-- Name: chats id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.chats ALTER COLUMN id SET DEFAULT nextval('public.chats_id_seq'::regclass);
 
 --
 -- Name: messages id; Type: DEFAULT; Schema: public; Owner: postgres
@@ -200,6 +239,12 @@ ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_
 COPY public.messages (id, user_id, chat_id, date, role, content) FROM stdin;
 \.
 
+--
+-- Data for Name: chats; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.chats (id, user_id, chat_id) FROM stdin;
+\.
 
 --
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: postgres
@@ -215,6 +260,11 @@ COPY public.users (id, username, password) FROM stdin;
 
 SELECT pg_catalog.setval('public.messages_id_seq', 1, false);
 
+--
+-- Name: chats_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.chats_id_seq', 1, false);
 
 --
 -- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
@@ -229,6 +279,13 @@ SELECT pg_catalog.setval('public.users_id_seq', 1, false);
 
 ALTER TABLE ONLY public.messages
     ADD CONSTRAINT messages_pkey PRIMARY KEY (id);
+
+--
+-- Name: users chats_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.chats
+    ADD CONSTRAINT chats_pkey PRIMARY KEY (id);
 
 
 --
@@ -246,6 +303,19 @@ ALTER TABLE ONLY public.users
 ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_username_key UNIQUE (username);
 
+--
+-- Name: chats chats_user_chat_id_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.chats
+    ADD CONSTRAINT chats_user_chat_id_key UNIQUE (user_id, chat_id);
+
+
+--
+-- Name: chats_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX chats_index ON public.chats USING btree (user_id) WITH (deduplicate_items='true');
 
 --
 -- Name: messages_index; Type: INDEX; Schema: public; Owner: postgres
@@ -262,12 +332,31 @@ CREATE UNIQUE INDEX users_index ON public.users USING btree (username) WITH (ded
 
 
 --
--- Name: messages messages_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: messages messages_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.messages
-    ADD CONSTRAINT messages_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON UPDATE CASCADE ON DELETE CASCADE;
+    ADD CONSTRAINT messages_fkey FOREIGN KEY (user_id, chat_id) REFERENCES public.chats(user_id, chat_id) ON UPDATE CASCADE ON DELETE CASCADE;
 
+--
+-- Name: chats chats_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.chats
+    ADD CONSTRAINT chats_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+--
+-- Name: TABLE chats; Type: ACL; Schema: public; Owner: postgres
+--
+
+GRANT SELECT,INSERT,DELETE,UPDATE ON TABLE public.chats TO backend;
+
+
+--
+-- Name: SEQUENCE chats_id_seq; Type: ACL; Schema: public; Owner: postgres
+--
+
+GRANT SELECT,UPDATE ON SEQUENCE public.chats_id_seq TO backend;
 
 --
 -- Name: TABLE messages; Type: ACL; Schema: public; Owner: postgres
