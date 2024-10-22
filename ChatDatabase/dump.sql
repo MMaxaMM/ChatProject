@@ -302,6 +302,12 @@ ALTER TABLE ONLY public.users
 ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_username_key UNIQUE (username);
 
+--
+-- Name: users chats_unique_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.chats
+    ADD CONSTRAINT chats_unique_key UNIQUE (id, user_id);
 
 --
 -- Name: chats_index; Type: INDEX; Schema: public; Owner: postgres
