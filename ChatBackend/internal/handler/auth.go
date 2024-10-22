@@ -11,14 +11,20 @@ func (h *Handler) signUp(c *gin.Context) {
 	var user chat.User
 
 	if err := c.BindJSON(&user); err != nil {
-		newErrorResponse(c, http.StatusBadRequest, "invalid input body")
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
 
 	id, err := h.services.Authorization.CreateUser(user.Username, user.Password)
 	if err != nil {
-		newErrorResponse(c, http.StatusInternalServerError, err.Error())
-		return
+		switch chat.ErrorCode(err) {
+		case chat.EDUPLICATE:
+			newErrorResponse(c, http.StatusConflict, err.Error())
+			return
+		default:
+			newErrorResponse(c, http.StatusInternalServerError, err.Error())
+			return
+		}
 	}
 
 	c.JSON(http.StatusOK, gin.H{"id": id})

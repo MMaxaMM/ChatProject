@@ -73,5 +73,5 @@ func (h *Handler) Delete(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, statusResponse{Status: "ok"})
+	c.Status(http.StatusOK)
 }
