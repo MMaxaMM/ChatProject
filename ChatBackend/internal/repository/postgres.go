@@ -1,9 +1,11 @@
 package repository
 
 import (
+	"chat"
 	"fmt"
 
 	"github.com/jmoiron/sqlx"
+	"github.com/lib/pq"
 )
 
 const (
@@ -35,4 +37,14 @@ func NewPostgresDB(cfg *Config) (*sqlx.DB, error) {
 	}
 
 	return db, nil
+}
+
+func PostgresNewError(err error, op string) error {
+	if err, ok := err.(*pq.Error); ok {
+		switch err.Code {
+		case "23505":
+			return chat.NewError(chat.EDUPLICATE, err, op)
+		}
+	}
+	return chat.NewError(chat.EINTERNAL, err, op)
 }
