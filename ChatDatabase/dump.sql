@@ -112,8 +112,7 @@ SET default_table_access_method = heap;
 
 CREATE TABLE public.chats (
     id integer NOT NULL,
-    user_id integer NOT NULL,
-    chat_id integer NOT NULL
+    user_id integer NOT NULL
 );
 
 
@@ -243,7 +242,7 @@ COPY public.messages (id, user_id, chat_id, date, role, content) FROM stdin;
 -- Data for Name: chats; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.chats (id, user_id, chat_id) FROM stdin;
+COPY public.chats (id, user_id) FROM stdin;
 \.
 
 --
@@ -303,13 +302,6 @@ ALTER TABLE ONLY public.users
 ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_username_key UNIQUE (username);
 
---
--- Name: chats chats_user_chat_id_key; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.chats
-    ADD CONSTRAINT chats_user_chat_id_key UNIQUE (user_id, chat_id);
-
 
 --
 -- Name: chats_index; Type: INDEX; Schema: public; Owner: postgres
@@ -336,7 +328,7 @@ CREATE UNIQUE INDEX users_index ON public.users USING btree (username) WITH (ded
 --
 
 ALTER TABLE ONLY public.messages
-    ADD CONSTRAINT messages_fkey FOREIGN KEY (user_id, chat_id) REFERENCES public.chats(user_id, chat_id) ON UPDATE CASCADE ON DELETE CASCADE;
+    ADD CONSTRAINT messages_fkey FOREIGN KEY (user_id, chat_id) REFERENCES public.chats(user_id, id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 --
 -- Name: chats chats_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
