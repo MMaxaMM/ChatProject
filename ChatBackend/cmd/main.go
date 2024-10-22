@@ -5,6 +5,8 @@ import (
 	"chat/internal/api/llmapi"
 	"chat/internal/config"
 	"chat/internal/handler"
+	"chat/internal/lib/slogx"
+	"chat/internal/logger"
 	"chat/internal/repository"
 	"chat/internal/service"
 	"log"
@@ -21,7 +23,14 @@ func main() {
 	}
 
 	// Загрузка конфигураций
-	cfg := config.MustLoad()
+	cfg, err := config.Load()
+	if err != nil {
+		log.Fatalf("error loading configuration: %s", err.Error())
+	}
+
+	// Инициализация logger
+	logger := logger.SetupLogger(cfg.Env)
+	logger.Debug("running in debug mode")
 
 	// Инициализация базы данных
 	db, err := repository.NewPostgresDB(&repository.Config{
@@ -33,7 +42,8 @@ func main() {
 		Password: os.Getenv("DB_PASSWORD"),
 	})
 	if err != nil {
-		log.Fatalf("failed to initialize db: %s", err.Error())
+		logger.Error("failed to initialize db", slogx.Error(err))
+		os.Exit(1)
 	}
 
 	// Инициализация репозитория
@@ -44,10 +54,12 @@ func main() {
 	services := service.NewService(rep, client)
 
 	// Инициализация обработчиков
-	handlers := handler.NewHandler(services)
+	handlers := handler.NewHandler(services, logger)
 
 	srv := new(chat.Server)
+	logger.Info("run HTTP server")
 	if err = srv.Run(cfg.Address, handlers.InitRoutes()); err != nil {
-		log.Fatalf("failed to run HTTP server: %s", err.Error())
+		logger.Error("failed to run HTTP server", slogx.Error(err))
+		os.Exit(1)
 	}
 }
