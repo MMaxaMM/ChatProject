@@ -36,7 +36,7 @@ func (r *AuthPostgres) GetUserId(username, password string) (int, error) {
 	err := r.db.Get(&userId, query, username, password)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return 0, chat.Error{Code: chat.EUNAUTHORIZED, ErrString: err.Error()}
+			return 0, chat.NewError(chat.EUNAUTHORIZED, err.Error())
 		}
 	}
 

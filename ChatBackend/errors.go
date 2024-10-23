@@ -3,10 +3,10 @@ package chat
 type errorCode int
 
 const (
-	EINTERNAL errorCode = iota
-	EDUPLICATE
-	EUNAUTHORIZED
-	EFOREIGNKEY
+	EINTERNAL     errorCode = iota // Неизвестная ошибка
+	EDUPLICATE                     // Пользователь с таким username уже существует
+	EUNAUTHORIZED                  // Неверное имя пользователя или пароль
+	EFOREIGNKEY                    // Нарушение ограничений базы данных, несуществующий внешний ключ
 )
 
 type Error struct {

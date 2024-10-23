@@ -25,7 +25,7 @@ func main() {
 	// Загрузка конфигураций
 	cfg, err := config.Load()
 	if err != nil {
-		log.Fatalf("error loading configuration: %s", err.Error())
+		log.Fatalf("error loading configuration file: %s", err.Error())
 	}
 
 	// Инициализация logger
@@ -56,6 +56,7 @@ func main() {
 	// Инициализация обработчиков
 	handlers := handler.NewHandler(services, logger)
 
+	// Запуск сервера
 	srv := new(chat.Server)
 	logger.Info("run HTTP server")
 	if err = srv.Run(cfg.Address, handlers.InitRoutes()); err != nil {
