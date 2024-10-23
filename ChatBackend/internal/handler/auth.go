@@ -10,8 +10,8 @@ import (
 )
 
 func (h *Handler) signUp(c *gin.Context) {
-	const op = "handler.signUp"
-	logger := h.logger.With(slog.String("op", op))
+	//const op = "handler.signUp"
+	logger := h.logger //.With(slog.String("op", op))
 
 	var user chat.User
 
@@ -21,11 +21,11 @@ func (h *Handler) signUp(c *gin.Context) {
 		return
 	}
 
-	id, err := h.services.Authorization.CreateUser(user.Username, user.Password)
+	userId, err := h.services.Authorization.CreateUser(user.Username, user.Password)
 	if err != nil {
 		switch chat.ErrorCode(err) {
 		case chat.EDUPLICATE:
-			logger.Warn("user already exists", slog.String("username", user.Username))
+			logger.Info("user already exists", slog.String("username", user.Username))
 			newErrorResponse(c, http.StatusConflict, err.Error())
 			return
 		default:
@@ -36,12 +36,12 @@ func (h *Handler) signUp(c *gin.Context) {
 	}
 
 	logger.Info("new user created", slog.String("username", user.Username))
-	c.JSON(http.StatusOK, gin.H{"id": id})
+	c.JSON(http.StatusOK, gin.H{"user_id": userId})
 }
 
 func (h *Handler) signIn(c *gin.Context) {
-	const op = "handler.signIn"
-	logger := h.logger.With(slog.String("op", op))
+	//const op = "handler.signIn"
+	logger := h.logger //.With(slog.String("op", op))
 
 	var user chat.User
 
@@ -53,9 +53,16 @@ func (h *Handler) signIn(c *gin.Context) {
 
 	token, err := h.services.Authorization.GenerateToken(user.Username, user.Password)
 	if err != nil {
-		logger.Error("failed to generate token", slogx.Error(err))
-		newErrorResponse(c, http.StatusInternalServerError, err.Error())
-		return
+		switch chat.ErrorCode(err) {
+		case chat.EUNAUTHORIZED:
+			logger.Info("unauthorized", slog.String("username", user.Username))
+			newErrorResponse(c, http.StatusUnauthorized, err.Error())
+			return
+		default:
+			logger.Error("failed to generate token", slogx.Error(err))
+			newErrorResponse(c, http.StatusInternalServerError, err.Error())
+			return
+		}
 	}
 
 	logger.Info("user is authorized", slog.String("username", user.Username))

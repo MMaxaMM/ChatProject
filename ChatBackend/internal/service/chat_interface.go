@@ -55,3 +55,11 @@ func (s *ChatInterfaceService) SendMessage(item *chat.ChatItem) (*chat.ChatItem,
 
 	return item, nil
 }
+
+func (s *ChatInterfaceService) CreateChat(request *chat.HistoryRequest) (int, error) {
+	return s.rep.CreateChat(request)
+}
+
+func (s *ChatInterfaceService) GetStart(userId int) (*chat.StartResponse, error) {
+	return s.rep.GetStart(userId)
+}

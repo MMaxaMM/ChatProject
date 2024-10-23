@@ -10,6 +10,7 @@ import (
 
 const (
 	usersTable    = "public.users"
+	chatsTable    = "public.chats"
 	messagesTable = "public.messages"
 )
 
@@ -43,8 +44,10 @@ func PostgresNewError(err error) error {
 	if err, ok := err.(*pq.Error); ok {
 		switch err.Code {
 		case "23505":
-			return chat.NewError(chat.EDUPLICATE, err)
+			return chat.NewError(chat.EDUPLICATE, err.Error())
+		case "23503":
+			return chat.NewError(chat.EFOREIGNKEY, err.Error())
 		}
 	}
-	return chat.NewError(chat.EINTERNAL, err)
+	return chat.NewError(chat.EINTERNAL, err.Error())
 }

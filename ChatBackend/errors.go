@@ -5,19 +5,21 @@ type errorCode int
 const (
 	EINTERNAL errorCode = iota
 	EDUPLICATE
+	EUNAUTHORIZED
+	EFOREIGNKEY
 )
 
 type Error struct {
-	Code errorCode
-	Err  error
+	Code      errorCode
+	ErrString string
 }
 
 func (e Error) Error() string {
-	return e.Err.Error()
+	return e.ErrString
 }
 
-func NewError(code errorCode, err error) error {
-	return Error{Code: code, Err: err}
+func NewError(code errorCode, errString string) error {
+	return Error{Code: code, ErrString: errString}
 }
 
 func ErrorCode(err error) errorCode {

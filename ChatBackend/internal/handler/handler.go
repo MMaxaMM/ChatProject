@@ -7,6 +7,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+func init() {
+	gin.SetMode(gin.ReleaseMode)
+}
+
 type Handler struct {
 	services *service.Service
 	logger   *slog.Logger
@@ -29,7 +33,9 @@ func (h *Handler) InitRoutes() *gin.Engine {
 	{
 		chatInterface.POST("/history", h.GetHistory)
 		chatInterface.POST("/message", h.SendMessage)
-		chatInterface.POST("/delete", h.Delete)
+		chatInterface.POST("/delete", h.DeleteChat)
+		chatInterface.GET("/create", h.CreateChat)
+		chatInterface.GET("/start", h.GetStart)
 	}
 
 	return router

@@ -16,6 +16,8 @@ type ChatInterface interface {
 	GetHistory(request *chat.HistoryRequest) (*chat.HistoryResponse, error)
 	DeleteChat(request *chat.HistoryRequest) error
 	SendMessage(item *chat.ChatItem) (*chat.ChatItem, error)
+	CreateChat(request *chat.HistoryRequest) (int, error)
+	GetStart(userId int) (*chat.StartResponse, error)
 }
 
 type Service struct {

@@ -3,7 +3,6 @@ package handler
 import (
 	"chat/internal/lib/slogx"
 	"errors"
-	"log/slog"
 	"net/http"
 	"strings"
 
@@ -16,8 +15,8 @@ const (
 )
 
 func (h *Handler) userIdentity(c *gin.Context) {
-	const op = "handler.userIdentity"
-	logger := h.logger.With(slog.String("op", op))
+	//const op = "handler.userIdentity"
+	logger := h.logger //.With(slog.String("op", op))
 
 	header := c.GetHeader(authorizationHeader)
 	if header == "" {
@@ -46,7 +45,6 @@ func (h *Handler) userIdentity(c *gin.Context) {
 		return
 	}
 
-	logger.Info("user identified", slog.Int("user_id", userId))
 	c.Set(userCtx, userId)
 }
 

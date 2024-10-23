@@ -15,6 +15,8 @@ type ChatInterface interface {
 	GetHistory(request *chat.HistoryRequest, limit int) (*chat.HistoryResponse, error)
 	SaveChatItem(item *chat.ChatItem) error
 	DeleteChat(request *chat.HistoryRequest) error
+	CreateChat(request *chat.HistoryRequest) (int, error)
+	GetStart(userId int) (*chat.StartResponse, error)
 }
 
 type Repository struct {

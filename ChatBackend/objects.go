@@ -32,3 +32,13 @@ type ChatItem struct {
 	ChatId  int `json:"chat_id"`
 	Message `json:"message"`
 }
+
+type ChatPreview struct {
+	ChatId  int    `json:"chat_id"`
+	Content string `json:"content"`
+}
+
+type StartResponse struct {
+	UserId int           `json:"user_id"`
+	Chats  []ChatPreview `json:"chats"`
+}
