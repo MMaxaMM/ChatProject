@@ -6,37 +6,45 @@ services:
     build:
       context: ./LLMServerDev
       dockerfile: Dockerfile
-      args:
-        GOOS: $GOOS
     image: llm_server
     container_name: llm_server
-    ports:
-        - "5000:5000"
+    expose:
+      - 5000
     restart: unless-stopped
+    networks:
+      - chatnetwork
 
-  # backend:
-  #   build:
-  #     context: ./ChatBackend
-  #     dockerfile: Dockerfile
-  #     args:
-  #       GOOS: $GOOS
-  #   image: backend
-  #   container_name: backend
-  #   ports:
-  #     - "5050:5050"
-  #   restart: unless-stopped
-  #   depends_on:
-  #     - llm_server
-  #     - database
+  backend:
+    build:
+      context: ./ChatBackend
+      dockerfile: Dockerfile
+    image: backend
+    container_name: backend
+    volumes:
+      - ./config:/config
+    ports:
+      - "5050:5050"
+    restart: unless-stopped
+    networks:
+      - chatnetwork
 
   database:
     image: postgres:15
     container_name: database
+    command: postgres -c config_file=/etc/postgresql.conf && postgres -c hba_file=/etc/pg_hba.conf
     environment:
       POSTGRES_PASSWORD: postgres
       PGDATA: "/var/lib/postgresql/data/pgdata"
     volumes:
-      - ./ChatDatabase:/docker-entrypoint-initdb.d
-    ports:
-      - "5432:5432"
+      - ./ChatDatabase/pg-init:/docker-entrypoint-initdb.d
+      - ./ChatDatabase/pg-conf/postgresql.conf:/etc/postgresql.conf
+      - ./ChatDatabase/pg-conf/pg_hba.conf:/etc/pg_hba.conf
+    expose:
+      - 5432
     restart: unless-stopped
+    networks:
+      - chatnetwork
+
+networks:
+  chatnetwork:
+    driver: bridge
