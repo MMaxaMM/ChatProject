@@ -6,10 +6,8 @@ import (
 	"chat/internal/repository"
 )
 
-const (
-	defaultHistoryLimit = 10
-	defaultMaxTokens    = 512
-)
+var DefaultHistoryLimit int = 10
+var DefaultMaxTokens uint = 512
 
 type ChatInterfaceService struct {
 	rep    repository.ChatInterface
@@ -30,13 +28,13 @@ func (s *ChatInterfaceService) DeleteChat(request *chat.HistoryRequest) error {
 
 func (s *ChatInterfaceService) SendMessage(item *chat.ChatItem) (*chat.ChatItem, error) {
 	historyRequest := &chat.HistoryRequest{UserId: item.UserId, ChatId: item.ChatId}
-	history, err := s.rep.GetHistory(historyRequest, defaultHistoryLimit)
+	history, err := s.rep.GetHistory(historyRequest, DefaultHistoryLimit)
 	if err != nil {
 		return nil, err
 	}
 
 	messages := append(history.Messages, item.Message)
-	request := llmapi.Request{Messages: messages, MaxTokens: defaultMaxTokens}
+	request := llmapi.Request{Messages: messages, MaxTokens: DefaultMaxTokens}
 	response, err := s.client.Generate(&request)
 	if err != nil {
 		return nil, err

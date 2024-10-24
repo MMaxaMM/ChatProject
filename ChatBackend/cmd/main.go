@@ -53,6 +53,10 @@ func main() {
 	client := llmapi.NewClient(cfg.URL)
 	services := service.NewService(rep, client)
 
+	// Переопределение значений по умолчанию
+	service.DefaultHistoryLimit = cfg.HistoryLimit
+	service.DefaultMaxTokens = cfg.MaxTokens
+
 	// Инициализация обработчиков
 	handlers := handler.NewHandler(services, logger)
 
