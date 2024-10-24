@@ -1,11 +1,12 @@
-# Запуск серверов:
+# Как работать с сервисами:
 
 ### Пересборка образов:
-- `Linux:` GOOS=linux docker compose -f docker-compose.dev.yml build
-- `Windows:` GOOS=windows docker compose -f docker-compose.dev.yml build
+- docker compose -f docker-compose.dev.yml build
 
-### Непосредственно запуск:
-- `Любая OS:` docker compose -f docker-compose.dev.yml up
+### Запуск:
+- docker compose -f docker-compose.dev.yml up llm_server database -d
+- Небольшая пауза для инициализации DB
+- docker compose -f docker-compose.dev.yml up backend -d
 
-### Остановка серверов:
-- `Любая OS:` docker compose -f docker-compose.dev.yml down
+### Остановка и удаление:
+- docker compose -f docker-compose.dev.yml down
