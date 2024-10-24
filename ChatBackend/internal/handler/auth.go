@@ -10,8 +10,8 @@ import (
 )
 
 func (h *Handler) signUp(c *gin.Context) {
-	//const op = "handler.signUp"
-	logger := h.logger //.With(slog.String("op", op))
+	const op = "handler.signUp"
+	logger := h.logger.With(slog.String("op", op))
 
 	var user chat.User
 
@@ -40,8 +40,8 @@ func (h *Handler) signUp(c *gin.Context) {
 }
 
 func (h *Handler) signIn(c *gin.Context) {
-	//const op = "handler.signIn"
-	logger := h.logger //.With(slog.String("op", op))
+	const op = "handler.signIn"
+	logger := h.logger.With(slog.String("op", op))
 
 	var user chat.User
 

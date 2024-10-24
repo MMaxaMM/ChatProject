@@ -10,8 +10,8 @@ import (
 )
 
 func (h *Handler) GetHistory(c *gin.Context) {
-	//const op = "handler.GetHistory"
-	logger := h.logger //.With(slog.String("op", op))
+	const op = "handler.GetHistory"
+	logger := h.logger.With(slog.String("op", op))
 
 	userId, err := getUserId(c)
 	if err != nil {
@@ -40,8 +40,8 @@ func (h *Handler) GetHistory(c *gin.Context) {
 }
 
 func (h *Handler) SendMessage(c *gin.Context) {
-	//const op = "handler.SendMessage"
-	logger := h.logger //.With(slog.String("op", op))
+	const op = "handler.SendMessage"
+	logger := h.logger.With(slog.String("op", op))
 
 	userId, err := getUserId(c)
 	if err != nil {
@@ -77,8 +77,8 @@ func (h *Handler) SendMessage(c *gin.Context) {
 }
 
 func (h *Handler) DeleteChat(c *gin.Context) {
-	//const op = "handler.DeleteChat"
-	logger := h.logger //.With(slog.String("op", op))
+	const op = "handler.DeleteChat"
+	logger := h.logger.With(slog.String("op", op))
 
 	userId, err := getUserId(c)
 	if err != nil {
@@ -107,8 +107,8 @@ func (h *Handler) DeleteChat(c *gin.Context) {
 }
 
 func (h *Handler) CreateChat(c *gin.Context) {
-	//const op = "handler.CreateChat"
-	logger := h.logger //.With(slog.String("op", op))
+	const op = "handler.CreateChat"
+	logger := h.logger.With(slog.String("op", op))
 
 	userId, err := getUserId(c)
 	if err != nil {
@@ -133,8 +133,8 @@ func (h *Handler) CreateChat(c *gin.Context) {
 }
 
 func (h *Handler) GetStart(c *gin.Context) {
-	//const op = "handler.GetStart"
-	logger := h.logger //.With(slog.String("op", op))
+	const op = "handler.GetStart"
+	logger := h.logger.With(slog.String("op", op))
 
 	userId, err := getUserId(c)
 	if err != nil {

@@ -1,4 +1,4 @@
-env: "dev" # dev, prod
+env: "dev-linux" # dev-linux / dev-windows / prod
 http_server:
   address: "localhost:5050"
 database:
