@@ -178,6 +178,10 @@ a {
   color: #10a37f;
 }
 
+.email-input:not(:placeholder-shown)+.email-label {
+  top: 0;
+}
+
 .email-input.error {
   border: 1px solid #d00e17
 }
