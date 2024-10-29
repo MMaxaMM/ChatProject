@@ -58,7 +58,7 @@ module.exports = {
   ],
   resolve: {
     extensions: [
-      '*',
+      '.*',
       '.js',
       '.jsx',
       '.ts',
@@ -71,7 +71,9 @@ module.exports = {
       '.jpg'
     ],
     alias: {
-
+      '@pages': path.resolve(__dirname, './src/pages'),
+      '@ui-pages': path.resolve(__dirname, './src/components/ui/pages'),
+      '@images': path.resolve(__dirname, './src/images')
     }
   },
   output: {
