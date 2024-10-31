@@ -1,16 +1,16 @@
 import { FC } from 'react';
-import { NavLink } from 'react-router-dom';
-import styles from './register.module.css';
+import styles from './login.module.css';
 import openai_logo from '../../../../images/openai_logo.svg';
 import error_icon from '../../../../images/error_icon.svg';
+import { NavLink } from 'react-router-dom';
 
-export const RegisterUI: FC = () => (
+export const LoginUI: FC = () => (
   <div className={styles['page-wrapper']}>
     <div className={styles['main-container']}>
       <section className={styles['content-wrapper']}>
         <img src={openai_logo} alt='Логотип OpenAI' />
         <div className={styles['title-wrapper']}>
-          <h1 className={styles.title}>Создать учетную запись</h1>
+          <h1 className={styles.title}>С возвращением</h1>
         </div>
         <div className={styles['login-container']}>
           <div className={styles['input-wrapper']}>
@@ -48,7 +48,7 @@ export const RegisterUI: FC = () => (
               placeholder=''
             />
             <label className={styles['email-label']} htmlFor='password-input'>
-              Придумайте пароль
+              Пароль
             </label>
             <div className={styles['invalid-email-error-message']}>
               <img className={styles['error-icon']} src={error_icon} />
@@ -56,12 +56,12 @@ export const RegisterUI: FC = () => (
             </div>
           </div>
           <button className={styles['continue-btn']} disabled>
-            Зарегистрироваться
+            Войти
           </button>
           <p className={styles['other-page']}>
-            У вас уже есть учетная запись?{' '}
-            <NavLink className={styles['other-page-link']} to={'/login'}>
-              Войти
+            У вас нет учетной записи?{' '}
+            <NavLink className={styles['other-page-link']} to={'/register'}>
+              Зарегистрироваться
             </NavLink>
           </p>
         </div>

@@ -1,5 +1,5 @@
 import styles from './app.module.css';
-import { Start, Register } from '@pages';
+import { Start, Register, Login } from '@pages';
 import '../../index.css';
 import { Route, Routes } from 'react-router-dom';
 
@@ -9,6 +9,7 @@ function App() {
       <Routes>
         <Route path='/' element={<Start />} />
         <Route path='/register' element={<Register />} />
+        <Route path='/login' element={<Login />} />
       </Routes>
     </main>
   );
