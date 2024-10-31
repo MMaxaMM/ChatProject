@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState, FC } from 'react';
 import { StartUI } from '@ui-pages';
+import { replace, useNavigate } from 'react-router-dom';
 
 export const Start: FC = () => {
   const lines = [
@@ -14,6 +15,7 @@ export const Start: FC = () => {
 
   const [text, setText] = useState('');
   const [lineNumber, setLineNumber] = useState(0);
+  const navigate = useNavigate();
 
   const shuffle = useCallback(() => {
     const index = Math.floor(Math.random() * lines.length);
@@ -36,9 +38,23 @@ export const Start: FC = () => {
     };
   }, [lineNumber]);
 
+  const onLogin = () => {
+    navigate('/login', { replace: true });
+    return;
+  };
+
+  const onRegister = () => {
+    navigate('/register', { replace: true });
+    return;
+  };
+
   return (
     <>
-      <StartUI text={text} />
+      <StartUI
+        text={text}
+        onClickLogin={onLogin}
+        onClickRegister={onRegister}
+      />
     </>
   );
 };
