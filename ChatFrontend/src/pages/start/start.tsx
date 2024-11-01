@@ -50,11 +50,7 @@ export const Start: FC = () => {
 
   return (
     <>
-      <StartUI
-        text={text}
-        onClickLogin={onLogin}
-        onClickRegister={onRegister}
-      />
+      <StartUI text={text} onLogin={onLogin} onRegister={onRegister} />
     </>
   );
 };

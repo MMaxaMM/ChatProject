@@ -73,7 +73,9 @@ module.exports = {
     alias: {
       '@pages': path.resolve(__dirname, './src/pages'),
       '@ui-pages': path.resolve(__dirname, './src/components/ui/pages'),
-      '@images': path.resolve(__dirname, './src/images')
+      '@images': path.resolve(__dirname, './src/images'),
+      '@ui': path.resolve(__dirname, './src/components/ui'),
+      '@components': path.resolve(__dirname, './src/components')
     }
   },
   output: {
