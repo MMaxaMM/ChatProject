@@ -38,3 +38,25 @@
 	height: 32px;
 	border-radius: 25%;
 }
+
+.chat_list {
+	display: flex;
+	flex-direction: column;
+}
+
+.chat_list_header {
+	margin: 0;
+	padding: 8px;
+	color: #ececec;
+	font-size: 12px;
+	font-weight: 600px;
+	line-height: 16px;
+	font-family: sans-serif;
+}
+
+.chat_list_content {
+	margin: 0;
+	display: flex;
+	flex-direction: column;
+	padding: 0;
+}

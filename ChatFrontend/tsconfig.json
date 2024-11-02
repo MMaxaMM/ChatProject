@@ -23,6 +23,7 @@
       "@images" : ["src/images"],
       "@ui" : ["src/components/ui"],
       "@components": ["src/components"],
+      "@utils-types": ["src/utils/types.ts"]
     }
   },
   "include": ["src"],
