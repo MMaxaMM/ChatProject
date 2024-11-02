@@ -3,11 +3,21 @@ import logo from '../../../../images/logo.svg';
 import arrowStart from '../../../../images/arrowStart.svg';
 import { FC } from 'react';
 import closeIcon from '../../../../images/closeIcon.svg';
+import { TChatUIProps } from './type';
+import clsx from 'clsx';
 
-export const ChatUI: FC = () => (
-  <div className={styles.main}>
+export const ChatUI: FC<TChatUIProps> = ({ isAsideOpen, onOpenTab }) => (
+  <div
+    className={clsx(styles.main, {
+      [styles.main__open]: isAsideOpen
+    })}
+  >
     <nav className={styles.header}>
-      <button className={styles.nav_button}>
+      <button
+        className={styles.nav_button}
+        onClick={onOpenTab}
+        style={{ visibility: isAsideOpen ? 'hidden' : 'visible' }}
+      >
         <img src={closeIcon} />
       </button>
       <div className={styles.nav_user_logo}>

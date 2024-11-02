@@ -4,8 +4,8 @@
 	width: 260px;
 	height: 100%;
 	overflow: scroll;
-	transform: translate(-616px);
-	transition: transform 0.5s ease;
+	transform: translate(-260px);
+	transition: transform 0.8s ease-in-out;
 	background-color: #171711;
 	scrollbar-color: #424242 transparent;
 	overflow: hidden;
@@ -23,7 +23,8 @@
 .nav_buttons {
 	display: flex;
 	justify-content: space-between;
-	height: 56px;
+	height: 32px;
+	padding: 10px 0;
 	align-items: center;
 }
 
@@ -33,11 +34,7 @@
 	background-color: transparent;
 	border: none;
 	cursor: pointer;
-	width: 40px;
-	height: 40px;
+	width: 32px;
+	height: 32px;
 	border-radius: 25%;
-}
-
-.nav_button:hover {
-	background-color: #212121;
 }

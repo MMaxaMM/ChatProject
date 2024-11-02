@@ -1,16 +1,11 @@
-import { FC, useState } from 'react';
+import { FC } from 'react';
 import { ChatListUI } from '@ui';
+import { TChatListProps } from './types';
 
-export const ChatList: FC = () => {
-  const [isOpen, setIsOpen] = useState(false);
-
-  const onClose = () => {
-    setIsOpen(!isOpen);
-  };
-
-  const onCreateChat = () => void 0;
-
-  return (
-    <ChatListUI isOpen={isOpen} onClose={onClose} onCreateChat={onCreateChat} />
-  );
-};
+export const ChatList: FC<TChatListProps> = ({
+  isOpen,
+  onClose,
+  onCreateChat
+}) => (
+  <ChatListUI isOpen={isOpen} onClose={onClose} onCreateChat={onCreateChat} />
+);
