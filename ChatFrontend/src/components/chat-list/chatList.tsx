@@ -2,7 +2,7 @@ import { FC, useState } from 'react';
 import { ChatListUI } from '@ui';
 
 export const ChatList: FC = () => {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
 
   const onClose = () => {
     setIsOpen(!isOpen);
