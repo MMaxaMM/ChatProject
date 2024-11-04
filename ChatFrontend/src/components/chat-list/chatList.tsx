@@ -1,11 +1,17 @@
 import { FC } from 'react';
 import { ChatListUI } from '@ui';
-import { TChatListProps } from './types';
+import { TChatListProps } from './type';
 
 export const ChatList: FC<TChatListProps> = ({
+  chats,
   isOpen,
   onClose,
   onCreateChat
 }) => (
-  <ChatListUI isOpen={isOpen} onClose={onClose} onCreateChat={onCreateChat} />
+  <ChatListUI
+    chats={chats}
+    isOpen={isOpen}
+    onClose={onClose}
+    onCreateChat={onCreateChat}
+  />
 );
