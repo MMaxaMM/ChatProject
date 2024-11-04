@@ -1,2 +1,4 @@
 .env
 tmp.txt
+node_modules
+dist
