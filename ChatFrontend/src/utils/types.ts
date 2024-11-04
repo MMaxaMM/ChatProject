@@ -8,3 +8,8 @@ export type TChat = {
   chatId: number;
   messages: TMessage[];
 };
+
+export type TUser = {
+  username: string;
+  password: string;
+}
