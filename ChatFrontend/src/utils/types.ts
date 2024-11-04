@@ -12,4 +12,4 @@ export type TChat = {
 export type TUser = {
   username: string;
   password: string;
-}
+};

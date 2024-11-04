@@ -76,7 +76,9 @@ module.exports = {
       '@images': path.resolve(__dirname, './src/images'),
       '@ui': path.resolve(__dirname, './src/components/ui'),
       '@components': path.resolve(__dirname, './src/components'),
-      '@utils-types': path.resolve(__dirname, './src/utils/types.ts')
+      '@utils-types': path.resolve(__dirname, './src/utils/types.ts'),
+      '@api': path.resolve(__dirname, './src/utils/chat-api.ts'),
+      '@slices': path.resolve(__dirname, './src/services/slices')
     }
   },
   output: {

@@ -23,7 +23,9 @@
       "@images" : ["src/images"],
       "@ui" : ["src/components/ui"],
       "@components": ["src/components"],
-      "@utils-types": ["src/utils/types.ts"]
+      "@utils-types": ["src/utils/types.ts"],
+      "@api": ["src/utils/chat-api.ts"],
+      "@slices": ["src/services/slices"]
     }
   },
   "include": ["src"],

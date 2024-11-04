@@ -11,9 +11,9 @@ type TServerResponse<T> = {
 } & T;
 
 type TChatStart = {
-  chatId : number;
+  chatId: number;
   content: string;
-}
+};
 
 type TChatStartResponse = TServerResponse<{
   userId: number;
@@ -23,12 +23,10 @@ type TChatStartResponse = TServerResponse<{
 type TChatCreateResponse = TServerResponse<{
   userId: number;
   chatId: number;
-}>
-
-
+}>;
 
 export const getChatsApi = () =>
-  fetch(`${URL}/chat/start`,{
+  fetch(`${URL}/chat/start`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json;charset=utf-8',
@@ -49,11 +47,11 @@ export const createChatApi = () =>
       authorization: getCookie('accessToken')
     } as HeadersInit
   })
-  .then((res) => checkResponse<TChatCreateResponse>(res))
-  .then((data) => {
-    if (data?.success) return data;
-    return Promise.reject(data);
-  });
+    .then((res) => checkResponse<TChatCreateResponse>(res))
+    .then((data) => {
+      if (data?.success) return data;
+      return Promise.reject(data);
+    });
 
 export const deleteChatApi = (chatId: number) =>
   fetch(`${URL}/chat/delete`, {
@@ -65,11 +63,12 @@ export const deleteChatApi = (chatId: number) =>
     body: JSON.stringify({
       chat_id: chatId
     })
-  }).then((res) => checkResponse<TServerResponse<{}>>(res))
-  .then((data) => {
-    if (data?.success) return data;
-    return Promise.reject(data);
-  });
+  })
+    .then((res) => checkResponse<TServerResponse<{}>>(res))
+    .then((data) => {
+      if (data?.success) return data;
+      return Promise.reject(data);
+    });
 
 type TPostMessageQuery = {
   chatId: number;
@@ -93,13 +92,13 @@ export const postChatMessageApi = (data: TPostMessageQuery) =>
     } as HeadersInit,
     body: JSON.stringify(data)
   })
-  .then((res) => checkResponse<TPostMessageResponse>(res))
-  .then((data) => {
-    if (data?.success) return data;
-    return Promise.reject(data);
-  });
+    .then((res) => checkResponse<TPostMessageResponse>(res))
+    .then((data) => {
+      if (data?.success) return data;
+      return Promise.reject(data);
+    });
 
-export const getChatApi = (chatId: number) => 
+export const getChatApi = (chatId: number) =>
   fetch(`${URL}/chat/history`, {
     method: 'POST',
     headers: {
@@ -110,16 +109,15 @@ export const getChatApi = (chatId: number) =>
       chat_id: chatId
     })
   })
-  .then((res) => checkResponse<TChatHistory>(res))
-  .then((data) => {
-    if (data?.success) return data;
-    return Promise.reject(data);
-  });
-
+    .then((res) => checkResponse<TChatHistory>(res))
+    .then((data) => {
+      if (data?.success) return data;
+      return Promise.reject(data);
+    });
 
 type TAuthResponse = TServerResponse<{
   token: string;
-}>
+}>;
 
 export const registerUserApi = (data: TUser) =>
   fetch(`${URL}/auth/sign-up`, {
@@ -129,11 +127,11 @@ export const registerUserApi = (data: TUser) =>
     },
     body: JSON.stringify(data)
   })
-  .then((res) => checkResponse<TServerResponse<{userId:number}>>(res))
-  .then((data) => {
-    if (data?.success) return data;
-    return Promise.reject(data);
-  });
+    .then((res) => checkResponse<TServerResponse<{ userId: number }>>(res))
+    .then((data) => {
+      if (data?.success) return data;
+      return Promise.reject(data);
+    });
 
 export const loginUserApi = (data: TUser) =>
   fetch(`${URL}/auth/sign-up`, {
@@ -143,8 +141,8 @@ export const loginUserApi = (data: TUser) =>
     },
     body: JSON.stringify(data)
   })
-  .then((res) => checkResponse<TAuthResponse>(res))
-  .then((data) => {
-    if (data?.success) return data;
-    return Promise.reject(data);
-  });
+    .then((res) => checkResponse<TAuthResponse>(res))
+    .then((data) => {
+      if (data?.success) return data;
+      return Promise.reject(data);
+    });
