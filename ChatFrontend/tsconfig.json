@@ -1,0 +1,33 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": false,
+    "jsx": "react-jsx",
+    "types": ["node", "jest"],
+    "baseUrl": ".",
+    "paths": {
+      "@pages" : ["src/pages"],
+      "@ui-pages" : ["src/components/ui/pages"],
+      "@images" : ["src/images"],
+      "@ui" : ["src/components/ui"],
+      "@components": ["src/components"],
+      "@utils-types": ["src/utils/types.ts"],
+      "@api": ["src/utils/chat-api.ts"],
+      "@slices": ["src/services/slices"]
+    }
+  },
+  "include": ["src"],
+  "outDir": "./dist/",
+}

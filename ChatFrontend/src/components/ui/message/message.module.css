@@ -1,0 +1,28 @@
+.message {
+  display: inline-block;
+  border-radius: 24px;
+  background-color: #424242;
+  padding: 10px 20px;
+  max-width: 70%;
+  grid-column-start: 2;
+  height: min-content;
+}
+
+.message_ai {
+  justify-self: start;
+  background-color: inherit;
+  max-width: 100%;
+}
+
+.message_user {
+  justify-self: end;
+}
+
+.message_text {
+  margin: 0;
+  font-size: 16px;
+  font-family: sans-serif;
+  color: #ececec;
+  line-height: 28px;
+  display: block;
+}
