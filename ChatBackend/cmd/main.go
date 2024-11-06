@@ -11,7 +11,9 @@ import (
 	"chat/internal/service"
 	"log"
 	"os"
+	"time"
 
+	"github.com/gin-contrib/cors"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 )
@@ -59,11 +61,23 @@ func main() {
 
 	// Инициализация обработчиков
 	handlers := handler.NewHandler(services, logger)
+	router := handlers.InitRoutes()
+	router.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"*"},
+		AllowMethods:     []string{"POST", "GET"},
+		AllowHeaders:     []string{"Origin", "Authorization", "Content-Type", "Accept-Encoding"},
+		ExposeHeaders:    []string{"Content-Length", "Access-Control-Allow-Origin", "Access-Control-Allow-Credentials", "Access-Control-Allow-Headers", "Access-Control-Allow-Methods"},
+		AllowCredentials: true,
+		AllowOriginFunc: func(origin string) bool {
+			return origin == "*"
+		},
+		MaxAge: 12 * time.Hour,
+	}))
 
 	// Запуск сервера
 	srv := new(chat.Server)
 	logger.Info("run HTTP server")
-	if err = srv.Run(cfg.Address, handlers.InitRoutes()); err != nil {
+	if err = srv.Run(cfg.Address, router); err != nil {
 		logger.Error("failed to run HTTP server", slogx.Error(err))
 		os.Exit(1)
 	}
