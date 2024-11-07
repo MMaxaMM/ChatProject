@@ -1,0 +1,9 @@
+version: "3"
+
+tasks:
+  generate-audio-python:
+    cmds:
+      - python3 -m grpc_tools.protoc -I ./protos/ ./protos/audio.proto --python_out=./ChatAudio --grpc_python_out=./ChatAudio --pyi_out=./ChatAudio
+  generate-auth-go:
+    cmds:
+      - protoc -I ./protos/ ./protos/auth.proto --go_out=./Auth/gen --go_opt=paths=source_relative --go-grpc_out=./Auth/gen --go-grpc_opt=paths=source_relative

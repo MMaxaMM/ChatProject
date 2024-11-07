@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package audio_service;
+
+enum Error {
+    OK = 0;
+    INTERNAL = 1;
+}
+
+service AudioService {
+    rpc Recognize (AudioRequest) returns (AudioResponse);
+}
+
+message AudioRequest {
+    bytes audio = 1; // Аудиофайл в бинарном формате
+}
+
+message AudioResponse {
+    string result = 1;
+    Error error = 2;
+}
