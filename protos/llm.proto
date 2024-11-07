@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package llm;
+
+option go_package = "MMaxaMM.llm.v1;llmv1";
+
+service LLMService {
+    rpc Generate (LLMRequest) returns (LLMResponse);
+}
+
+message Message {
+    string role = 1;
+    string content = 2;
+}
+
+message LLMRequest {
+    repeated Message messages = 1;
+    uint32 max_tokens = 2;
+}
+
+message LLMResponse {
+    Message message = 1;
+    string error = 2;
+}
