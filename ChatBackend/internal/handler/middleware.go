@@ -15,6 +15,10 @@ const (
 	userCtx             = "userId"
 )
 
+func (h *Handler) accessControl(c *gin.Context) {
+	c.Header("Access-Control-Allow-Origin", "*")
+}
+
 func (h *Handler) userIdentity(c *gin.Context) {
 	const op = "handler.userIdentity"
 	logger := h.logger.With(slog.String("op", op))
@@ -47,6 +51,7 @@ func (h *Handler) userIdentity(c *gin.Context) {
 	}
 
 	c.Set(userCtx, userId)
+	c.Header("Access-Control-Allow-Origin", "*")
 }
 
 func getUserId(c *gin.Context) (int, error) {
