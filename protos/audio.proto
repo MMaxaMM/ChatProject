@@ -1,11 +1,8 @@
 syntax = "proto3";
 
-package audio_service;
+package audio;
 
-enum Error {
-    OK = 0;
-    INTERNAL = 1;
-}
+option go_package = "MMaxaMM.audio.v1;audiov1";
 
 service AudioService {
     rpc Recognize (AudioRequest) returns (AudioResponse);
@@ -17,5 +14,5 @@ message AudioRequest {
 
 message AudioResponse {
     string result = 1;
-    Error error = 2;
+    string error = 2;
 }

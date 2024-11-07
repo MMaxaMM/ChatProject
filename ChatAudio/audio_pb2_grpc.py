@@ -35,7 +35,7 @@ class AudioServiceStub(object):
             channel: A grpc.Channel.
         """
         self.Recognize = channel.unary_unary(
-                '/audio_service.AudioService/Recognize',
+                '/audio.AudioService/Recognize',
                 request_serializer=audio__pb2.AudioRequest.SerializeToString,
                 response_deserializer=audio__pb2.AudioResponse.FromString,
                 _registered_method=True)
@@ -60,9 +60,9 @@ def add_AudioServiceServicer_to_server(servicer, server):
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-            'audio_service.AudioService', rpc_method_handlers)
+            'audio.AudioService', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
-    server.add_registered_method_handlers('audio_service.AudioService', rpc_method_handlers)
+    server.add_registered_method_handlers('audio.AudioService', rpc_method_handlers)
 
 
  # This class is part of an EXPERIMENTAL API.
@@ -83,7 +83,7 @@ class AudioService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/audio_service.AudioService/Recognize',
+            '/audio.AudioService/Recognize',
             audio__pb2.AudioRequest.SerializeToString,
             audio__pb2.AudioResponse.FromString,
             options,
