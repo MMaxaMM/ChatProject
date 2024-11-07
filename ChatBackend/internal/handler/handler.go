@@ -29,7 +29,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		auth.POST("/sign-in", h.signIn)
 	}
 
-	chatInterface := router.Group("/chat", h.userIdentity)
+	chatInterface := router.Group("/chat", h.accessControl, h.userIdentity)
 	{
 		chatInterface.POST("/history", h.GetHistory)
 		chatInterface.POST("/message", h.SendMessage)
