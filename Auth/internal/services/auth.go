@@ -33,6 +33,8 @@ var (
 	ErrUserExists         = errors.New("user already exists")
 )
 
+const secret = "rehdft;br"
+
 // New returns a new interface of the Auth service
 func New(
 	log *slog.Logger,
@@ -75,14 +77,9 @@ func (a *AuthService) Login(
 		return "", fmt.Errorf("%s: %w", op, ErrInvalidCredentials)
 	}
 
-	app, err := a.appProvider.App(ctx, appID)
-	if err != nil {
-		return "", fmt.Errorf("%s: %w", op, err)
-	}
-
 	log.Info("User logged in successfully")
 
-	token, err := NewToken(user, app, a.tokenTTL)
+	token, err := NewToken(user, a.tokenTTL)
 	if err != nil {
 		log.Error("Failed to generate token", slog.String("err", err.Error()))
 		return "", fmt.Errorf("%s: %w", op, err)
@@ -91,16 +88,14 @@ func (a *AuthService) Login(
 	return token, nil
 }
 
-func NewToken(user *models.User, app models.App, duration time.Duration) (string, error) {
+func NewToken(user *models.User, duration time.Duration) (string, error) {
 	token := jwt.New(jwt.SigningMethodHS256)
 
 	claims := token.Claims.(jwt.MapClaims)
-	claims["userID"] = user.ID
-	claims["username"] = user.Username
 	claims["exp"] = time.Now().Add(duration).Unix()
-	claims["appID"] = app.ID
+	claims["user_id"] = user.ID
 
-	tokenString, err := token.SignedString([]byte(app.Secret))
+	tokenString, err := token.SignedString([]byte(secret))
 	if err != nil {
 		return "", err
 	}
@@ -126,7 +121,7 @@ func (a *AuthService) Register(ctx context.Context,
 		return 0, fmt.Errorf("%s: %w", op, err)
 	}
 
-	userID, err := a.userSaver.SaveUser(ctx, username, passHash)
+	userID, err := a.storage.SaveUser(ctx, username, passHash)
 	if err != nil {
 		if errors.Is(err, storage.ErrUserExists) {
 			log.Warn("User already exists", slog.String("err", err.Error()))
@@ -139,26 +134,4 @@ func (a *AuthService) Register(ctx context.Context,
 	log.Info("User registered")
 
 	return userID, nil
-}
-
-// IsAdmin checks if user is admin
-func (a *AuthService) IsAdmin(ctx context.Context, username string) (bool, error) {
-	const op = "services.IsAdmin"
-	log := a.log.With(slog.String("op", op), slog.String("username", username))
-
-	log.Info("Checking if user is admin")
-
-	isAdmin, err := a.userProvider.IsAdmin(ctx, username)
-	if err != nil {
-		if errors.Is(err, storage.ErrUserNotFound) {
-			log.Warn("Invalid app ID", slog.String("err", err.Error()))
-			return false, fmt.Errorf("%s: %w", op, ErrInvalidCredentials)
-		}
-		log.Error("Failed to checks if user is admin", slog.String("err", err.Error()))
-		return false, fmt.Errorf("%s: %w", op, err)
-	}
-
-	log.Info("Checked if user is admin", slog.Bool("is_admin", isAdmin))
-
-	return isAdmin, nil
 }
