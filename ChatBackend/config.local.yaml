@@ -1,0 +1,13 @@
+env: "dev-linux" # dev-linux / dev-windows / prod
+http_server:
+  address: ":5050"
+database:
+  username: "backend"
+  host: "localhost"
+  port: "5430"
+  dbname: "Chat"
+  sslmode: "disable"
+llm:
+  address: "localhost:50100"
+  history_limit: 15
+  max_tokens: 1024

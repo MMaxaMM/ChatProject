@@ -3,68 +3,87 @@ package handler
 import (
 	"chat"
 	"chat/internal/lib/slogx"
+	"chat/internal/models"
+	"errors"
 	"log/slog"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
-func (h *Handler) signUp(c *gin.Context) {
-	const op = "handler.signUp"
-	logger := h.logger.With(slog.String("op", op))
-
-	var user chat.User
-
-	if err := c.BindJSON(&user); err != nil {
-		logger.Error("bad request", slogx.Error(err))
-		newErrorResponse(c, http.StatusBadRequest, err.Error())
-		return
-	}
-
-	userId, err := h.services.Authorization.CreateUser(user.Username, user.Password)
-	if err != nil {
-		switch chat.ErrorCode(err) {
-		case chat.EDUPLICATE:
-			logger.Info("user already exists", slog.String("username", user.Username))
-			newErrorResponse(c, http.StatusConflict, err.Error())
-			return
-		default:
-			logger.Error("failed to create user", slogx.Error(err))
-			newErrorResponse(c, http.StatusInternalServerError, err.Error())
-			return
-		}
-	}
-
-	logger.Info("new user created", slog.String("username", user.Username))
-	c.JSON(http.StatusOK, gin.H{"user_id": userId})
+type AuthService interface {
+	CreateUser(*models.SignUpRequest) (*models.SignUpResponse, error)
+	GenerateToken(*models.SignInRequest) (*models.SignInResponse, error)
 }
 
-func (h *Handler) signIn(c *gin.Context) {
-	const op = "handler.signIn"
-	logger := h.logger.With(slog.String("op", op))
+type AuthHandler struct {
+	service AuthService
+	log     *slog.Logger
+}
 
-	var user chat.User
+func NewAuthHandler(service AuthService, log *slog.Logger) *AuthHandler {
+	return &AuthHandler{service: service, log: log}
+}
 
-	if err := c.BindJSON(&user); err != nil {
-		logger.Error("bad request", slogx.Error(err))
-		newErrorResponse(c, http.StatusBadRequest, err.Error())
+func (h *AuthHandler) SignUp(c *gin.Context) {
+	const op = "handler.SignUp"
+	log := h.log.With(slog.String("op", op))
+
+	request := new(models.SignUpRequest)
+
+	if err := c.BindJSON(request); err != nil {
+		log.Error("Bad request", slogx.Error(err))
+		NewErrorResponse(c, http.StatusBadRequest, MsgBadRequest)
 		return
 	}
 
-	token, err := h.services.Authorization.GenerateToken(user.Username, user.Password)
+	log = log.With(slog.String("username", request.Username))
+
+	response, err := h.service.CreateUser(request)
 	if err != nil {
-		switch chat.ErrorCode(err) {
-		case chat.EUNAUTHORIZED:
-			logger.Info("unauthorized", slog.String("username", user.Username))
-			newErrorResponse(c, http.StatusUnauthorized, err.Error())
-			return
-		default:
-			logger.Error("failed to generate token", slogx.Error(err))
-			newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		if errors.Is(err, chat.ErrUserDuplicate) {
+			log.Warn("User already exists")
+			NewErrorResponse(c, http.StatusConflict, MsgUserExsists)
 			return
 		}
+		log.Error("Failed to create user", slogx.Error(err))
+		NewErrorResponse(c, http.StatusInternalServerError, MsgInternal)
+		return
 	}
 
-	logger.Info("user is authorized", slog.String("username", user.Username))
-	c.JSON(http.StatusOK, gin.H{"token": token})
+	log.Info("New user created")
+
+	c.JSON(http.StatusOK, response)
+}
+
+func (h *AuthHandler) SignIn(c *gin.Context) {
+	const op = "handler.SignIn"
+	log := h.log.With(slog.String("op", op))
+
+	request := new(models.SignInRequest)
+
+	if err := c.BindJSON(&request); err != nil {
+		log.Error("Bad request", slogx.Error(err))
+		NewErrorResponse(c, http.StatusBadRequest, MsgBadRequest)
+		return
+	}
+
+	log = log.With(slog.String("username", request.Username))
+
+	response, err := h.service.GenerateToken(request)
+	if err != nil {
+		if errors.Is(err, chat.ErrUserNotFound) {
+			log.Warn("Incorrect username or password", slogx.Error(err))
+			NewErrorResponse(c, http.StatusUnauthorized, MsgUserNotFound)
+			return
+		}
+		log.Error("Failed to generate token", slogx.Error(err))
+		NewErrorResponse(c, http.StatusInternalServerError, MsgInternal)
+		return
+
+	}
+
+	log.Info("User is authorized")
+
+	c.JSON(http.StatusOK, response)
 }

@@ -28,9 +28,9 @@ type Database struct {
 }
 
 type LLM struct {
-	URL          string `yaml:"url"`
+	ChatAddress  string `yaml:"address"`
 	HistoryLimit int    `yaml:"history_limit"`
-	MaxTokens    uint   `yaml:"max_tokens"`
+	MaxTokens    uint32 `yaml:"max_tokens"`
 }
 
 func Load() (*Config, error) {

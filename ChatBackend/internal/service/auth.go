@@ -1,43 +1,52 @@
 package service
 
 import (
-	"chat/internal/repository"
+	"chat/internal/models"
 	"crypto/sha1"
-	"errors"
 	"fmt"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
 )
 
-const (
-	salt       = "rehdft;br"
-	signingKey = "sdVp9afO#mEsfkr2p"
-	tokenTTL   = 12 * time.Hour
-)
-
-type tokenClaims struct {
-	jwt.StandardClaims
-	UserId int `json:"user_id"`
+type AuthRepository interface {
+	CreateUser(username string, password string) (int64, error)
+	GetUserId(username string, passwordHash string) (int64, error)
 }
 
 type AuthService struct {
-	rep repository.Authorization
+	rep AuthRepository
 }
 
-func NewAuthService(rep repository.Authorization) *AuthService {
+func NewAuthService(rep AuthRepository) *AuthService {
 	return &AuthService{rep: rep}
 }
 
-func (s *AuthService) CreateUser(username, password string) (int, error) {
-	password = generatePasswordHash(password)
-	return s.rep.CreateUser(username, password)
+type tokenClaims struct {
+	jwt.StandardClaims
+	UserId int64 `json:"user_id"`
 }
 
-func (s *AuthService) GenerateToken(username, password string) (string, error) {
-	userId, err := s.rep.GetUserId(username, generatePasswordHash(password))
+func (s *AuthService) CreateUser(request *models.SignUpRequest) (*models.SignUpResponse, error) {
+	const op = "service.CreateUser"
+
+	passwordHash := generatePasswordHash(request.Password)
+	userID, err := s.rep.CreateUser(request.Username, passwordHash)
 	if err != nil {
-		return "", err
+		return nil, fmt.Errorf("%s: %w", op, err)
+	}
+
+	response := models.SignUpResponse{UserId: userID}
+	return &response, nil
+}
+
+func (s *AuthService) GenerateToken(request *models.SignInRequest) (*models.SignInResponse, error) {
+	const op = "service.GenerateToken"
+
+	passwordHash := generatePasswordHash(request.Password)
+	userId, err := s.rep.GetUserId(request.Username, passwordHash)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, &tokenClaims{
@@ -48,27 +57,14 @@ func (s *AuthService) GenerateToken(username, password string) (string, error) {
 		userId,
 	})
 
-	return token.SignedString([]byte(signingKey))
-}
-
-func (s *AuthService) ParseToken(accessToken string) (int, error) {
-	token, err := jwt.ParseWithClaims(accessToken, &tokenClaims{}, func(token *jwt.Token) (interface{}, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, errors.New("invalid signing method")
-		}
-
-		return []byte(signingKey), nil
-	})
+	signedToken, err := token.SignedString([]byte(signingKey))
 	if err != nil {
-		return 0, err
+		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 
-	claims, ok := token.Claims.(*tokenClaims)
-	if !ok {
-		return 0, errors.New("token claims are not of type *tokenClaims")
-	}
+	response := models.SignInResponse{Token: signedToken}
 
-	return claims.UserId, nil
+	return &response, nil
 }
 
 func generatePasswordHash(password string) string {
