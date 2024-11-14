@@ -11,7 +11,7 @@ import (
 const (
 	usersTable    = "public.users"
 	chatsTable    = "public.chats"
-	messagesTable = "public.messages"
+	messagesTable = "public.chat"
 )
 
 const NoLimit = -1

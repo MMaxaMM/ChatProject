@@ -113,7 +113,8 @@ SET default_table_access_method = heap;
 CREATE TABLE public.chats (
     id bigint NOT NULL,
     user_id bigint NOT NULL,
-    chat_type integer NOT NULL
+    chat_type integer NOT NULL,
+    date timestamp NOT NULL
 );
 
 
@@ -243,7 +244,7 @@ COPY public.chat (id, user_id, chat_id, date, role, content) FROM stdin;
 -- Data for Name: chats; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.chats (id, user_id) FROM stdin;
+COPY public.chats (id, user_id, chat_type, date) FROM stdin;
 \.
 
 --
