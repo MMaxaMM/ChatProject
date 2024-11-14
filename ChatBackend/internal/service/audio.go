@@ -1,12 +1,11 @@
 package service
 
-type AudioRepository interface {
-}
+import "chat/internal/repository"
 
 type AudioService struct {
-	rep AudioRepository
+	rep *repository.Repository
 }
 
-func NewAudioService(rep AudioRepository) *AudioService {
+func NewAudioService(rep *repository.Repository) *AudioService {
 	return &AudioService{rep: rep}
 }

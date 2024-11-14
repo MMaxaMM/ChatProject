@@ -1,8 +1,10 @@
 package service
 
 import (
+	"chat"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/golang-jwt/jwt"
 )
@@ -33,7 +35,9 @@ func (s *MiddlewareService) ParseToken(accessToken string) (int64, error) {
 		return 0, fmt.Errorf("%s: %w", op, err)
 	}
 
-	// TODO: истекло время жизни токена
+	if !claims.VerifyExpiresAt(time.Now().Unix(), true) {
+		return 0, fmt.Errorf("%s: %w", op, chat.ErrTokenExpired)
+	}
 
 	return claims.UserId, nil
 }

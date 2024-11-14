@@ -1,7 +1,9 @@
 package handler
 
 import (
+	"chat"
 	"chat/internal/lib/slogx"
+	"chat/internal/service"
 	"errors"
 	"log/slog"
 	"net/http"
@@ -15,17 +17,13 @@ const (
 	userCtx             = "userId"
 )
 
-type MiddlewareService interface {
-	ParseToken(string) (int64, error)
-}
-
 type MiddlewareHandler struct {
-	service MiddlewareService
+	service *service.Service
 	log     *slog.Logger
 }
 
 func NewMiddlewareHandler(
-	service MiddlewareService,
+	service *service.Service,
 	log *slog.Logger,
 ) *MiddlewareHandler {
 	return &MiddlewareHandler{service: service, log: log}
@@ -61,8 +59,11 @@ func (h *MiddlewareHandler) UserIdentity(c *gin.Context) {
 
 	userId, err := h.service.ParseToken(headerParts[1])
 	if err != nil {
-		// TODO: истекло время жизни токена
-
+		if errors.Is(err, chat.ErrTokenExpired) {
+			log.Warn("Token expired", slogx.Error(err))
+			NewErrorResponse(c, http.StatusUnauthorized, MsgTokenExpired)
+			return
+		}
 		log.Error("Failed to parse token", slogx.Error(err))
 		NewErrorResponse(c, http.StatusUnauthorized, MsgBadAuthHeader)
 		return

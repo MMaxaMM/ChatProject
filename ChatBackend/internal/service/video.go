@@ -1,12 +1,14 @@
 package service
 
+import "chat/internal/repository"
+
 type VideoRepository interface {
 }
 
 type VideoService struct {
-	rep VideoRepository
+	rep *repository.Repository
 }
 
-func NewVideoService(rep VideoRepository) *VideoService {
+func NewVideoService(rep *repository.Repository) *VideoService {
 	return &VideoService{rep: rep}
 }

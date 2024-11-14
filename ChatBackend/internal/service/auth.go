@@ -2,6 +2,7 @@ package service
 
 import (
 	"chat/internal/models"
+	"chat/internal/repository"
 	"crypto/sha1"
 	"fmt"
 	"time"
@@ -9,16 +10,11 @@ import (
 	"github.com/dgrijalva/jwt-go"
 )
 
-type AuthRepository interface {
-	CreateUser(username string, password string) (int64, error)
-	GetUserId(username string, passwordHash string) (int64, error)
-}
-
 type AuthService struct {
-	rep AuthRepository
+	rep *repository.Repository
 }
 
-func NewAuthService(rep AuthRepository) *AuthService {
+func NewAuthService(rep *repository.Repository) *AuthService {
 	return &AuthService{rep: rep}
 }
 

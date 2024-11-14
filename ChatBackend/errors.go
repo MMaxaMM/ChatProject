@@ -2,14 +2,13 @@ package chat
 
 import "errors"
 
-// Handler:
-
-// Service:
+// Service error
 var (
 	ErrServiceNotAvailable = errors.New("service not available")
+	ErrTokenExpired        = errors.New("token expired")
 )
 
-// Repository:
+// Repository error
 var (
 	ErrUserDuplicate = errors.New("user with that username already exists")
 	ErrForeignKey    = errors.New("non-existent foreign key")

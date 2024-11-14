@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/gin-contrib/cors"
+	_ "github.com/lib/pq"
 )
 
 type App struct {
@@ -25,12 +26,12 @@ func NewApp(cfg *config.Config, log *slog.Logger) *App {
 func (a *App) MustRun() {
 	// Инициализация базы данных
 	db, err := repository.NewPostgresDB(&repository.Config{
-		Host:     a.cfg.Host,
-		Port:     a.cfg.Port,
-		Username: a.cfg.Username,
-		DBName:   a.cfg.DBName,
-		SSLMode:  a.cfg.SSLMode,
-		Password: os.Getenv("DB_PASSWORD"),
+		Host:     a.cfg.Database.Host,
+		Port:     a.cfg.Database.Port,
+		Username: a.cfg.Database.Username,
+		DBName:   a.cfg.Database.DBName,
+		SSLMode:  a.cfg.Database.SSLMode,
+		Password: a.cfg.Database.Password,
 	})
 	if err != nil {
 		a.log.Error("Failed to initialize database", slogx.Error(err))
@@ -38,36 +39,13 @@ func (a *App) MustRun() {
 	}
 
 	// Инициализация репозитория
-	authPostgres := repository.NewAuthPostgres(db)
-	controlPostgres := repository.NewControlPostgres(db)
-	chatPostgres := repository.NewChatPostgres(db)
-	audioPostgres := repository.NewAudioPostgres(db)
-	videoPostgres := repository.NewVideoPostgres(db)
+	rep := repository.NewPostgresRepository(db)
 
-	authService := service.NewAuthService(authPostgres)
-	middlewareService := service.NewMiddlewareService()
-	controlService := service.NewControlService(controlPostgres)
-	chatService := service.NewChatService(chatPostgres, a.cfg.LLM)
-	audioService := service.NewAudioService(audioPostgres)
-	videoService := service.NewVideoService(videoPostgres)
+	// Инициализация сервисов
+	service := service.NewService(rep, a.cfg)
 
 	// Инициализация обработчиков
-	authHandler := handler.NewAuthHandler(authService, a.log)
-	middlewareHandler := handler.NewMiddlewareHandler(middlewareService, a.log)
-	controlHandler := handler.NewControlHandler(controlService, a.log)
-	chatHandler := handler.NewChatHandler(chatService, a.log)
-	audioHandler := handler.NewAudioHandler(audioService, a.log)
-	videoHandler := handler.NewVideoHandler(videoService, a.log)
-
-	// Инициализация роутера
-	handler := NewHandler(
-		middlewareHandler,
-		authHandler,
-		controlHandler,
-		chatHandler,
-		audioHandler,
-		videoHandler,
-	)
+	handler := handler.NewHandler(service, a.log)
 	router := handler.InitRoutes()
 
 	router.Use(cors.New(cors.Config{
@@ -82,9 +60,9 @@ func (a *App) MustRun() {
 		MaxAge: 12 * time.Hour,
 	}))
 
-	srv := new(Server)
-	a.log.Info("Run HTTP server", slog.String("address", a.cfg.Address))
-	if err = srv.Run(a.cfg.Address, router); err != nil {
+	srv := NewServer(a.cfg.HTTPServer)
+	a.log.Info("Run HTTP server", slog.String("address", a.cfg.HTTPServer.Address))
+	if err = srv.Run(router); err != nil {
 		a.log.Error("Failed to run HTTP server", slogx.Error(err))
 		os.Exit(1)
 	}

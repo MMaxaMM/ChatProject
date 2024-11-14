@@ -1,29 +1,78 @@
 package service
 
-import "chat/internal/models"
-
-type ControlRepository interface {
-	CreateChat(*models.CreateRequest) (*models.CreateResponse, error)
-	DeleteChat(*models.DeleteRequest) error
-	GetStart(*models.StartRequest) (*models.StartResponse, error)
-}
+import (
+	"chat/internal/models"
+	"chat/internal/repository"
+	"fmt"
+)
 
 type ControlService struct {
-	rep ControlRepository
+	rep *repository.Repository
 }
 
-func NewControlService(rep ControlRepository) *ControlService {
+func NewControlService(rep *repository.Repository) *ControlService {
 	return &ControlService{rep: rep}
 }
 
 func (s *ControlService) CreateChat(request *models.CreateRequest) (*models.CreateResponse, error) {
-	return s.rep.CreateChat(request)
+	const op = "service.CreateChat"
+
+	chatId, err := s.rep.CreateChat(request.UserId, request.ChatType)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", op, err)
+	}
+
+	response := &models.CreateResponse{
+		UserId:   request.UserId,
+		ChatType: request.ChatType,
+		ChatId:   chatId,
+	}
+
+	return response, nil
 }
 
 func (s *ControlService) DeleteChat(request *models.DeleteRequest) error {
-	return s.rep.DeleteChat(request)
+	const op = "service.DeleteChat"
+
+	err := s.rep.DeleteChat(request.UserId, request.ChatId)
+	if err != nil {
+		return fmt.Errorf("%s: %w", op, err)
+	}
+
+	return nil
 }
 
 func (s *ControlService) GetStart(request *models.StartRequest) (*models.StartResponse, error) {
-	return s.rep.GetStart(request)
+	const op = "service.GetStart"
+
+	chatPreviewSlice, err := s.rep.GetStart(request.UserId)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", op, err)
+	}
+
+	response := &models.StartResponse{UserId: request.UserId, Chats: chatPreviewSlice}
+
+	return response, nil
+}
+
+func (s *ControlService) GetHistory(request *models.HistoryRequest) (*models.HistoryResponse, error) {
+	const op = "service.GetHistory"
+
+	messages, err := s.rep.GetHistory(
+		request.UserId,
+		request.ChatId,
+		true,
+		repository.NoLimit,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", op, err)
+	}
+
+	response := &models.HistoryResponse{
+		UserId:   request.UserId,
+		ChatId:   request.ChatId,
+		Messages: messages,
+	}
+
+	return response, nil
 }

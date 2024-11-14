@@ -3,6 +3,7 @@ http_server:
   address: ":5050"
 database:
   username: "backend"
+  password: "f*c$;d3EQACG8KW"
   host: "localhost"
   port: "5430"
   dbname: "Chat"
@@ -11,3 +12,7 @@ llm:
   address: "localhost:50100"
   history_limit: 15
   max_tokens: 1024
+minio:
+  address: "localhost:9000"
+  user: "minio"
+  password: "11111111"

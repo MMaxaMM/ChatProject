@@ -4,6 +4,7 @@ import (
 	"chat"
 	"chat/internal/lib/slogx"
 	"chat/internal/models"
+	"chat/internal/service"
 	"errors"
 	"log/slog"
 	"net/http"
@@ -11,17 +12,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type AuthService interface {
-	CreateUser(*models.SignUpRequest) (*models.SignUpResponse, error)
-	GenerateToken(*models.SignInRequest) (*models.SignInResponse, error)
-}
-
 type AuthHandler struct {
-	service AuthService
+	service *service.Service
 	log     *slog.Logger
 }
 
-func NewAuthHandler(service AuthService, log *slog.Logger) *AuthHandler {
+func NewAuthHandler(service *service.Service, log *slog.Logger) *AuthHandler {
 	return &AuthHandler{service: service, log: log}
 }
 

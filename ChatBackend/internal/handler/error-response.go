@@ -13,6 +13,7 @@ const (
 	MsgUserExsists         ErrorMessage = "user whit that username already exists"
 	MsgUserNotFound        ErrorMessage = "incorrect username or password"
 	MsgServiceNotAvailable ErrorMessage = "service not available"
+	MsgTokenExpired        ErrorMessage = "jwt token expired"
 )
 
 type ErrorResponse struct {

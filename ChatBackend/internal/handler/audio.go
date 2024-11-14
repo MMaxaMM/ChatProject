@@ -1,20 +1,18 @@
 package handler
 
 import (
+	"chat/internal/service"
 	"log/slog"
 
 	"github.com/gin-gonic/gin"
 )
 
-type AudioService interface {
-}
-
 type AudioHandler struct {
-	service AudioService
+	service *service.Service
 	log     *slog.Logger
 }
 
-func NewAudioHandler(service AudioService, log *slog.Logger) *AudioHandler {
+func NewAudioHandler(service *service.Service, log *slog.Logger) *AudioHandler {
 	return &AudioHandler{service: service, log: log}
 }
 

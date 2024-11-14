@@ -1,20 +1,18 @@
 package handler
 
 import (
+	"chat/internal/service"
 	"log/slog"
 
 	"github.com/gin-gonic/gin"
 )
 
-type VideoService interface {
-}
-
 type VideoHandler struct {
-	service VideoService
+	service *service.Service
 	log     *slog.Logger
 }
 
-func NewVideoHandler(service VideoService, log *slog.Logger) *VideoHandler {
+func NewVideoHandler(service *service.Service, log *slog.Logger) *VideoHandler {
 	return &VideoHandler{service: service, log: log}
 }
 

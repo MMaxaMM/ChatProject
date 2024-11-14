@@ -1,23 +1,17 @@
 package repository
 
 import (
+	"chat"
 	"fmt"
 
 	"github.com/jmoiron/sqlx"
+	"github.com/lib/pq"
 )
 
 const (
-	usersTable = "public.users"
-	chatsTable = "public.chats"
-	chatTable  = "public.chat"
-	ragTable   = "public.rag"
-	audioTable = "public.audio"
-	videoTable = "public.video"
-)
-
-const (
-	audioPlug = "Audio"
-	videoPlug = "Video"
+	usersTable    = "public.users"
+	chatsTable    = "public.chats"
+	messagesTable = "public.messages"
 )
 
 const NoLimit = -1
@@ -46,4 +40,16 @@ func NewPostgresDB(cfg *Config) (*sqlx.DB, error) {
 	}
 
 	return db, nil
+}
+
+func PostgresNewError(err error) error {
+	if err, ok := err.(*pq.Error); ok {
+		switch err.Code {
+		case "23505":
+			return chat.ErrUserDuplicate
+		case "23503":
+			return chat.ErrForeignKey
+		}
+	}
+	return err
 }

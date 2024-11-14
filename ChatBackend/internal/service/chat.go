@@ -16,55 +16,33 @@ import (
 var DefaultHistoryLimit int = 10
 var DefaultMaxTokens uint32 = 512
 
-type ChatRepository interface {
-	GetHistory(userId int64, chatId int64, limit int) ([]models.Message, error)
-	SaveChatItem(userId int64, chatId int64, message models.Message) error
-}
-
 type ChatService struct {
-	rep ChatRepository
+	rep *repository.Repository
 	cfg config.LLM
 }
 
-func NewChatService(rep ChatRepository, cfg config.LLM) *ChatService {
+func NewChatService(rep *repository.Repository, cfg config.LLM) *ChatService {
 	DefaultHistoryLimit = cfg.HistoryLimit
 	DefaultMaxTokens = cfg.MaxTokens
 
 	return &ChatService{rep: rep, cfg: cfg}
 }
 
-func (s *ChatService) GetHistory(request *models.ChatHistoryRequest) (*models.ChatHistoryResponse, error) {
-	const op = "service.GetHistory"
-
-	messages, err := s.rep.GetHistory(request.UserId, request.ChatId, repository.NoLimit)
-	if err != nil {
-		return nil, fmt.Errorf("%s: %w", op, err)
-	}
-
-	response := &models.ChatHistoryResponse{
-		UserId:   request.UserId,
-		ChatId:   request.ChatId,
-		Messages: messages,
-	}
-
-	return response, nil
-}
-
 func (s *ChatService) SendMessage(request *models.ChatMessageRequest) (*models.ChatMessageResponse, error) {
 	const op = "service.SendMessage"
 
-	messages, err := s.rep.GetHistory(request.UserId, request.ChatId, DefaultHistoryLimit)
+	messages, err := s.rep.GetHistory(request.UserId, request.ChatId, false, DefaultHistoryLimit)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 	messages = append(messages, request.Message)
 
 	conn, err := grpc.NewClient(
-		s.cfg.ChatAddress,
+		s.cfg.Address,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
 	if err != nil {
-		return nil, fmt.Errorf("%s: %w", op, chat.ErrServiceNotAvailable)
+		return nil, fmt.Errorf("%s: %w: %w", op, chat.ErrServiceNotAvailable, err)
 	}
 	defer conn.Close()
 
@@ -89,12 +67,12 @@ func (s *ChatService) SendMessage(request *models.ChatMessageRequest) (*models.C
 		Content: llmResponse.Message.Content,
 	}
 
-	err = s.rep.SaveChatItem(request.UserId, request.ChatId, request.Message)
+	err = s.rep.SaveMessage(request.UserId, request.ChatId, &request.Message)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 
-	err = s.rep.SaveChatItem(request.UserId, request.ChatId, response.Message)
+	err = s.rep.SaveMessage(request.UserId, request.ChatId, &response.Message)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}

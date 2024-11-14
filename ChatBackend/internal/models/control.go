@@ -22,15 +22,22 @@ type StartResponse struct {
 	Chats  []ChatPreview `json:"chats"`
 }
 
-type UserChats struct {
-	ChatId   int64    `json:"chat_id" db:"id"`
-	ChatType ChatType `json:"chat_type" db:"chat_type"`
-}
+type ByDate []ChatPreview
+
+func (a ByDate) Len() int           { return len(a) }
+func (a ByDate) Less(i, j int) bool { return a[i].Date.Before(a[j].Date) }
+func (a ByDate) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 
 type ChatPreview struct {
 	ChatType ChatType  `json:"chat_type"`
 	ChatId   int64     `json:"chat_id"`
 	Content  string    `json:"content" db:"content"`
+	Date     time.Time `json:"date" db:"date"`
+}
+
+type UserChats struct {
+	ChatId   int64     `json:"chat_id" db:"id"`
+	ChatType ChatType  `json:"chat_type" db:"chat_type"`
 	Date     time.Time `json:"date" db:"date"`
 }
 
@@ -50,7 +57,19 @@ type CreateResponse struct {
 // Delete:
 
 type DeleteRequest struct {
-	UserId   int64    `json:"user_id"`
-	ChatType ChatType `json:"chat_type"`
-	ChatId   int64    `json:"chat_id"`
+	UserId int64 `json:"user_id"`
+	ChatId int64 `json:"chat_id"`
+}
+
+// History:
+
+type HistoryRequest struct {
+	UserId int64 `json:"user_id"`
+	ChatId int64 `json:"chat_id"`
+}
+
+type HistoryResponse struct {
+	UserId   int64     `json:"user_id"`
+	ChatId   int64     `json:"chat_id"`
+	Messages []Message `json:"messages"`
 }
