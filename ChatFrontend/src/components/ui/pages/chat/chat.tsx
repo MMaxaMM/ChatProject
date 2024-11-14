@@ -1,6 +1,6 @@
 import styles from './chat.module.css';
 import logo from '../../../../images/logo.svg';
-import { FC, forwardRef } from 'react';
+import { FC } from 'react';
 import closeIcon from '../../../../images/closeIcon.svg';
 import { TChatUIProps } from './type';
 import clsx from 'clsx';

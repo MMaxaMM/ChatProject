@@ -78,7 +78,8 @@ module.exports = {
       '@components': path.resolve(__dirname, './src/components'),
       '@utils-types': path.resolve(__dirname, './src/utils/types.ts'),
       '@api': path.resolve(__dirname, './src/utils/chat-api.ts'),
-      '@slices': path.resolve(__dirname, './src/services/slices')
+      '@slices': path.resolve(__dirname, './src/services/slices'),
+      '@store': path.resolve(__dirname, './src/services/store.ts')
     }
   },
   output: {

@@ -1,5 +1,5 @@
 import styles from './app.module.css';
-import { Start, Register, Login, Chat, ChatOpen } from '@pages';
+import { Start, Register, Login, Chat } from '@pages';
 import '../../index.css';
 import { Route, Routes } from 'react-router-dom';
 
@@ -10,10 +10,9 @@ function App() {
         <Route path='/' element={<Start />} />
         <Route path='/register' element={<Register />} />
         <Route path='/login' element={<Login />} />
-        <Route path='/chat'>
-          <Route index element={<Chat />} />
-          <Route path=':id' element={<ChatOpen />} />
-        </Route>
+        {['/chat', '/chat/:id'].map((path) => (
+          <Route path={path} element={<Chat />} key='Chat' />
+        ))}
       </Routes>
     </main>
   );

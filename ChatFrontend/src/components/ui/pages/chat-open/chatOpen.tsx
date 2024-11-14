@@ -1,16 +1,16 @@
 import styles from './chatOpen.module.css';
-import arrowStart from '../../../../images/arrowStart.svg';
 import { FC } from 'react';
 import closeIcon from '../../../../images/closeIcon.svg';
 import { TChatOpenUIProps } from './type';
 import clsx from 'clsx';
-import { Message } from '@components';
+import { Message, MessageInput } from '@components';
 import { TMessage } from '@utils-types';
 
 export const ChatOpenUI: FC<TChatOpenUIProps> = ({
   isAsideOpen,
   chat,
-  onOpenTab
+  onOpenTab,
+  onSendMessage
 }) => {
   const messages: TMessage[] = chat.messages;
   return (
@@ -37,14 +37,8 @@ export const ChatOpenUI: FC<TChatOpenUIProps> = ({
             <Message message={message} key={index} />
           ))}
         </ul>
-        <div className={styles.message_input}>
-          <p className={styles.message_input__text}>Сообщить ChatGPT</p>
-          <button className={styles.message_input__button}>
-            <img
-              src={arrowStart}
-              className={styles.message_input__button_icon}
-            />
-          </button>
+        <div className={styles.message_input_wrapper}>
+          <MessageInput onSendMessage={onSendMessage} />
         </div>
       </div>
     </div>

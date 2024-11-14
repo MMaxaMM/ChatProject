@@ -25,7 +25,8 @@
       "@components": ["src/components"],
       "@utils-types": ["src/utils/types.ts"],
       "@api": ["src/utils/chat-api.ts"],
-      "@slices": ["src/services/slices"]
+      "@slices": ["src/services/slices"],
+      "@store": ["src/services/store.ts"]
     }
   },
   "include": ["src"],

@@ -11,7 +11,48 @@ export type ChatState = {
 
 const initialState: ChatState = {
   userId: null,
-  chats: [],
+  chats: [
+    {
+      userId: 1,
+      chatId: 0,
+      messages: [
+        {
+          role: 'user',
+          content: 'hello'
+        }
+      ]
+    },
+    {
+      userId: 2,
+      chatId: 1,
+      messages: [
+        {
+          role: 'user',
+          content: 'Привет!'
+        },
+        {
+          role: 'assistent',
+          content: 'Ответ ассистента...'
+        },
+        {
+          role: 'user',
+          content: 'Привет!'
+        },
+        {
+          role: 'assistent',
+          content: 'Ответ ассистента...'
+        },
+        {
+          role: 'user',
+          content: 'Привет!'
+        },
+        {
+          role: 'assistent',
+          content: 'Ответ ассистента...'
+        }
+      ]
+    }
+  ],
   chatRequest: false
 };
 
@@ -21,11 +62,15 @@ export const getChats = createAsyncThunk('chat/start', async () => {
   return ans;
 });
 
-const userSlice = createSlice({
+const chatSlice = createSlice({
   name: 'chatSlice',
   initialState,
-  reducers: {},
-  selectors: {},
+  reducers: {
+    
+  },
+  selectors: {
+    getStoreChats: (state) => state.chats
+  },
   extraReducers: (builder) => {
     builder
       .addCase(getChats.pending, (state) => {
@@ -42,4 +87,5 @@ const userSlice = createSlice({
   }
 });
 
-export const chatReducer = userSlice.reducer;
+export const { getStoreChats } = chatSlice.selectors;
+export const chatReducer = chatSlice.reducer;
