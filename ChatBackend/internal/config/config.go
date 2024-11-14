@@ -14,6 +14,7 @@ type Config struct {
 	Database   Database   `yaml:"database"`
 	LLM        LLM        `yaml:"llm"`
 	Minio      Minio      `yaml:"minio"`
+	Audio      Audio      `yaml:"audio"`
 }
 
 type HTTPServer struct {
@@ -33,6 +34,10 @@ type LLM struct {
 	Address      string `yaml:"address"`
 	HistoryLimit int    `yaml:"history_limit"`
 	MaxTokens    uint32 `yaml:"max_tokens"`
+}
+
+type Audio struct {
+	Address string `yaml:"address"`
 }
 
 type Minio struct {

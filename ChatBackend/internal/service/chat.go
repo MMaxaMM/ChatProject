@@ -17,18 +17,18 @@ var DefaultHistoryLimit int = 10
 var DefaultMaxTokens uint32 = 512
 
 type ChatService struct {
-	rep *repository.Repository
 	cfg config.LLM
+	rep *repository.Repository
 }
 
-func NewChatService(rep *repository.Repository, cfg config.LLM) *ChatService {
+func NewChatService(cfg config.LLM, rep *repository.Repository) *ChatService {
 	DefaultHistoryLimit = cfg.HistoryLimit
 	DefaultMaxTokens = cfg.MaxTokens
 
-	return &ChatService{rep: rep, cfg: cfg}
+	return &ChatService{cfg: cfg, rep: rep}
 }
 
-func (s *ChatService) SendMessage(request *models.ChatMessageRequest) (*models.ChatMessageResponse, error) {
+func (s *ChatService) SendMessage(request *models.ChatRequest) (*models.ChatResponse, error) {
 	const op = "service.SendMessage"
 
 	messages, err := s.rep.GetHistory(request.UserId, request.ChatId, false, DefaultHistoryLimit)
@@ -59,12 +59,13 @@ func (s *ChatService) SendMessage(request *models.ChatMessageRequest) (*models.C
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 
-	response := new(models.ChatMessageResponse)
-	response.UserId = request.UserId
-	response.ChatId = request.ChatId
-	response.Message = models.Message{
-		Role:    llmResponse.Message.Role,
-		Content: llmResponse.Message.Content,
+	response := &models.ChatResponse{
+		UserId: request.UserId,
+		ChatId: request.ChatId,
+		Message: models.Message{
+			Role:    llmResponse.Message.Role,
+			Content: llmResponse.Message.Content,
+		},
 	}
 
 	err = s.rep.SaveMessage(request.UserId, request.ChatId, &request.Message)
@@ -72,7 +73,7 @@ func (s *ChatService) SendMessage(request *models.ChatMessageRequest) (*models.C
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 
-	err = s.rep.SaveMessage(request.UserId, request.ChatId, &response.Message)
+	err = s.rep.SaveMessage(response.UserId, response.ChatId, &response.Message)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}

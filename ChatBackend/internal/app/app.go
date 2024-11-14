@@ -4,6 +4,7 @@ import (
 	"chat/internal/config"
 	"chat/internal/handler"
 	"chat/internal/lib/slogx"
+	minioclient "chat/internal/minio-client"
 	"chat/internal/repository"
 	"chat/internal/service"
 	"log/slog"
@@ -24,6 +25,7 @@ func NewApp(cfg *config.Config, log *slog.Logger) *App {
 }
 
 func (a *App) MustRun() {
+
 	// Инициализация базы данных
 	db, err := repository.NewPostgresDB(&repository.Config{
 		Host:     a.cfg.Database.Host,
@@ -42,7 +44,12 @@ func (a *App) MustRun() {
 	rep := repository.NewPostgresRepository(db)
 
 	// Инициализация сервисов
-	service := service.NewService(rep, a.cfg)
+	minioClient := minioclient.NewMinioProvider(a.cfg.Minio)
+	if err = minioClient.Connect(); err != nil {
+		a.log.Error("Failed to connect to minio", slogx.Error(err))
+		os.Exit(1)
+	}
+	service := service.NewService(a.cfg, rep, minioClient)
 
 	// Инициализация обработчиков
 	handler := handler.NewHandler(service, a.log)

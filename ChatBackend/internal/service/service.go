@@ -2,6 +2,7 @@ package service
 
 import (
 	"chat/internal/config"
+	minioclient "chat/internal/minio-client"
 	"chat/internal/models"
 	"chat/internal/repository"
 )
@@ -23,10 +24,11 @@ type Control interface {
 }
 
 type Chat interface {
-	SendMessage(request *models.ChatMessageRequest) (*models.ChatMessageResponse, error)
+	SendMessage(request *models.ChatRequest) (*models.ChatResponse, error)
 }
 
 type Audio interface {
+	Recognize(request *models.AudioRequest) (*models.AudioResponse, error)
 }
 
 type Video interface {
@@ -42,15 +44,16 @@ type Service struct {
 }
 
 func NewService(
-	rep *repository.Repository,
 	cfg *config.Config,
+	rep *repository.Repository,
+	minio *minioclient.MinioProvider,
 ) *Service {
 	return &Service{
 		Auth:       NewAuthService(rep),
 		Middleware: NewMiddlewareService(),
 		Control:    NewControlService(rep),
-		Chat:       NewChatService(rep, cfg.LLM),
-		Audio:      NewAudioService(rep),
+		Chat:       NewChatService(cfg.LLM, rep),
+		Audio:      NewAudioService(cfg.Audio, rep, minio),
 		Video:      NewVideoService(rep),
 	}
 }

@@ -2,7 +2,10 @@ package minioclient
 
 import (
 	"chat/internal/config"
+	"chat/internal/models"
+	"fmt"
 
+	"github.com/google/uuid"
 	"github.com/minio/minio-go"
 )
 
@@ -11,16 +14,16 @@ const (
 	videoBucketName = "video"
 )
 
-type Minio struct {
+type MinioProvider struct {
 	client *minio.Client
 	cfg    config.Minio
 }
 
-func NewMinio(cfg config.Minio) *Minio {
-	return &Minio{cfg: cfg}
+func NewMinioProvider(cfg config.Minio) *MinioProvider {
+	return &MinioProvider{cfg: cfg}
 }
 
-func (m *Minio) Connect() error {
+func (m *MinioProvider) Connect() error {
 	var err error
 	m.client, err = minio.New(m.cfg.Address, m.cfg.User, m.cfg.Password, false)
 	if err != err {
@@ -50,4 +53,39 @@ func (m *Minio) Connect() error {
 	}
 
 	return nil
+}
+
+func (m *MinioProvider) UploadAudio(audio *models.Audio) (string, error) {
+	const op = "minioclient.UploadAudio"
+
+	filename := uuid.New().String()
+
+	_, err := m.client.PutObject(
+		audioBucketName,
+		filename,
+		audio.Payload,
+		audio.PayloadSize,
+		minio.PutObjectOptions{ContentType: "audio/wav"},
+	)
+	if err != nil {
+		return "", fmt.Errorf("%s: %w", op, err)
+	}
+
+	return fmt.Sprintf("http://%s/%s/%s", m.cfg.Address, audioBucketName, filename), nil
+}
+
+func (m *MinioProvider) DownloadAudio(filename string) (*models.Audio, error) {
+	const op = "minioclient.DownloadAudio"
+
+	payload, err := m.client.GetObject(
+		audioBucketName,
+		filename,
+		minio.GetObjectOptions{},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", op, err)
+	}
+	defer payload.Close()
+
+	return &models.Audio{Payload: payload}, nil
 }

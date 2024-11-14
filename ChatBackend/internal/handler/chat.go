@@ -32,7 +32,7 @@ func (h *ChatHandler) SendMessage(c *gin.Context) {
 		return
 	}
 
-	request := new(models.ChatMessageRequest)
+	request := new(models.ChatRequest)
 	if err := c.BindJSON(request); err != nil {
 		log.Error("Bad request", slogx.Error(err))
 		NewErrorResponse(c, http.StatusBadRequest, MsgBadRequest)

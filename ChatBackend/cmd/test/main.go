@@ -24,7 +24,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	minio := minioclient.NewMinio(cfg.Minio)
+	minio := minioclient.NewMinioProvider(cfg.Minio)
 	if err = minio.Connect(); err != nil {
 		log.Fatalln(err.Error())
 	}
