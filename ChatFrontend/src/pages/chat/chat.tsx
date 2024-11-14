@@ -4,18 +4,22 @@ import { ChatList } from '@components';
 import { TChat } from '@utils-types';
 import { useSelector } from '@store';
 import { getStoreChats } from '@slices';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 
 export const Chat: FC = () => {
   const [isOpen, setIsOpen] = useState(true);
   const params = useParams();
-  const index = parseInt(params.id ? params.id : '0');
+  const index = parseInt(params.id ? params.id : '-1');
+  const navigate = useNavigate();
+  console.log(index);
 
   const toggleOpen = () => {
     setIsOpen(!isOpen);
   };
 
-  const onCreateChat = () => void 0;
+  const onCreateChat = () => {
+    navigate('/chat');
+  };
   const onSendMessage = (message: string) => void 1;
   const chats: TChat[] = useSelector(getStoreChats);
 
@@ -27,7 +31,7 @@ export const Chat: FC = () => {
         onClose={toggleOpen}
         onCreateChat={onCreateChat}
       />
-      {chats[index].messages.length > 0 ? (
+      {index >= 0 ? (
         <ChatOpenUI
           isAsideOpen={isOpen}
           chat={chats[index]}

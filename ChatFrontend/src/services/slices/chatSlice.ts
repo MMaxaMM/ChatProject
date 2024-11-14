@@ -65,9 +65,7 @@ export const getChats = createAsyncThunk('chat/start', async () => {
 const chatSlice = createSlice({
   name: 'chatSlice',
   initialState,
-  reducers: {
-    
-  },
+  reducers: {},
   selectors: {
     getStoreChats: (state) => state.chats
   },

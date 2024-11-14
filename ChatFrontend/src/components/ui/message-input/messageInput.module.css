@@ -39,12 +39,20 @@
   height: 32px;
   width: 32px;
   border: none;
-  background-color: rgb(103, 103,103);
+  background-color: #fff;
   border-radius: 50%;
   color: #fff;
   cursor: pointer;
   fill: #fff;
   font-size: 14px;
+}
+
+.message_input__button:disabled {
+  background-color: rgb(103, 103,103);
+}
+
+.message_input__button:hover {
+  opacity: 0.7;
 }
 
 .message_input__button_icon {
