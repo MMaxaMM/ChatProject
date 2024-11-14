@@ -1,5 +1,5 @@
 import { TUser } from '@utils-types';
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { setCookie } from '../../utils/cookie';
 import { registerUserApi, loginUserApi } from '@api';
 

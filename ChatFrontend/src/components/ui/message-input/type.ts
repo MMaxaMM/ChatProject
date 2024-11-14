@@ -4,4 +4,5 @@ export type TMessageInputProps = {
   message: string;
   handleChange: ChangeEventHandler<HTMLTextAreaElement>;
   handleKeyDown: KeyboardEventHandler<HTMLTextAreaElement>;
+  handleSend: () => void;
 };

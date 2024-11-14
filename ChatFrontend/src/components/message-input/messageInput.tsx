@@ -45,6 +45,7 @@ export const MessageInput: FC<TMessageInputProps> = ({ onSendMessage }) => {
       message={message}
       handleChange={handleChange}
       handleKeyDown={handleKeyDown}
+      handleSend={handleSend}
     />
   );
 };

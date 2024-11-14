@@ -6,7 +6,7 @@ import { TMessageInputProps } from './type';
 export const MessageInputUI = forwardRef<
   HTMLTextAreaElement,
   TMessageInputProps
->(({ message, handleChange, handleKeyDown }, ref) => (
+>(({ message, handleChange, handleKeyDown, handleSend }, ref) => (
   <div className={styles.message_input}>
     <textarea
       ref={ref}
@@ -18,6 +18,7 @@ export const MessageInputUI = forwardRef<
       className={styles.message_input__text}
     />
     <button
+      onClick={handleSend}
       className={styles.message_input__button}
       disabled={!message.trim()} // Кнопка отключена, если сообщение пустое
     >

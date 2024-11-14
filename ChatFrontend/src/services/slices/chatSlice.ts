@@ -1,5 +1,5 @@
-import { TChat } from '@utils-types';
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { TChat, TMessage } from '@utils-types';
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { setCookie } from '../../utils/cookie';
 import { getChatsApi, loginUserApi } from '@api';
 
@@ -65,7 +65,14 @@ export const getChats = createAsyncThunk('chat/start', async () => {
 const chatSlice = createSlice({
   name: 'chatSlice',
   initialState,
-  reducers: {},
+  reducers: {
+    sendMessage: (
+      state,
+      action: PayloadAction<{ chatId: number; message: TMessage }>
+    ) => {
+      state.chats[action.payload.chatId].messages.push(action.payload.message);
+    }
+  },
   selectors: {
     getStoreChats: (state) => state.chats
   },
@@ -86,4 +93,5 @@ const chatSlice = createSlice({
 });
 
 export const { getStoreChats } = chatSlice.selectors;
+export const { sendMessage } = chatSlice.actions;
 export const chatReducer = chatSlice.reducer;
