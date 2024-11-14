@@ -5,15 +5,13 @@ from typing import ClassVar as _ClassVar, Optional as _Optional
 DESCRIPTOR: _descriptor.FileDescriptor
 
 class AudioRequest(_message.Message):
-    __slots__ = ("audio",)
-    AUDIO_FIELD_NUMBER: _ClassVar[int]
-    audio: bytes
-    def __init__(self, audio: _Optional[bytes] = ...) -> None: ...
+    __slots__ = ("uri",)
+    URI_FIELD_NUMBER: _ClassVar[int]
+    uri: str
+    def __init__(self, uri: _Optional[str] = ...) -> None: ...
 
 class AudioResponse(_message.Message):
-    __slots__ = ("result", "error")
+    __slots__ = ("result",)
     RESULT_FIELD_NUMBER: _ClassVar[int]
-    ERROR_FIELD_NUMBER: _ClassVar[int]
     result: str
-    error: str
-    def __init__(self, result: _Optional[str] = ..., error: _Optional[str] = ...) -> None: ...
+    def __init__(self, result: _Optional[str] = ...) -> None: ...

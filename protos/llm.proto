@@ -20,5 +20,4 @@ message LLMRequest {
 
 message LLMResponse {
     Message message = 1;
-    string error = 2;
 }

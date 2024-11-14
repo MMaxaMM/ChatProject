@@ -9,10 +9,9 @@ service AudioService {
 }
 
 message AudioRequest {
-    bytes audio = 1; // Аудиофайл в бинарном формате
+    string uri = 1;
 }
 
 message AudioResponse {
     string result = 1;
-    string error = 2;
 }
