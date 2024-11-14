@@ -25,7 +25,7 @@ type StartResponse struct {
 type ByDate []ChatPreview
 
 func (a ByDate) Len() int           { return len(a) }
-func (a ByDate) Less(i, j int) bool { return a[i].Date.Before(a[j].Date) }
+func (a ByDate) Less(i, j int) bool { return a[i].Date.After(a[j].Date) }
 func (a ByDate) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 
 type ChatPreview struct {

@@ -59,7 +59,7 @@ func (r *ControlPostgres) GetStart(userId int64) ([]models.ChatPreview, error) {
 
 	chatPreviewSlice := make([]models.ChatPreview, len(*userChats))
 
-	for _, userChat := range *userChats {
+	for idx, userChat := range *userChats {
 		chatPreview := new(models.ChatPreview)
 		chatPreview.ChatType = userChat.ChatType
 		chatPreview.ChatId = userChat.ChatId
@@ -74,7 +74,7 @@ func (r *ControlPostgres) GetStart(userId int64) ([]models.ChatPreview, error) {
 			}
 		}
 
-		chatPreviewSlice = append(chatPreviewSlice, *chatPreview)
+		chatPreviewSlice[idx] = *chatPreview
 	}
 
 	sort.Sort(models.ByDate(chatPreviewSlice))
@@ -94,7 +94,7 @@ func (r *ControlPostgres) GetHistory(
 
 	var query string
 	if visibleOnly {
-		query = fmt.Sprintf("SELECT role, content FROM %s WHERE user_id=$1 AND chat_id=$2 AND role!=%s ORDER BY date ASC", messagesTable, models.RoleSystem)
+		query = fmt.Sprintf("SELECT role, content FROM %s WHERE user_id=$1 AND chat_id=$2 AND role!='%s' ORDER BY date ASC", messagesTable, models.RoleSystem)
 	} else {
 		query = fmt.Sprintf("SELECT role, content FROM %s WHERE user_id=$1 AND chat_id=$2 ORDER BY date ASC", messagesTable)
 	}

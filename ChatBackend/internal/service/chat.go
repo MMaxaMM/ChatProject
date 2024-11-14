@@ -42,7 +42,7 @@ func (s *ChatService) SendMessage(request *models.ChatRequest) (*models.ChatResp
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
 	if err != nil {
-		return nil, fmt.Errorf("%s: %w: %w", op, chat.ErrServiceNotAvailable, err)
+		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 	defer conn.Close()
 
@@ -56,7 +56,7 @@ func (s *ChatService) SendMessage(request *models.ChatRequest) (*models.ChatResp
 	llmRequest := &llmv1.LLMRequest{Messages: llmMessages, MaxTokens: DefaultMaxTokens}
 	llmResponse, err := client.Generate(context.Background(), llmRequest)
 	if err != nil {
-		return nil, fmt.Errorf("%s: %w", op, err)
+		return nil, fmt.Errorf("%s: %w: %w", op, chat.ErrServiceNotAvailable, err)
 	}
 
 	response := &models.ChatResponse{
