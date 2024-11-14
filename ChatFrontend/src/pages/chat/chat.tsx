@@ -11,7 +11,7 @@ export const Chat: FC = () => {
   };
 
   const onCreateChat = () => void 0;
-
+  const onSendMessage = (message: string) => void 1;
   const chats: TChat[] = [
     {
       userId: 1,
@@ -43,7 +43,11 @@ export const Chat: FC = () => {
         onClose={toggleOpen}
         onCreateChat={onCreateChat}
       />
-      <ChatUI isAsideOpen={isOpen} onOpenTab={toggleOpen} />
+      <ChatUI
+        isAsideOpen={isOpen}
+        onSendMessage={onSendMessage}
+        onOpenTab={toggleOpen}
+      />
     </>
   );
 };

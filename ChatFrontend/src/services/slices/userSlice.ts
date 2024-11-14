@@ -21,7 +21,8 @@ export const registerUser = createAsyncThunk(
   'user/register',
   async (data: TUser) => {
     const ans = await registerUserApi(data);
-    return ans.userId;
+    console.log(ans);
+    return ans.user_id;
   }
 );
 

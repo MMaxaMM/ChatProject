@@ -1,5 +1,5 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
-import { userReducer } from '@slices';
+import { userReducer, chatReducer } from '@slices';
 import {
   TypedUseSelectorHook,
   useDispatch as dispatchHook,
@@ -7,7 +7,8 @@ import {
 } from 'react-redux';
 
 export const rootReducer = combineReducers({
-  userSlice: userReducer
+  userSlice: userReducer,
+  chatSlice: chatReducer
 }); // Заменить на импорт настоящего редьюсера
 
 const store = configureStore({

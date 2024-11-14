@@ -3,8 +3,15 @@ import { NavLink } from 'react-router-dom';
 import styles from './register.module.css';
 import openai_logo from '../../../../images/openai_logo.svg';
 import error_icon from '../../../../images/error_icon.svg';
+import { TRegisterUIProps } from './type';
 
-export const RegisterUI: FC = () => (
+export const RegisterUI: FC<TRegisterUIProps> = ({
+  user,
+  password,
+  handeleSubmit,
+  setUsername,
+  setpassword
+}) => (
   <div className={styles['page-wrapper']}>
     <div className={styles['main-container']}>
       <section className={styles['content-wrapper']}>
@@ -12,26 +19,32 @@ export const RegisterUI: FC = () => (
         <div className={styles['title-wrapper']}>
           <h1 className={styles.title}>Создать учетную запись</h1>
         </div>
-        <div className={styles['login-container']}>
+        <form
+          className={styles['login-container']}
+          name='login'
+          onSubmit={handeleSubmit}
+        >
           <div className={styles['input-wrapper']}>
             <input
               className={styles['email-input']}
-              inputMode='email'
-              type='email'
-              id='email-input'
-              name='email'
+              inputMode='text'
+              type='username'
+              id='user-input'
+              name='username'
               autoComplete='username'
               autoCapitalize='none'
               spellCheck='false'
               required
               placeholder=''
+              value={user}
+              onChange={setUsername}
             />
-            <label className={styles['email-label']} htmlFor='email-input'>
-              Адрес электронной почты
+            <label className={styles['email-label']} htmlFor='user-input'>
+              Имя пользователя
             </label>
             <div className={styles['invalid-email-error-message']}>
               <img className={styles['error-icon']} src={error_icon} />
-              Недопустимый адрес электронной почты.
+              Недопустимое имя пользователя.
             </div>
           </div>
           <div className={styles['input-wrapper']}>
@@ -46,6 +59,8 @@ export const RegisterUI: FC = () => (
               spellCheck='false'
               required
               placeholder=''
+              value={password}
+              onChange={setpassword}
             />
             <label className={styles['email-label']} htmlFor='password-input'>
               Придумайте пароль
@@ -55,7 +70,7 @@ export const RegisterUI: FC = () => (
               Недопустимый пароль.
             </div>
           </div>
-          <button className={styles['continue-btn']} disabled>
+          <button className={styles['continue-btn']} type='submit'>
             Зарегистрироваться
           </button>
           <p className={styles['other-page']}>
@@ -64,7 +79,7 @@ export const RegisterUI: FC = () => (
               Войти
             </NavLink>
           </p>
-        </div>
+        </form>
       </section>
     </div>
   </div>

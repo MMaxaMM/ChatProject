@@ -12,7 +12,7 @@
 }
 
 .main__open {
-  width: 79%;
+  width: calc(100% - 125px * 2);
   transform: translateX(125px);
 }
 

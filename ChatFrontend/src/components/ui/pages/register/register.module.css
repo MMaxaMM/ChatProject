@@ -127,6 +127,10 @@ a {
   box-sizing: content-box
 }
 
+input {
+  background-color: #212121;
+}
+
 .email-input {
   -webkit-appearance: none;
   -moz-appearance: none;
