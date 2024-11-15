@@ -58,14 +58,14 @@ func (m *MinioProvider) Connect() error {
 func (m *MinioProvider) UploadAudio(audio *models.Audio) (string, error) {
 	const op = "minioclient.UploadAudio"
 
-	filename := uuid.New().String()
+	filename := uuid.New().String() + ".mp3"
 
 	_, err := m.client.PutObject(
 		audioBucketName,
 		filename,
 		audio.Payload,
 		audio.PayloadSize,
-		minio.PutObjectOptions{ContentType: "audio/wav"},
+		minio.PutObjectOptions{ContentType: "audio/mpeg"},
 	)
 	if err != nil {
 		return "", fmt.Errorf("%s: %w", op, err)

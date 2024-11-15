@@ -8,11 +8,15 @@ import (
 	"errors"
 	"log/slog"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
 
-const audioKey = "audio"
+const (
+	chatIdHeader = "chat_id"
+	audioKey     = "audio"
+)
 
 type AudioHandler struct {
 	service *service.Service
@@ -34,13 +38,16 @@ func (h *AudioHandler) Recognize(c *gin.Context) {
 		return
 	}
 
-	request := new(models.AudioRequest)
-	if err := c.BindJSON(request); err != nil {
+	chatIdStr := c.Request.URL.Query().Get(chatIdHeader)
+	chatId, err := strconv.ParseInt(chatIdStr, 10, 64)
+	if err != nil {
 		log.Error("Bad request", slogx.Error(err))
 		NewErrorResponse(c, http.StatusBadRequest, MsgBadRequest)
 		return
 	}
+	request := new(models.AudioRequest)
 	request.UserId = userId
+	request.ChatId = chatId
 
 	src, hdr, err := c.Request.FormFile(audioKey)
 	if err != nil {

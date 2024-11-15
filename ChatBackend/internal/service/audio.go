@@ -9,6 +9,7 @@ import (
 	"chat/internal/repository"
 	"context"
 	"fmt"
+	"log"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -36,12 +37,13 @@ func (s *AudioService) Recognize(request *models.AudioRequest) (*models.AudioRes
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 
+	log.Printf(s.cfg.Address)
 	conn, err := grpc.NewClient(
 		s.cfg.Address,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
 	if err != nil {
-		return nil, fmt.Errorf("%s: %w: %w", op, chat.ErrServiceNotAvailable, err)
+		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 	defer conn.Close()
 
@@ -50,7 +52,7 @@ func (s *AudioService) Recognize(request *models.AudioRequest) (*models.AudioRes
 	audioRequest := &audiov1.AudioRequest{Uri: uri}
 	audioResponse, err := client.Recognize(context.Background(), audioRequest)
 	if err != nil {
-		return nil, fmt.Errorf("%s: %w", op, err)
+		return nil, fmt.Errorf("%s: %w: %w", op, chat.ErrServiceNotAvailable, err)
 	}
 
 	response := &models.AudioResponse{

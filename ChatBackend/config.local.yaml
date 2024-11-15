@@ -12,7 +12,7 @@ llm:
   address: "localhost:50100"
   history_limit: 15
   max_tokens: 1024
-video:
+audio:
   address: "localhost:50200"
 minio:
   address: "localhost:9000"
