@@ -1,16 +1,17 @@
 import { TChat, TMessage } from '@utils-types';
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { setCookie } from '../../utils/cookie';
-import { getChatsApi, loginUserApi } from '@api';
+import { getChatsApi } from '@api';
 
 export type ChatState = {
   userId: number | null;
   chats: TChat[];
   chatRequest: boolean;
+  currentChatId: number;
 };
 
 const initialState: ChatState = {
   userId: null,
+  currentChatId: -1,
   chats: [
     {
       userId: 1,
@@ -58,7 +59,6 @@ const initialState: ChatState = {
 
 export const getChats = createAsyncThunk('chat/start', async () => {
   const ans = await getChatsApi();
-  console.log(ans);
   return ans;
 });
 
@@ -71,10 +71,28 @@ const chatSlice = createSlice({
       action: PayloadAction<{ chatId: number; message: TMessage }>
     ) => {
       state.chats[action.payload.chatId].messages.push(action.payload.message);
+    },
+    createChat: (state, action: PayloadAction<string>) => {
+      const newChat: TChat = {
+        userId: state.userId ? state.userId : -1,
+        chatId: state.chats.length,
+        messages: [
+          {
+            role: 'user',
+            content: action.payload
+          }
+        ]
+      };
+      state.chats.push(newChat);
+      state.currentChatId = newChat.chatId;
+    },
+    setChatId: (state, action: PayloadAction<number>) => {
+      state.currentChatId = action.payload;
     }
   },
   selectors: {
-    getStoreChats: (state) => state.chats
+    getStoreChats: (state) => state.chats,
+    getCurrentChatId: (state) => state.currentChatId
   },
   extraReducers: (builder) => {
     builder
@@ -92,6 +110,6 @@ const chatSlice = createSlice({
   }
 });
 
-export const { getStoreChats } = chatSlice.selectors;
-export const { sendMessage } = chatSlice.actions;
+export const { getStoreChats, getCurrentChatId } = chatSlice.selectors;
+export const { sendMessage, createChat, setChatId } = chatSlice.actions;
 export const chatReducer = chatSlice.reducer;
