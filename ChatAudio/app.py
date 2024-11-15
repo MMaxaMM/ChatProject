@@ -15,7 +15,8 @@ ADDRESS = "[::]:50200"
 class AudioService(audio_grpc.AudioServiceServicer):
     def Recognize(self, request:AudioRequest, context:grpc.ServicerContext) -> AudioResponse:
         # Запрос пользователя
-        print(f"Пришел запрос от пользователя")
+        print("Пришел запрос от пользователя")
+        print(request.uri)
 
         # Заглушка для модели
         time.sleep(5)

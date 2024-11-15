@@ -9,7 +9,6 @@ import (
 	"chat/internal/repository"
 	"context"
 	"fmt"
-	"log"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -37,7 +36,6 @@ func (s *AudioService) Recognize(request *models.AudioRequest) (*models.AudioRes
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 
-	log.Printf(s.cfg.Address)
 	conn, err := grpc.NewClient(
 		s.cfg.Address,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
