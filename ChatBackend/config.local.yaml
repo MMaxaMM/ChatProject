@@ -14,6 +14,8 @@ llm:
   max_tokens: 1024
 audio:
   address: "localhost:50200"
+video:
+  address: "localhost:50300"
 minio:
   address: "localhost:9000"
   user: "minio"

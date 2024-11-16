@@ -10,6 +10,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/google/uuid"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
@@ -31,7 +32,14 @@ func NewAudioService(
 func (s *AudioService) Recognize(request *models.AudioRequest) (*models.AudioResponse, error) {
 	const op = "service.Recognize"
 
-	uri, err := s.minio.UploadAudio(&request.Audio)
+	filename := uuid.New().String() + ".mp3"
+
+	uri, err := s.minio.UploadObject(
+		filename,
+		&request.Object,
+		minioclient.AudioBucketName,
+		minioclient.AudioContentType,
+	)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}

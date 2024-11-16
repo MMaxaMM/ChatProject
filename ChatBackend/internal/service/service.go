@@ -32,6 +32,7 @@ type Audio interface {
 }
 
 type Video interface {
+	Detect(request *models.VideoRequest) (*models.VideoResponse, error)
 }
 
 type Service struct {
@@ -54,6 +55,6 @@ func NewService(
 		Control:    NewControlService(rep),
 		Chat:       NewChatService(cfg.LLM, rep),
 		Audio:      NewAudioService(cfg.Audio, rep, minio),
-		Video:      NewVideoService(rep),
+		Video:      NewVideoService(cfg.Video, rep, minio),
 	}
 }

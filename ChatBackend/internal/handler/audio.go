@@ -14,8 +14,8 @@ import (
 )
 
 const (
-	chatIdHeader = "chat_id"
-	audioKey     = "audio"
+	audioChatIdHeader = "chat_id"
+	audioKey          = "audio"
 )
 
 type AudioHandler struct {
@@ -38,7 +38,7 @@ func (h *AudioHandler) Recognize(c *gin.Context) {
 		return
 	}
 
-	chatIdStr := c.Request.URL.Query().Get(chatIdHeader)
+	chatIdStr := c.Request.URL.Query().Get(audioChatIdHeader)
 	chatId, err := strconv.ParseInt(chatIdStr, 10, 64)
 	if err != nil {
 		log.Error("Bad request", slogx.Error(err))
@@ -55,7 +55,7 @@ func (h *AudioHandler) Recognize(c *gin.Context) {
 		NewErrorResponse(c, http.StatusBadRequest, MsgBadRequest)
 		return
 	}
-	request.Audio = models.Audio{Payload: src, PayloadSize: hdr.Size}
+	request.Object = models.Object{Payload: src, PayloadSize: hdr.Size}
 	defer src.Close()
 
 	log = log.With(

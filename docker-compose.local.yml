@@ -2,32 +2,6 @@ version: "3.9"
 
 services:
 
-  llm_server:
-    build:
-      context: ./LLMServerDev
-      dockerfile: Dockerfile
-    image: llm_server
-    container_name: llm_server
-    expose:
-      - 5000
-    restart: unless-stopped
-    networks:
-      - chatnetwork
-
-  backend:
-    build:
-      context: ./ChatBackend
-      dockerfile: Dockerfile
-    image: backend
-    container_name: backend
-    volumes:
-      - ./config:/config
-    ports:
-      - "5050:5050"
-    restart: unless-stopped
-    networks:
-      - chatnetwork
-
   database:
     image: postgres:15
     container_name: database
@@ -41,8 +15,6 @@ services:
       - ./ChatDatabase/pg-conf/pg_hba.conf:/etc/pg_hba.conf
     ports:
       - "5430:5432"
-    expose:
-      - 5432
     restart: unless-stopped
     networks:
       - chatnetwork

@@ -13,3 +13,7 @@ tasks:
     cmds:
       - python3 -m grpc_tools.protoc -I ./protos/ ./protos/llm.proto --python_out=./LLMServer --grpc_python_out=./LLMServer --pyi_out=./LLMServer
       - protoc -I ./protos/ ./protos/llm.proto --go_out=./ChatBackend/gen/llm --go_opt=paths=source_relative --go-grpc_out=./ChatBackend/gen/llm --go-grpc_opt=paths=source_relative
+  generate-video:
+    cmds:
+      - python3 -m grpc_tools.protoc -I ./protos/ ./protos/video.proto --python_out=./ChatVideo --grpc_python_out=./ChatVideo --pyi_out=./ChatVideo
+      - protoc -I ./protos/ ./protos/video.proto --go_out=./ChatBackend/gen/video --go_opt=paths=source_relative --go-grpc_out=./ChatBackend/gen/video --go-grpc_opt=paths=source_relative

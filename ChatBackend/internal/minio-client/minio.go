@@ -5,13 +5,19 @@ import (
 	"chat/internal/models"
 	"fmt"
 
-	"github.com/google/uuid"
 	"github.com/minio/minio-go"
 )
 
 const (
-	audioBucketName = "audio"
-	videoBucketName = "video"
+	AudioBucketName = "audio"
+	VideoBucketName = "video"
+)
+
+type ContentType string
+
+const (
+	AudioContentType ContentType = "audio/mpeg"
+	VideoContentType ContentType = "video/mp4"
 )
 
 type MinioProvider struct {
@@ -30,23 +36,23 @@ func (m *MinioProvider) Connect() error {
 		return err
 	}
 
-	exists, err := m.client.BucketExists(audioBucketName)
+	exists, err := m.client.BucketExists(AudioBucketName)
 	if err != nil {
 		return err
 	}
 	if !exists {
-		err = m.client.MakeBucket(audioBucketName, "us-east-1")
+		err = m.client.MakeBucket(AudioBucketName, "us-east-1")
 		if err != nil {
 			return err
 		}
 	}
 
-	exists, err = m.client.BucketExists(videoBucketName)
+	exists, err = m.client.BucketExists(VideoBucketName)
 	if err != nil {
 		return err
 	}
 	if !exists {
-		err = m.client.MakeBucket(videoBucketName, "us-east-1")
+		err = m.client.MakeBucket(VideoBucketName, "us-east-1")
 		if err != nil {
 			return err
 		}
@@ -55,37 +61,24 @@ func (m *MinioProvider) Connect() error {
 	return nil
 }
 
-func (m *MinioProvider) UploadAudio(audio *models.Audio) (string, error) {
+func (m *MinioProvider) UploadObject(
+	filename string,
+	object *models.Object,
+	bucketName string,
+	contentType ContentType,
+) (string, error) {
 	const op = "minioclient.UploadAudio"
 
-	filename := uuid.New().String() + ".mp3"
-
 	_, err := m.client.PutObject(
-		audioBucketName,
+		bucketName,
 		filename,
-		audio.Payload,
-		audio.PayloadSize,
-		minio.PutObjectOptions{ContentType: "audio/mpeg"},
+		object.Payload,
+		object.PayloadSize,
+		minio.PutObjectOptions{ContentType: string(contentType)},
 	)
 	if err != nil {
 		return "", fmt.Errorf("%s: %w", op, err)
 	}
 
-	return fmt.Sprintf("http://%s/%s/%s", m.cfg.Address, audioBucketName, filename), nil
-}
-
-func (m *MinioProvider) DownloadAudio(filename string) (*models.Audio, error) {
-	const op = "minioclient.DownloadAudio"
-
-	payload, err := m.client.GetObject(
-		audioBucketName,
-		filename,
-		minio.GetObjectOptions{},
-	)
-	if err != nil {
-		return nil, fmt.Errorf("%s: %w", op, err)
-	}
-	defer payload.Close()
-
-	return &models.Audio{Payload: payload}, nil
+	return fmt.Sprintf("http://%s/%s/%s", m.cfg.Address, bucketName, filename), nil
 }

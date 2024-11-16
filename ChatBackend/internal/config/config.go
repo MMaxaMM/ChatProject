@@ -15,6 +15,7 @@ type Config struct {
 	LLM        LLM        `yaml:"llm"`
 	Minio      Minio      `yaml:"minio"`
 	Audio      Audio      `yaml:"audio"`
+	Video      Video      `yaml:"video"`
 }
 
 type HTTPServer struct {
@@ -37,6 +38,10 @@ type LLM struct {
 }
 
 type Audio struct {
+	Address string `yaml:"address"`
+}
+
+type Video struct {
 	Address string `yaml:"address"`
 }
 
