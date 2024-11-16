@@ -14,14 +14,19 @@ export const ChatListUI: FC<TChatListUIProps> = ({
   <aside className={`${styles.container} ${isOpen && styles.container_open}`}>
     <div className={styles.content}>
       <nav className={styles.nav_buttons}>
-        <button className={styles.nav_button} onClick={onClose}>
-          <img src={closeIcon} />
-        </button>
+        <div className={styles.tooltip_container}>
+          <button className={styles.nav_button} onClick={onClose}>
+            <img src={closeIcon} />
+          </button>
+          <span className={styles.tooltip_close_text}>
+            Закрыть боковую панель
+          </span>
+        </div>
         <div className={styles.tooltip_container}>
           <button className={styles.nav_button} onClick={onCreateChat}>
             <img src={newChatIcon} />
           </button>
-          <span className={styles.tooltip_text}>Новый чат</span>
+          <span className={styles.tooltip_create_text}>Новый чат</span>
         </div>
       </nav>
       <div className={styles.chat_list}>

@@ -30,7 +30,7 @@
 	background-color: #212121;
 }
 
-.tooltip_text {
+.tooltip_create_text {
 	display: inline-block;
   visibility: hidden;
   background-color: #000;
@@ -53,7 +53,7 @@
   border-radius: 10px;
 }
 
-.tooltip_text::after {
+.tooltip_create_text::after {
   content: '';
   position: absolute;
   left: 50%;
@@ -68,7 +68,7 @@
   z-index: 10;
 }
 
-.tooltip_text::before {
+.tooltip_create_text::before {
   content: '';
   position: absolute;
   bottom: -12px; /* Добавляем границу для треугольника */
@@ -83,7 +83,64 @@
   z-index: 9;
 }
 
-.tooltip_container:hover .tooltip_text {
+.tooltip_close_text {
+	display: inline-block;
+  visibility: hidden;
+  background-color: #000;
+  color: #fff;
+  text-align: center;
+  border-radius: 4px;
+  padding: 5px;
+	font-size: 16px;
+	line-height: 24px;
+  position: absolute;
+  left: 370%; /* Расположить тултип справа от кнопки */
+  top: 15%;
+  transform: translateX(-50%);
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 0.3s;
+	white-space: nowrap;
+	box-shadow: 0 0 0 0.3px #fff;
+	border: 2px solid #000;
+  border-radius: 10px;
+}
+
+.tooltip_close_text::after {
+  content: '';
+  position: absolute;
+  top: 35%;
+	left: 0;
+  width: 0;
+  height: 0;
+  bottom: auto;
+  transform: translateX(-82%) rotate(90deg); 
+  border-style: solid;
+  border-width: 10px 10px 0 10px;
+  border-color: #000 transparent transparent transparent; 
+  z-index: 10;
+}
+
+.tooltip_close_text::before {
+  content: '';
+  position: absolute;
+  bottom: -12px; 
+  top: 35%;
+  transform: translateX(-110%) rotate(90deg);
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 10px 10px 0 10px; 
+  border-color: #fff transparent transparent transparent;
+  z-index: 9;
+}
+
+.tooltip_container:hover .tooltip_create_text {
+  visibility: visible;
+  opacity: 1;
+}
+
+.tooltip_container:hover .tooltip_close_text {
   visibility: visible;
   opacity: 1;
 }
