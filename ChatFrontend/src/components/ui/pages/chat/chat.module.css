@@ -29,14 +29,82 @@
   box-sizing: border-box;
 }
 
+.tooltip_container {
+	position: relative;
+	display: inline-block;
+	border-radius: 8px;
+}
+
+.tooltip_container:hover {
+	background-color: #212121;
+}
+
+.tooltip_open_text {
+	display: inline-block;
+  visibility: hidden;
+  background-color: #000;
+  color: #fff;
+  text-align: center;
+  border-radius: 4px;
+  padding: 5px;
+	font-size: 16px;
+	line-height: 24px;
+  position: absolute;
+  top: 110%; /* Расположение над кнопкой */
+  left: 250%;
+  transform: translateX(-50%);
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 0.3s;
+	white-space: nowrap;
+	box-shadow: 0 0 0 0.3px #fff;
+	border: 2px solid #000;
+  border-radius: 10px;
+}
+
+.tooltip_open_text::after {
+  content: '';
+  position: absolute;
+  left: 10%;
+  width: 0;
+  height: 0;
+	top: -11px;
+  bottom: auto;
+  transform: translateX(-50%) rotate(180deg); /* Треугольник вверх */
+  border-style: solid;
+  border-width: 10px 10px 0 10px; /* Треугольник, направленный вниз */
+  border-color: #000 transparent transparent transparent; /* Треугольник белого цвета */
+  z-index: 10;
+}
+
+.tooltip_open_text::before {
+  content: '';
+  position: absolute;
+  bottom: -12px; /* Добавляем границу для треугольника */
+  left: 10%;
+	top: -11px;
+  transform: translateX(-50%) rotate(180deg);
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 10px 10px 0 10px; /* Треугольник, чуть больше основного */
+  border-color: #fff transparent transparent transparent; /* Черная рамка */
+  z-index: 9;
+}
+
+.tooltip_container:hover .tooltip_open_text {
+  visibility: visible;
+  opacity: 1;
+}
+
 .nav_button {
-  padding: 0;
+  padding: 8;
 	display: block; 
 	background-color: transparent;
 	border: none;
 	cursor: pointer;
-	width: 32px;
-	height: 32px;
+	width: 40px;
+	height: 40px;
 	border-radius: 25%; 
 }
 

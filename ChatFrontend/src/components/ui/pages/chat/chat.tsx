@@ -17,13 +17,16 @@ export const ChatUI: FC<TChatUIProps> = ({
     })}
   >
     <nav className={styles.header}>
-      <button
-        className={styles.nav_button}
-        onClick={onOpenTab}
-        style={{ visibility: isAsideOpen ? 'hidden' : 'visible' }}
-      >
-        <img src={closeIcon} />
-      </button>
+      <div className={styles.tooltip_container}>
+        <button
+          className={styles.nav_button}
+          onClick={onOpenTab}
+          style={{ visibility: isAsideOpen ? 'hidden' : 'visible' }}
+        >
+          <img src={closeIcon} />
+        </button>
+        <span className={styles.tooltip_open_text}>Открыть боковую панель</span>
+      </div>
       <div className={styles.nav_user_logo}>
         <div className={styles.nav_user_name}>D</div>
       </div>
