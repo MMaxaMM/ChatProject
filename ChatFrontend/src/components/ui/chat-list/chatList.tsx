@@ -17,9 +17,12 @@ export const ChatListUI: FC<TChatListUIProps> = ({
         <button className={styles.nav_button} onClick={onClose}>
           <img src={closeIcon} />
         </button>
-        <button className={styles.nav_button} onClick={onCreateChat}>
-          <img src={newChatIcon} />
-        </button>
+        <div className={styles.tooltip_container}>
+          <button className={styles.nav_button} onClick={onCreateChat}>
+            <img src={newChatIcon} />
+          </button>
+          <span className={styles.tooltip_text}>Новый чат</span>
+        </div>
       </nav>
       <div className={styles.chat_list}>
         <h3 className={styles.chat_list_header}>Список чатов</h3>

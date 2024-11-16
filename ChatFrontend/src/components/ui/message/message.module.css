@@ -21,7 +21,7 @@
   height: 18px;
   padding: 8px;
   fill: #ececec;
-  border: 0.5px solid #ececec;
+  box-shadow: 0 0 0 0.3px #ececec;
   border-radius: 50%;
   background-color: #212121;
   background-size: cover;
