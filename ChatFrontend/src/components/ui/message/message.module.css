@@ -14,6 +14,21 @@
   max-width: 100%;
 }
 
+.message_ai::before {
+  content: url('../../../images/chatLogo.svg');
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  padding: 8px;
+  fill: #ececec;
+  border: 0.5px solid #ececec;
+  border-radius: 50%;
+  background-color: #212121;
+  background-size: cover;
+  vertical-align: middle;
+  margin-right: 20px;
+}
+
 .message_user {
   justify-self: end;
 }
@@ -24,5 +39,5 @@
   font-family: sans-serif;
   color: #ececec;
   line-height: 28px;
-  display: block;
+  display: inline-block;
 }
