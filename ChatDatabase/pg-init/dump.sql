@@ -151,7 +151,8 @@ CREATE TABLE public.chat (
     chat_id bigint NOT NULL,
     date timestamp NOT NULL,
     role text NOT NULL,
-    content text NOT NULL
+    content text NOT NULL,
+    content_type integer NOT NULL
 );
 
 
