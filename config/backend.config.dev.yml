@@ -1,16 +1,15 @@
-env: "dev-linux" # dev-linux / dev-windows / prod
-filestorage: "localhost:9000"
+env: "dev-windows" # dev-linux / dev-windows / prod
 http_server:
   address: ":5050"
 database:
   username: "backend"
   password: "f*c$;d3EQACG8KW"
-  host: "localhost"
-  port: "5430"
+  host: "database"
+  port: "5432"
   dbname: "Chat"
   sslmode: "disable"
 llm:
-  address: "localhost:50100"
+  address: "llm:50100"
   history_limit: 15
   max_tokens: 1024
 audio:

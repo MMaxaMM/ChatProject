@@ -34,7 +34,7 @@ func (s *VideoService) Detect(request *models.VideoRequest) (*models.VideoRespon
 
 	filename := uuid.New().String() + ".mp4"
 
-	uri, err := s.minio.UploadObject(
+	filepath, err := s.minio.UploadObject(
 		filename,
 		&request.Object,
 		minioclient.VideoBucketName,
@@ -55,7 +55,7 @@ func (s *VideoService) Detect(request *models.VideoRequest) (*models.VideoRespon
 
 	client := videov1.NewVideoServiceClient(conn)
 
-	videoRequest := &videov1.VideoRequest{Uri: uri}
+	videoRequest := &videov1.VideoRequest{Filepath: filepath}
 	videoResponse, err := client.Detect(context.Background(), videoRequest)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w: %w", op, chat.ErrServiceNotAvailable, err)
@@ -65,8 +65,9 @@ func (s *VideoService) Detect(request *models.VideoRequest) (*models.VideoRespon
 		UserId: request.UserId,
 		ChatId: request.ChatId,
 		Message: models.Message{
-			Role:    models.RoleAssistant,
-			Content: videoResponse.Uri,
+			Role:        models.RoleAssistant,
+			Content:     s.rep.GetURI(videoResponse.Filepath),
+			ContentType: models.VideoType,
 		},
 	}
 
@@ -74,8 +75,9 @@ func (s *VideoService) Detect(request *models.VideoRequest) (*models.VideoRespon
 		request.UserId,
 		request.ChatId,
 		&models.Message{
-			Role:    models.RoleUser,
-			Content: uri,
+			Role:        models.RoleUser,
+			Content:     filepath,
+			ContentType: models.VideoType,
 		},
 	)
 	if err != nil {

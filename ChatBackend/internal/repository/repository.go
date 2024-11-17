@@ -22,6 +22,7 @@ type Control interface {
 	DeleteChat(userId int64, chatId int64) error
 	CreateChat(userId int64, chatType models.ChatType) (int64, error)
 	GetStart(userId int64) ([]models.ChatPreview, error)
+	GetURI(content string) string
 }
 
 type Repository struct {
@@ -29,9 +30,9 @@ type Repository struct {
 	Control
 }
 
-func NewPostgresRepository(db *sqlx.DB) *Repository {
+func NewPostgresRepository(db *sqlx.DB, filestorage string) *Repository {
 	return &Repository{
 		Auth:    NewAuthPostgres(db),
-		Control: NewControlPostgres(db),
+		Control: NewControlPostgres(db, filestorage),
 	}
 }

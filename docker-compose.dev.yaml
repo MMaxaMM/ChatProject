@@ -2,6 +2,34 @@ version: "3.9"
 
 services:
 
+  llm:
+    build:
+      context: ./LLMServer
+      dockerfile: Dockerfile
+    image: llm
+    container_name: llm
+    expose:
+      - 50100
+    restart: unless-stopped
+    networks:
+      - chatnetwork
+
+  backend:
+    build:
+      context: ./ChatBackend
+      dockerfile: Dockerfile
+    image: backend
+    container_name: backend
+    volumes:
+      - ./config:/config
+    ports:
+      - "5050:5050"
+    environment:
+      - CONFIG_PATH=/config/backend.config.dev.yml
+    restart: unless-stopped
+    networks:
+      - chatnetwork
+
   database:
     image: postgres:15
     container_name: database
@@ -13,22 +41,8 @@ services:
       - ./ChatDatabase/pg-init:/docker-entrypoint-initdb.d
       - ./ChatDatabase/pg-conf/postgresql.conf:/etc/postgresql.conf
       - ./ChatDatabase/pg-conf/pg_hba.conf:/etc/pg_hba.conf
-    ports:
-      - "5430:5432"
-    restart: unless-stopped
-    networks:
-      - chatnetwork
-
-  minio:
-    image: minio/minio:latest
-    container_name: minio
-    command: server --console-address ":9001" /data/
-    ports:
-      - "9000:9000"
-      - "9001:9001"
-    environment:
-      MINIO_ROOT_USER: minio
-      MINIO_ROOT_PASSWORD: 11111111
+    expose:
+      - 5432
     restart: unless-stopped
     networks:
       - chatnetwork

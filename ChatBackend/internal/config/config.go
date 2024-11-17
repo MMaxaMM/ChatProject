@@ -9,13 +9,14 @@ import (
 )
 
 type Config struct {
-	Env        string     `yaml:"env"`
-	HTTPServer HTTPServer `yaml:"http_server"`
-	Database   Database   `yaml:"database"`
-	LLM        LLM        `yaml:"llm"`
-	Minio      Minio      `yaml:"minio"`
-	Audio      Audio      `yaml:"audio"`
-	Video      Video      `yaml:"video"`
+	Env         string     `yaml:"env"`
+	Filestorage string     `yaml:"filestorage"`
+	HTTPServer  HTTPServer `yaml:"http_server"`
+	Database    Database   `yaml:"database"`
+	LLM         LLM        `yaml:"llm"`
+	Minio       Minio      `yaml:"minio"`
+	Audio       Audio      `yaml:"audio"`
+	Video       Video      `yaml:"video"`
 }
 
 type HTTPServer struct {

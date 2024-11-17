@@ -80,5 +80,5 @@ func (m *MinioProvider) UploadObject(
 		return "", fmt.Errorf("%s: %w", op, err)
 	}
 
-	return fmt.Sprintf("http://%s/%s/%s", m.cfg.Address, bucketName, filename), nil
+	return fmt.Sprintf("%s/%s", bucketName, filename), nil
 }

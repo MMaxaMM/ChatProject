@@ -34,7 +34,7 @@ func (s *AudioService) Recognize(request *models.AudioRequest) (*models.AudioRes
 
 	filename := uuid.New().String() + ".mp3"
 
-	uri, err := s.minio.UploadObject(
+	filepath, err := s.minio.UploadObject(
 		filename,
 		&request.Object,
 		minioclient.AudioBucketName,
@@ -55,7 +55,7 @@ func (s *AudioService) Recognize(request *models.AudioRequest) (*models.AudioRes
 
 	client := audiov1.NewAudioServiceClient(conn)
 
-	audioRequest := &audiov1.AudioRequest{Uri: uri}
+	audioRequest := &audiov1.AudioRequest{Filepath: filepath}
 	audioResponse, err := client.Recognize(context.Background(), audioRequest)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w: %w", op, chat.ErrServiceNotAvailable, err)
@@ -65,8 +65,9 @@ func (s *AudioService) Recognize(request *models.AudioRequest) (*models.AudioRes
 		UserId: request.UserId,
 		ChatId: request.ChatId,
 		Message: models.Message{
-			Role:    models.RoleAssistant,
-			Content: audioResponse.Result,
+			Role:        models.RoleAssistant,
+			Content:     audioResponse.Result,
+			ContentType: models.TextType,
 		},
 	}
 
@@ -74,8 +75,9 @@ func (s *AudioService) Recognize(request *models.AudioRequest) (*models.AudioRes
 		request.UserId,
 		request.ChatId,
 		&models.Message{
-			Role:    models.RoleUser,
-			Content: uri,
+			Role:        models.RoleUser,
+			Content:     filepath,
+			ContentType: models.AudioType,
 		},
 	)
 	if err != nil {

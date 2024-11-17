@@ -35,6 +35,7 @@ func (s *ChatService) SendMessage(request *models.ChatRequest) (*models.ChatResp
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
+	request.Message.ContentType = models.TextType
 	messages = append(messages, request.Message)
 
 	conn, err := grpc.NewClient(
@@ -63,8 +64,9 @@ func (s *ChatService) SendMessage(request *models.ChatRequest) (*models.ChatResp
 		UserId: request.UserId,
 		ChatId: request.ChatId,
 		Message: models.Message{
-			Role:    llmResponse.Message.Role,
-			Content: llmResponse.Message.Content,
+			Role:        llmResponse.Message.Role,
+			Content:     llmResponse.Message.Content,
+			ContentType: models.TextType,
 		},
 	}
 

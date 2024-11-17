@@ -9,9 +9,9 @@ service VideoService {
 }
 
 message VideoRequest {
-    string uri = 1;
+    string filepath = 1;
 }
 
 message VideoResponse {
-    string uri = 1;
+    string filepath = 1;
 }

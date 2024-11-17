@@ -12,11 +12,12 @@ import (
 )
 
 type ControlPostgres struct {
-	db *sqlx.DB
+	db          *sqlx.DB
+	filestorage string
 }
 
-func NewControlPostgres(db *sqlx.DB) *ControlPostgres {
-	return &ControlPostgres{db: db}
+func NewControlPostgres(db *sqlx.DB, filestorage string) *ControlPostgres {
+	return &ControlPostgres{db: db, filestorage: filestorage}
 }
 
 func (r *ControlPostgres) CreateChat(userId int64, chatType models.ChatType) (int64, error) {
@@ -64,7 +65,7 @@ func (r *ControlPostgres) GetStart(userId int64) ([]models.ChatPreview, error) {
 		chatPreview.ChatType = userChat.ChatType
 		chatPreview.ChatId = userChat.ChatId
 
-		query := fmt.Sprintf("SELECT content, date FROM %s WHERE user_id=$1 AND chat_id=$2 ORDER BY date DESC", messagesTable)
+		query := fmt.Sprintf("SELECT content, content_type, date FROM %s WHERE user_id=$1 AND chat_id=$2 ORDER BY date DESC", messagesTable)
 		err = r.db.Get(chatPreview, query, userId, userChat.ChatId)
 		if err != nil {
 			if errors.Is(err, sql.ErrNoRows) {
@@ -72,6 +73,10 @@ func (r *ControlPostgres) GetStart(userId int64) ([]models.ChatPreview, error) {
 			} else {
 				return nil, fmt.Errorf("%s: %w", op, PostgresNewError(err))
 			}
+		}
+
+		if chatPreview.ContentType == models.AudioType || chatPreview.ContentType == models.VideoType {
+			chatPreview.Content = r.GetURI(chatPreview.Content)
 		}
 
 		chatPreviewSlice[idx] = *chatPreview
@@ -94,9 +99,9 @@ func (r *ControlPostgres) GetHistory(
 
 	var query string
 	if visibleOnly {
-		query = fmt.Sprintf("SELECT role, content FROM %s WHERE user_id=$1 AND chat_id=$2 AND role!='%s' ORDER BY date ASC", messagesTable, models.RoleSystem)
+		query = fmt.Sprintf("SELECT role, content, content_type FROM %s WHERE user_id=$1 AND chat_id=$2 AND role!='%s' ORDER BY date ASC", messagesTable, models.RoleSystem)
 	} else {
-		query = fmt.Sprintf("SELECT role, content FROM %s WHERE user_id=$1 AND chat_id=$2 ORDER BY date ASC", messagesTable)
+		query = fmt.Sprintf("SELECT role, content, content_type FROM %s WHERE user_id=$1 AND chat_id=$2 ORDER BY date ASC", messagesTable)
 	}
 	if limit >= 0 {
 		query += fmt.Sprintf(" LIMIT %d", limit)
@@ -105,18 +110,29 @@ func (r *ControlPostgres) GetHistory(
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", op, PostgresNewError(err))
 	}
+
+	for idx, message := range messages {
+		if message.ContentType == models.AudioType || message.ContentType == models.VideoType {
+			messages[idx].Content = r.GetURI(messages[idx].Content)
+		}
+	}
+
 	return messages, nil
 }
 
 func (r *ControlPostgres) SaveMessage(userId int64, chatId int64, message *models.Message) error {
 	const op = "repository.SaveChatItem"
 
-	query := fmt.Sprintf("INSERT INTO %s (user_id, chat_id, date, role, content) values ($1, $2, $3, $4, $5)", messagesTable)
+	query := fmt.Sprintf("INSERT INTO %s (user_id, chat_id, date, role, content, content_type) values ($1, $2, $3, $4, $5, $6)", messagesTable)
 
-	_, err := r.db.Exec(query, userId, chatId, time.Now(), message.Role, message.Content)
+	_, err := r.db.Exec(query, userId, chatId, time.Now(), message.Role, message.Content, message.ContentType)
 	if err != nil {
 		return fmt.Errorf("%s: %w", op, PostgresNewError(err))
 	}
 
 	return nil
+}
+
+func (r *ControlPostgres) GetURI(filepath string) string {
+	return fmt.Sprintf("http://%s/%s", r.filestorage, filepath)
 }

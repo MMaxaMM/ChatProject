@@ -41,7 +41,7 @@ func (a *App) MustRun() {
 	}
 
 	// Инициализация репозитория
-	rep := repository.NewPostgresRepository(db)
+	rep := repository.NewPostgresRepository(db, a.cfg.Filestorage)
 
 	// Инициализация сервисов
 	minioClient := minioclient.NewMinioProvider(a.cfg.Minio)
