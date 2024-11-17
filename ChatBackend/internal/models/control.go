@@ -29,11 +29,11 @@ func (a ByDate) Less(i, j int) bool { return a[i].Date.After(a[j].Date) }
 func (a ByDate) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 
 type ChatPreview struct {
-	ChatType    ChatType    `json:"chat_type"`
-	ChatId      int64       `json:"chat_id"`
-	Content     string      `json:"content" db:"content"`
-	ContentType ContentType `json:"content_type" db:"content_type"`
-	Date        time.Time   `json:"date" db:"date"`
+	ChatType    ChatType  `json:"chat_type"`
+	ChatId      int64     `json:"chat_id"`
+	Content     string    `json:"content" db:"content"`
+	ContentType int       `json:"content_type" db:"content_type"`
+	Date        time.Time `json:"date" db:"date"`
 }
 
 type UserChats struct {

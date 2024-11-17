@@ -66,7 +66,7 @@ func (s *VideoService) Detect(request *models.VideoRequest) (*models.VideoRespon
 		ChatId: request.ChatId,
 		Message: models.Message{
 			Role:        models.RoleAssistant,
-			Content:     s.rep.GetURI(videoResponse.Filepath),
+			Content:     videoResponse.Filepath,
 			ContentType: models.VideoType,
 		},
 	}

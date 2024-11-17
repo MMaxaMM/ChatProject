@@ -6,17 +6,15 @@ const (
 	RoleAssistant string = "assistant"
 )
 
-type ContentType int
-
 const (
-	Empty     ContentType = 0
-	TextType  ContentType = 1
-	AudioType ContentType = 2
-	VideoType ContentType = 3
+	Empty     int = 0
+	TextType  int = 1
+	AudioType int = 2
+	VideoType int = 3
 )
 
 type Message struct {
-	Role        string      `json:"role"`
-	Content     string      `json:"content"`
-	ContentType ContentType `json:"content_type"`
+	Role        string `json:"role" db:"role"`
+	Content     string `json:"content" db:"content"`
+	ContentType int    `json:"content_type" db:"content_type"`
 }

@@ -71,7 +71,7 @@ func (h *VideoHandler) Detect(c *gin.Context) {
 			return
 		}
 		if errors.Is(err, chat.ErrServiceNotAvailable) {
-			log.Error("Audio service not available", slogx.Error(err))
+			log.Error("Video service not available", slogx.Error(err))
 			NewErrorResponse(c, http.StatusInternalServerError, MsgServiceNotAvailable)
 			return
 		}
