@@ -1,32 +1,38 @@
 package repository
 
 import (
-	"chat"
+	"chat/internal/models"
 
 	"github.com/jmoiron/sqlx"
 )
 
-type Authorization interface {
-	CreateUser(username, password string) (int, error)
-	GetUserId(username, password string) (int, error)
+type Auth interface {
+	CreateUser(username, password string) (int64, error)
+	GetUserId(username, password string) (int64, error)
 }
 
-type ChatInterface interface {
-	GetHistory(request *chat.HistoryRequest, limit int) (*chat.HistoryResponse, error)
-	SaveChatItem(item *chat.ChatItem) error
-	DeleteChat(request *chat.HistoryRequest) error
-	CreateChat(request *chat.HistoryRequest) (int, error)
-	GetStart(userId int) (*chat.StartResponse, error)
+type Control interface {
+	GetHistory(
+		userId int64,
+		chatId int64,
+		visibleOnly bool,
+		limit int,
+	) ([]models.Message, error)
+	SaveMessage(userId int64, chatId int64, message *models.Message) error
+	DeleteChat(userId int64, chatId int64) error
+	CreateChat(userId int64, chatType models.ChatType) (int64, error)
+	GetStart(userId int64) ([]models.ChatPreview, error)
+	GetURI(content string) string
 }
 
 type Repository struct {
-	Authorization
-	ChatInterface
+	Auth
+	Control
 }
 
-func NewPostgresRepository(db *sqlx.DB) *Repository {
+func NewPostgresRepository(db *sqlx.DB, filestorage string) *Repository {
 	return &Repository{
-		Authorization: NewAuthPostgres(db),
-		ChatInterface: NewChatInterfacePostgres(db),
+		Auth:    NewAuthPostgres(db),
+		Control: NewControlPostgres(db, filestorage),
 	}
 }

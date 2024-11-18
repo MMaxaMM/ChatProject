@@ -1,0 +1,5 @@
+grpcio==1.67.1
+grpcio-tools==1.67.1
+pyannote.audio
+requests
+transformers==4.45.2

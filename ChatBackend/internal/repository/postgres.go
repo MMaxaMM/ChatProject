@@ -11,8 +11,10 @@ import (
 const (
 	usersTable    = "public.users"
 	chatsTable    = "public.chats"
-	messagesTable = "public.messages"
+	messagesTable = "public.chat"
 )
+
+const NoLimit = -1
 
 type Config struct {
 	Host     string
@@ -44,10 +46,10 @@ func PostgresNewError(err error) error {
 	if err, ok := err.(*pq.Error); ok {
 		switch err.Code {
 		case "23505":
-			return chat.NewError(chat.EDUPLICATE, err.Error())
+			return chat.ErrUserDuplicate
 		case "23503":
-			return chat.NewError(chat.EFOREIGNKEY, err.Error())
+			return chat.ErrForeignKey
 		}
 	}
-	return chat.NewError(chat.EINTERNAL, err.Error())
+	return err
 }

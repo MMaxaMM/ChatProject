@@ -1,33 +1,58 @@
 package service
 
 import (
-	"chat"
-	"chat/internal/api/llmapi"
+	"chat/internal/config"
+	"chat/internal/models"
 	"chat/internal/repository"
 )
 
-type Authorization interface {
-	CreateUser(username, password string) (int, error)
-	GenerateToken(username, password string) (string, error)
-	ParseToken(token string) (int, error)
+type Auth interface {
+	CreateUser(request *models.SignUpRequest) (*models.SignUpResponse, error)
+	GenerateToken(request *models.SignInRequest) (*models.SignInResponse, error)
 }
 
-type ChatInterface interface {
-	GetHistory(request *chat.HistoryRequest) (*chat.HistoryResponse, error)
-	DeleteChat(request *chat.HistoryRequest) error
-	SendMessage(item *chat.ChatItem) (*chat.ChatItem, error)
-	CreateChat(request *chat.HistoryRequest) (int, error)
-	GetStart(userId int) (*chat.StartResponse, error)
+type Middleware interface {
+	ParseToken(accessToken string) (int64, error)
+}
+
+type Control interface {
+	CreateChat(request *models.CreateRequest) (*models.CreateResponse, error)
+	DeleteChat(request *models.DeleteRequest) error
+	GetStart(request *models.StartRequest) (*models.StartResponse, error)
+	GetHistory(request *models.HistoryRequest) (*models.HistoryResponse, error)
+}
+
+type Chat interface {
+	SendMessage(request *models.ChatRequest) (*models.ChatResponse, error)
+}
+
+type Audio interface {
+	Recognize(request *models.AudioRequest) (*models.AudioResponse, error)
+}
+
+type Video interface {
+	Detect(request *models.VideoRequest) (*models.VideoResponse, error)
 }
 
 type Service struct {
-	Authorization
-	ChatInterface
+	Auth
+	Middleware
+	Control
+	Chat
+	Audio
+	Video
 }
 
-func NewService(rep *repository.Repository, client *llmapi.Client) *Service {
+func NewService(
+	cfg *config.Config,
+	rep *repository.Repository,
+) *Service {
 	return &Service{
-		Authorization: NewAuthService(rep.Authorization),
-		ChatInterface: NewChatInterfaceService(rep.ChatInterface, client),
+		Auth:       NewAuthService(rep),
+		Middleware: NewMiddlewareService(),
+		Control:    NewControlService(rep),
+		Chat:       NewChatService(cfg.LLM, rep),
+		Audio:      NewAudioService(cfg.Audio, rep),
+		Video:      NewVideoService(cfg.Video, rep),
 	}
 }

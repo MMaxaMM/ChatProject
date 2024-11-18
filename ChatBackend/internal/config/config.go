@@ -9,10 +9,14 @@ import (
 )
 
 type Config struct {
-	Env        string `yaml:"env"`
-	HTTPServer `yaml:"http_server"`
-	Database   `yaml:"database"`
-	LLM        `yaml:"llm"`
+	Env         string     `yaml:"env"`
+	Filestorage string     `yaml:"filestorage"`
+	HTTPServer  HTTPServer `yaml:"http_server"`
+	Database    Database   `yaml:"database"`
+	LLM         LLM        `yaml:"llm"`
+	Minio       Minio      `yaml:"minio"`
+	Audio       Audio      `yaml:"audio"`
+	Video       Video      `yaml:"video"`
 }
 
 type HTTPServer struct {
@@ -23,14 +27,29 @@ type Database struct {
 	Host     string `yaml:"host"`
 	Port     string `yaml:"port"`
 	Username string `yaml:"username"`
+	Password string `yaml:"password"`
 	DBName   string `yaml:"dbname"`
 	SSLMode  string `yaml:"sslmode"`
 }
 
 type LLM struct {
-	URL          string `yaml:"url"`
+	Address      string `yaml:"address"`
 	HistoryLimit int    `yaml:"history_limit"`
-	MaxTokens    uint   `yaml:"max_tokens"`
+	MaxTokens    uint32 `yaml:"max_tokens"`
+}
+
+type Audio struct {
+	Address string `yaml:"address"`
+}
+
+type Video struct {
+	Address string `yaml:"address"`
+}
+
+type Minio struct {
+	Address  string `yaml:"address"`
+	User     string `yaml:"user"`
+	Password string `yaml:"password"`
 }
 
 func Load() (*Config, error) {

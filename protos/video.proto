@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package video;
+
+option go_package = "MMaxaMM.video.v1;videov1";
+
+service VideoService {
+    rpc Detect (VideoRequest) returns (VideoResponse);
+}
+
+message VideoRequest {
+    string filepath = 1;
+}
+
+message VideoResponse {
+    string filepath = 1;
+}

@@ -1,0 +1,22 @@
+version: "3"
+
+tasks:
+  generate-audio:
+    cmds:
+      - python3 -m grpc_tools.protoc -I ./protos/ ./protos/audio.proto --python_out=./ChatAudio/dev --grpc_python_out=./ChatAudio/dev --pyi_out=./ChatAudio/dev
+      - python3 -m grpc_tools.protoc -I ./protos/ ./protos/audio.proto --python_out=./ChatAudio/prod --grpc_python_out=./ChatAudio/prod --pyi_out=./ChatAudio/prod
+      - protoc -I ./protos/ ./protos/audio.proto --go_out=./ChatBackend/gen/audio --go_opt=paths=source_relative --go-grpc_out=./ChatBackend/gen/audio --go-grpc_opt=paths=source_relative
+  generate-auth:
+    cmds:
+      - protoc -I ./protos/ ./protos/auth.proto --go_out=./Auth/gen --go_opt=paths=source_relative --go-grpc_out=./Auth/gen --go-grpc_opt=paths=source_relative
+      - protoc -I ./protos/ ./protos/auth.proto --go_out=./ChatBackend/gen/auth --go_opt=paths=source_relative --go-grpc_out=./ChatBackend/gen/auth --go-grpc_opt=paths=source_relative
+  generate-llm:
+    cmds:
+      - python3 -m grpc_tools.protoc -I ./protos/ ./protos/llm.proto --python_out=./ChatLLM/dev --grpc_python_out=./ChatLLM/dev --pyi_out=./ChatLLM/dev
+      - python3 -m grpc_tools.protoc -I ./protos/ ./protos/llm.proto --python_out=./ChatLLM/prod --grpc_python_out=./ChatLLM/prod --pyi_out=./ChatLLM/prod
+      - protoc -I ./protos/ ./protos/llm.proto --go_out=./ChatBackend/gen/llm --go_opt=paths=source_relative --go-grpc_out=./ChatBackend/gen/llm --go-grpc_opt=paths=source_relative
+  generate-video:
+    cmds:
+      - python3 -m grpc_tools.protoc -I ./protos/ ./protos/video.proto --python_out=./ChatVideo/dev --grpc_python_out=./ChatVideo/dev --pyi_out=./ChatVideo/dev
+      - python3 -m grpc_tools.protoc -I ./protos/ ./protos/video.proto --python_out=./ChatVideo/prod --grpc_python_out=./ChatVideo/prod --pyi_out=./ChatVideo/prod
+      - protoc -I ./protos/ ./protos/video.proto --go_out=./ChatBackend/gen/video --go_opt=paths=source_relative --go-grpc_out=./ChatBackend/gen/video --go-grpc_opt=paths=source_relative

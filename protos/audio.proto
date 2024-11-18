@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package audio;
+
+option go_package = "MMaxaMM.audio.v1;audiov1";
+
+service AudioService {
+    rpc Recognize (AudioRequest) returns (AudioResponse);
+}
+
+message AudioRequest {
+    string filepath = 1;
+}
+
+message AudioResponse {
+    string result = 1;
+}
