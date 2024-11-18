@@ -50,12 +50,12 @@
 	font-size: 16px;
 	line-height: 24px;
   position: absolute;
-  top: 110%; /* Расположение над кнопкой */
+  top: 120%; /* Расположение над кнопкой */
   left: 250%;
   transform: translateX(-50%);
   z-index: 10;
   opacity: 0;
-  transition: opacity 0.3s;
+  transition: opacity 0.5s ease 1s;
 	white-space: nowrap;
 	box-shadow: 0 0 0 0.3px #fff;
 	border: 2px solid #000;
@@ -68,7 +68,7 @@
   left: 10%;
   width: 0;
   height: 0;
-	top: -11px;
+	top: -10px;
   bottom: auto;
   transform: translateX(-50%) rotate(180deg); /* Треугольник вверх */
   border-style: solid;
@@ -82,7 +82,7 @@
   position: absolute;
   bottom: -12px; /* Добавляем границу для треугольника */
   left: 10%;
-	top: -11px;
+	top: -10px;
   transform: translateX(-50%) rotate(180deg);
   width: 0;
   height: 0;
