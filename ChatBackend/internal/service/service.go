@@ -2,7 +2,6 @@ package service
 
 import (
 	"chat/internal/config"
-	minioclient "chat/internal/minio-client"
 	"chat/internal/models"
 	"chat/internal/repository"
 )
@@ -47,14 +46,13 @@ type Service struct {
 func NewService(
 	cfg *config.Config,
 	rep *repository.Repository,
-	minio *minioclient.MinioProvider,
 ) *Service {
 	return &Service{
 		Auth:       NewAuthService(rep),
 		Middleware: NewMiddlewareService(),
 		Control:    NewControlService(rep),
 		Chat:       NewChatService(cfg.LLM, rep),
-		Audio:      NewAudioService(cfg.Audio, rep, minio),
-		Video:      NewVideoService(cfg.Video, rep, minio),
+		Audio:      NewAudioService(cfg.Audio, rep),
+		Video:      NewVideoService(cfg.Video, rep),
 	}
 }

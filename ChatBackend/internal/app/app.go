@@ -44,12 +44,11 @@ func (a *App) MustRun() {
 	rep := repository.NewPostgresRepository(db, a.cfg.Filestorage)
 
 	// Инициализация сервисов
-	minioClient := minioclient.NewMinioProvider(a.cfg.Minio)
-	if err = minioClient.Connect(); err != nil {
+	if err = minioclient.Connect(a.cfg.Minio); err != nil {
 		a.log.Error("Failed to connect to minio", slogx.Error(err))
 		os.Exit(1)
 	}
-	service := service.NewService(a.cfg, rep, minioClient)
+	service := service.NewService(a.cfg, rep)
 
 	// Инициализация обработчиков
 	handler := handler.NewHandler(service, a.log)

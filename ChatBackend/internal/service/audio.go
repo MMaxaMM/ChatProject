@@ -4,6 +4,8 @@ import (
 	"chat"
 	audiov1 "chat/gen/audio"
 	"chat/internal/config"
+	"chat/internal/lib/slogx"
+	"chat/internal/logger"
 	minioclient "chat/internal/minio-client"
 	"chat/internal/models"
 	"chat/internal/repository"
@@ -16,26 +18,24 @@ import (
 )
 
 type AudioService struct {
-	cfg   config.Audio
-	rep   *repository.Repository
-	minio *minioclient.MinioProvider
+	cfg config.Audio
+	rep *repository.Repository
 }
 
 func NewAudioService(
 	cfg config.Audio,
 	rep *repository.Repository,
-	minio *minioclient.MinioProvider,
 ) *AudioService {
-	return &AudioService{cfg: cfg, rep: rep, minio: minio}
+	return &AudioService{cfg: cfg, rep: rep}
 }
 
 func (s *AudioService) Recognize(request *models.AudioRequest) (*models.AudioResponse, error) {
 	const op = "service.Recognize"
 
-	filename := uuid.New().String() + ".mp3"
+	objectName := uuid.New().String() + ".mp3"
 
-	filepath, err := s.minio.UploadObject(
-		filename,
+	objectPath, err := minioclient.UploadObject(
+		objectName,
 		&request.Object,
 		minioclient.AudioBucketName,
 		minioclient.AudioContentType,
@@ -55,9 +55,10 @@ func (s *AudioService) Recognize(request *models.AudioRequest) (*models.AudioRes
 
 	client := audiov1.NewAudioServiceClient(conn)
 
-	audioRequest := &audiov1.AudioRequest{Filepath: filepath}
+	audioRequest := &audiov1.AudioRequest{Filepath: objectPath}
 	audioResponse, err := client.Recognize(context.Background(), audioRequest)
 	if err != nil {
+		go minioclient.DeleteObject(minioclient.AudioBucketName, objectName)
 		return nil, fmt.Errorf("%s: %w: %w", op, chat.ErrServiceNotAvailable, err)
 	}
 
@@ -76,11 +77,17 @@ func (s *AudioService) Recognize(request *models.AudioRequest) (*models.AudioRes
 		request.ChatId,
 		&models.Message{
 			Role:        models.RoleUser,
-			Content:     filepath,
+			Content:     objectPath,
 			ContentType: models.AudioType,
 		},
 	)
 	if err != nil {
+		go func() {
+			err = minioclient.DeleteObject(minioclient.AudioBucketName, objectName)
+			if err != nil {
+				logger.Logger.Warn("Faild to delete file from storfge", slogx.Error(err))
+			}
+		}()
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 

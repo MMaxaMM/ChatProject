@@ -20,58 +20,76 @@ const (
 	VideoContentType ContentType = "video/mp4"
 )
 
-type MinioProvider struct {
-	client *minio.Client
-	cfg    config.Minio
-}
+var Client *minio.Client
 
-func NewMinioProvider(cfg config.Minio) *MinioProvider {
-	return &MinioProvider{cfg: cfg}
-}
+func Connect(cfg config.Minio) error {
+	const op = "minioclient.Connect"
 
-func (m *MinioProvider) Connect() error {
 	var err error
-	m.client, err = minio.New(m.cfg.Address, m.cfg.User, m.cfg.Password, false)
+	Client, err = minio.New(cfg.Address, cfg.User, cfg.Password, false)
 	if err != err {
-		return err
+		return fmt.Errorf("%s: %w", op, err)
 	}
 
-	exists, err := m.client.BucketExists(AudioBucketName)
-	if err != nil {
-		return err
-	}
-	if !exists {
-		err = m.client.MakeBucket(AudioBucketName, "us-east-1")
-		if err != nil {
-			return err
-		}
+	err = MakeBucket(AudioBucketName)
+	if err != err {
+		return fmt.Errorf("%s: %w", op, err)
 	}
 
-	exists, err = m.client.BucketExists(VideoBucketName)
-	if err != nil {
-		return err
-	}
-	if !exists {
-		err = m.client.MakeBucket(VideoBucketName, "us-east-1")
-		if err != nil {
-			return err
-		}
+	err = MakeBucket(VideoBucketName)
+	if err != err {
+		return fmt.Errorf("%s: %w", op, err)
 	}
 
 	return nil
 }
 
-func (m *MinioProvider) UploadObject(
-	filename string,
+func MakeBucket(bucketName string) error {
+	const op = "minioclient.MakeBucket"
+
+	exists, err := Client.BucketExists(bucketName)
+	if err != nil {
+		return fmt.Errorf("%s: %w", op, err)
+	}
+	if !exists {
+		err = Client.MakeBucket(bucketName, "us-east-1")
+		if err != nil {
+			return fmt.Errorf("%s: %w", op, err)
+		}
+	}
+
+	policy := fmt.Sprintf(`{
+		"Version": "2012-10-17",
+		"Statement": [
+			{
+				"Action": ["s3:GetObject"],
+				"Effect": "Allow",
+				"Principal": {"AWS": ["*"]},
+				"Resource": ["arn:aws:s3:::%s/*"],
+				"Sid": ""
+			}
+		]
+	}`, bucketName)
+
+	err = Client.SetBucketPolicy(bucketName, policy)
+	if err != nil {
+		return fmt.Errorf("%s: %w", op, err)
+	}
+
+	return nil
+}
+
+func UploadObject(
+	objectName string,
 	object *models.Object,
 	bucketName string,
 	contentType ContentType,
 ) (string, error) {
-	const op = "minioclient.UploadAudio"
+	const op = "minioclient.UploadObject"
 
-	_, err := m.client.PutObject(
+	_, err := Client.PutObject(
 		bucketName,
-		filename,
+		objectName,
 		object.Payload,
 		object.PayloadSize,
 		minio.PutObjectOptions{ContentType: string(contentType)},
@@ -80,5 +98,19 @@ func (m *MinioProvider) UploadObject(
 		return "", fmt.Errorf("%s: %w", op, err)
 	}
 
-	return fmt.Sprintf("%s/%s", bucketName, filename), nil
+	return fmt.Sprintf("%s/%s", bucketName, objectName), nil
+}
+
+func DeleteObject(
+	bucketName string,
+	objectName string,
+) error {
+	const op = "minioclient.DeleteObject"
+
+	err := Client.RemoveObject(bucketName, objectName)
+	if err != nil {
+		return fmt.Errorf("%s: %w", op, err)
+	}
+
+	return nil
 }
