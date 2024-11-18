@@ -4,8 +4,8 @@ services:
 
   llm:
     build:
-      context: ./ChatLLM
-      dockerfile: Dockerfile.dev
+      context: ./ChatLLM/dev
+      dockerfile: Dockerfile
     image: llm
     container_name: llm
     expose:
@@ -16,8 +16,8 @@ services:
 
   audio:
     build:
-      context: ./ChatAudio
-      dockerfile: Dockerfile.dev
+      context: ./ChatAudio/dev
+      dockerfile: Dockerfile
     image: audio
     container_name: audio
     expose:
@@ -28,8 +28,8 @@ services:
 
   video:
     build:
-      context: ./ChatVideo
-      dockerfile: Dockerfile.dev
+      context: ./ChatVideo/dev
+      dockerfile: Dockerfile
     image: video
     container_name: video
     expose:
