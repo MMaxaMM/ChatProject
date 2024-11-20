@@ -1,4 +1,4 @@
 export type TChatTypeModalProps = {
-  onSelectChats: (selectedChats: string[]) => void;
+  onSelectChats: (selectedChat: string) => void;
   onClose: () => void;
 };

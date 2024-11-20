@@ -46,7 +46,7 @@
   transform: translateX(-50%);
   z-index: 10;
   opacity: 0;
-  transition: opacity 0.5s ease 1s;
+  transition: opacity 0.5s 1s;
 	white-space: nowrap;
 	box-shadow: 0 0 0 0.3px #fff;
 	border: 2px solid #000;
@@ -99,7 +99,7 @@
   transform: translateX(-50%);
   z-index: 10;
   opacity: 0;
-  transition: opacity 0.5s ease 1s;
+  transition: opacity 0.5s 1s;
 	white-space: nowrap;
 	box-shadow: 0 0 0 0.3px #fff;
 	border: 2px solid #000;

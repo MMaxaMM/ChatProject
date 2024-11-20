@@ -3,13 +3,16 @@ import styles from './chatList.module.css';
 import closeIcon from '../../../images/closeIcon.svg';
 import newChatIcon from '../../../images/newChatIcon.svg';
 import { TChatListUIProps } from './type';
-import { ChatListItem } from '@components';
+import { ChatListItem, ChatTypeModal } from '@components';
 
 export const ChatListUI: FC<TChatListUIProps> = ({
   chats,
   isOpen,
+  isOpenModal,
   onClose,
-  onCreateChat
+  onCreateChat,
+  onCloseModal,
+  onSelectChat
 }) => (
   <aside className={`${styles.container} ${isOpen && styles.container_open}`}>
     <div className={styles.content}>
@@ -28,6 +31,9 @@ export const ChatListUI: FC<TChatListUIProps> = ({
           </button>
           <span className={styles.tooltip_create_text}>Новый чат</span>
         </div>
+        {isOpenModal && (
+          <ChatTypeModal onClose={onCloseModal} onSelectChats={onSelectChat} />
+        )}
       </nav>
       <div className={styles.chat_list}>
         <h3 className={styles.chat_list_header}>Список чатов</h3>

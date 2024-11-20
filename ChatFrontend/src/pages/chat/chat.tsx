@@ -1,19 +1,21 @@
 import { FC, useEffect, useState } from 'react';
 import { ChatUI, ChatOpenUI } from '@ui-pages';
 import { ChatList } from '@components';
-import { TChat, TMessage } from '@utils-types';
+import { TChat, TMessage, ChatType } from '@utils-types';
 import { useSelector, useDispatch } from '@store';
 import {
   getStoreChats,
   sendMessage,
   createChat,
   getCurrentChatId,
-  setChatId
+  setChatId,
+  setChatType
 } from '@slices';
 import { useParams, useNavigate } from 'react-router-dom';
 
 export const Chat: FC = () => {
   const [isOpen, setIsOpen] = useState(true);
+  const [isOpenModal, setIsOpenModal] = useState(false);
   const index = useSelector(getCurrentChatId);
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -22,7 +24,19 @@ export const Chat: FC = () => {
     setIsOpen(!isOpen);
   };
 
+  const onCloseModal = () => {
+    setIsOpenModal(false);
+  };
+
   const onCreateChat = () => {
+    setIsOpenModal(true);
+  };
+
+  const onSelectChats = (selectedChat: string) => {
+    const chatType = Object.values(ChatType).includes(selectedChat as ChatType)
+      ? (selectedChat as ChatType)
+      : ChatType.typeChat;
+    dispatch(setChatType(chatType));
     navigate('/chat');
     dispatch(setChatId(-1));
   };
@@ -50,9 +64,12 @@ export const Chat: FC = () => {
     <>
       <ChatList
         chats={chats}
+        isOpenModal={isOpenModal}
+        onCloseModal={onCloseModal}
         isOpen={isOpen}
         onClose={toggleOpen}
         onCreateChat={onCreateChat}
+        onSelectChat={onSelectChats}
       />
       {index >= 0 ? (
         <ChatOpenUI

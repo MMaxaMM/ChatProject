@@ -1,4 +1,4 @@
-import { TChat, TMessage } from '@utils-types';
+import { TChat, TMessage, ChatType } from '@utils-types';
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { getChatsApi } from '@api';
 
@@ -7,15 +7,18 @@ export type ChatState = {
   chats: TChat[];
   chatRequest: boolean;
   currentChatId: number;
+  currentChatType: ChatType;
 };
 
 const initialState: ChatState = {
   userId: null,
   currentChatId: -1,
+  currentChatType: ChatType.typeChat,
   chats: [
     {
       userId: 1,
       chatId: 0,
+      chatType: ChatType.typeChat,
       messages: [
         {
           role: 'user',
@@ -26,6 +29,7 @@ const initialState: ChatState = {
     {
       userId: 2,
       chatId: 1,
+      chatType: ChatType.typeChat,
       messages: [
         {
           role: 'user',
@@ -76,6 +80,7 @@ const chatSlice = createSlice({
       const newChat: TChat = {
         userId: state.userId ? state.userId : -1,
         chatId: state.chats.length,
+        chatType: state.currentChatType,
         messages: [
           {
             role: 'user',
@@ -88,11 +93,15 @@ const chatSlice = createSlice({
     },
     setChatId: (state, action: PayloadAction<number>) => {
       state.currentChatId = action.payload;
+    },
+    setChatType: (state, action: PayloadAction<ChatType>) => {
+      state.currentChatType = action.payload;
     }
   },
   selectors: {
     getStoreChats: (state) => state.chats,
-    getCurrentChatId: (state) => state.currentChatId
+    getCurrentChatId: (state) => state.currentChatId,
+    getCurrentChatType: (state) => state.currentChatType
   },
   extraReducers: (builder) => {
     builder
@@ -110,6 +119,8 @@ const chatSlice = createSlice({
   }
 });
 
-export const { getStoreChats, getCurrentChatId } = chatSlice.selectors;
-export const { sendMessage, createChat, setChatId } = chatSlice.actions;
+export const { getStoreChats, getCurrentChatId, getCurrentChatType } =
+  chatSlice.selectors;
+export const { sendMessage, createChat, setChatId, setChatType } =
+  chatSlice.actions;
 export const chatReducer = chatSlice.reducer;

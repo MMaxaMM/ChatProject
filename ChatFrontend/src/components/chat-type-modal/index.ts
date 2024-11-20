@@ -1,0 +1,1 @@
+export { ChatTypeModal } from './chatTypeModal';

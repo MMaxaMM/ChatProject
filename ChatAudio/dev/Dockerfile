@@ -2,7 +2,6 @@ FROM python:3.10
 
 RUN apt-get update
 RUN apt-get -y install python3-pip
-RUN apt-get -y install python-concurrent.futures
 RUN apt-get -y install nano
 
 WORKDIR /audio
