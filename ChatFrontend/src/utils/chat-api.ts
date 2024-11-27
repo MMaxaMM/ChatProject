@@ -89,6 +89,27 @@ export const getChatHistoryApi = (chatId: number) =>
     })
   }).then((res) => checkResponse<TChatHistory>(res));
 
+export type TPostAudioRequest = {
+  chat_id: number;
+  formData: FormData;
+};
+
+export const postAudioApi = (
+  data: TPostAudioRequest,
+  onProgress: (progress: number) => void
+) =>
+  fetchWithProgress(
+    `${URL}/audio/recognize?chat_id=${data.chat_id}`,
+    {
+      method: 'POST',
+      headers: {
+        authorization: `Bearer ${getCookie('accessToken')}`
+      } as HeadersInit,
+      body: data.formData
+    },
+    onProgress
+  ).then((res) => checkResponse<TPostMessageResponse>(res));
+
 type TAuthResponse = {
   token: string;
 };
@@ -104,3 +125,40 @@ export const loginUserApi = (data: TUser) =>
     method: 'POST',
     body: JSON.stringify(data)
   }).then((res) => checkResponse<TAuthResponse>(res));
+
+// Функция для fetch с отслеживанием прогресса
+async function fetchWithProgress(
+  url: string,
+  options: RequestInit,
+  onProgress: (progress: number) => void
+): Promise<Response> {
+  const request = new XMLHttpRequest();
+  request.open(options.method || 'POST', url);
+
+  if (options.headers) {
+    Object.entries(options.headers).forEach(([key, value]) => {
+      request.setRequestHeader(key, value as string);
+    });
+  }
+  return new Promise((resolve, reject) => {
+    request.upload.onprogress = (event) => {
+      if (event.lengthComputable) {
+        const percentCompleted = Math.round((event.loaded * 100) / event.total);
+        onProgress(percentCompleted);
+      }
+    };
+
+    request.onload = () => {
+      resolve(new Response(request.responseText, { status: request.status }));
+    };
+
+    request.onerror = () => reject(new Error('Ошибка при загрузке файла'));
+
+    // Передаем тело запроса
+    if (options.body instanceof FormData) {
+      request.send(options.body);
+    } else {
+      reject(new Error('Body должен быть FormData'));
+    }
+  });
+}

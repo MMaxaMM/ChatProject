@@ -3,11 +3,15 @@ import styles from './messageInput.module.css';
 import arrowStart from '../../../images/arrowStart.svg';
 import { TMessageInputProps, MultiRefHandle } from './type';
 import { useRef } from 'react';
+import { ChatType } from '@utils-types';
 
 export const MessageInputUI = forwardRef<MultiRefHandle, TMessageInputProps>(
   (
     {
       message,
+      chatType,
+      selectedFile,
+      progress,
       handleChange,
       handleKeyDown,
       handleSend,
@@ -36,20 +40,35 @@ export const MessageInputUI = forwardRef<MultiRefHandle, TMessageInputProps>(
         <button
           onClick={handleClickFile}
           className={styles.file_input__button}
+          disabled={
+            ChatType.typeAudio !== chatType && ChatType.typeVideo !== chatType
+          }
         />
-        <textarea
-          ref={textRef}
-          value={message}
-          onChange={handleChange}
-          onKeyDown={handleKeyDown}
-          placeholder='Сообщить ChatGPT'
-          rows={1}
-          className={styles.message_input__text}
-        />
+        {progress !== null ? (
+          <div className={styles.progress}>
+            <progress value={progress} max='100' />
+            <span className={styles.progress_message}>{progress}%</span>
+          </div>
+        ) : (
+          <span className={styles.progress_message}>{selectedFile?.name}</span>
+        )}
+        {chatType === ChatType.typeChat && (
+          <textarea
+            ref={textRef}
+            value={message}
+            onChange={handleChange}
+            onKeyDown={handleKeyDown}
+            placeholder='Сообщить ChatGPT'
+            rows={1}
+            className={styles.message_input__text}
+          />
+        )}
         <button
           onClick={handleSend}
           className={styles.message_input__button}
-          disabled={!message.trim()} // Кнопка отключена, если сообщение пустое
+          disabled={
+            ChatType.typeChat === chatType ? !message.trim() : !selectedFile
+          } // Кнопка отключена, если сообщение пустое
         >
           <img src={arrowStart} className={styles.message_input__button_icon} />
         </button>

@@ -4,4 +4,5 @@ export type TChatUIProps = {
   isAsideOpen: boolean;
   onOpenTab: () => void;
   onSendMessage: (message: string) => void;
+  onSendFile: (file: File) => void;
 };

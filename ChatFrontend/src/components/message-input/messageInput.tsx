@@ -8,12 +8,17 @@ import {
 } from 'react';
 import { TMessageInputProps, MultiRefHandle } from './type';
 import { MessageInputUI } from '@ui';
+import { useSelector } from '@store';
+import { getCurrentChatType, getProgress } from '@slices';
 
-export const MessageInput: FC<TMessageInputProps> = ({ onSendMessage }) => {
+export const MessageInput: FC<TMessageInputProps> = ({
+  onSendMessage,
+  onSendFile
+}) => {
   const [message, setMessage] = useState<string>(''); // Состояние для текста
-
   const multiRef = useRef<MultiRefHandle>(null);
-
+  const progress = useSelector(getProgress);
+  const chatType = useSelector(getCurrentChatType);
   // Функция, которая обновляет состояние при изменении textarea
   const handleChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
     setMessage(event.target.value);
@@ -56,13 +61,22 @@ export const MessageInput: FC<TMessageInputProps> = ({ onSendMessage }) => {
       multiRef.current?.fileRef.click(); // Триггерим клик по скрытому инпуту
     }
   };
+
+  const handleUpload = () => {
+    if (selectedFile) {
+      onSendFile(selectedFile);
+    }
+  };
   return (
     <MessageInputUI
       ref={multiRef}
+      chatType={chatType}
+      selectedFile={selectedFile}
+      progress={progress}
       message={message}
       handleChange={handleChange}
       handleKeyDown={handleKeyDown}
-      handleSend={handleSend}
+      handleSend={handleUpload}
       handleClickFile={handleClick}
       handleFileChange={handleFileChange}
     />

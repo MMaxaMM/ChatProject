@@ -12,7 +12,10 @@ import {
   getChats,
   postMessage,
   selectChatById,
-  getChatHistory
+  getChatHistory,
+  postAudio,
+  setChatType,
+  getCurrentChatType
 } from '@slices';
 import { useParams, useNavigate } from 'react-router-dom';
 
@@ -23,6 +26,12 @@ export const Chat: FC = () => {
   const currentChat = useSelector((state) =>
     selectChatById(state, currentChatId)
   );
+  const currentChatType = currentChat?.chat_type
+    ? currentChat.chat_type
+    : ChatType.typeChat;
+  console.log(currentChatType);
+  const cT = useSelector(getCurrentChatType);
+  console.log(cT);
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [index, setIndex] = useState(parseInt(params.id ? params.id : '-1'));
   const navigate = useNavigate();
@@ -47,15 +56,18 @@ export const Chat: FC = () => {
 
   useEffect(() => {
     dispatch(getChats());
-    if (currentChatId !== -1) {
-      setIndex(currentChatId);
+    if (currentChat) {
+      setIndex(currentChat.chat_id);
+      dispatch(setChatType(currentChat.chat_type));
     }
-  }, [currentChatId]);
+  }, [currentChatId, currentChatType]);
+  console.log(currentChatId);
 
   useEffect(() => {
     if (index !== -1) {
       navigate(`/chat/${index}`);
       dispatch(setChatId(index));
+      dispatch(setChatType(currentChatType));
       dispatch(getChatHistory(index));
     }
   }, [index]);
@@ -74,10 +86,17 @@ export const Chat: FC = () => {
     dispatch(sendMessage(query));
     dispatch(postMessage(query));
   };
+
+  const onSendFile = (file: File) => {
+    const formData = new FormData();
+    formData.append('audio', file);
+    const query = {
+      chat_id: currentChatId,
+      formData: formData
+    };
+    dispatch(postAudio(query));
+  };
   const chats: TChat[] = useSelector(getStoreChats);
-  console.log(`chat ${currentChat}`);
-  console.log(`chat id ${currentChatId}`);
-  console.log(`index ${index}`);
   console.log(chats);
   return (
     <>
@@ -96,12 +115,14 @@ export const Chat: FC = () => {
           chat={currentChat}
           onOpenTab={toggleOpen}
           onSendMessage={onSendMessage}
+          onSendFile={onSendFile}
         />
       ) : (
         <ChatUI
           isAsideOpen={isOpen}
           onSendMessage={onSendMessage}
           onOpenTab={toggleOpen}
+          onSendFile={onSendFile}
         />
       )}
     </>

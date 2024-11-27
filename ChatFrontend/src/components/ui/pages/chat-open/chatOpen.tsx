@@ -10,7 +10,8 @@ export const ChatOpenUI: FC<TChatOpenUIProps> = ({
   isAsideOpen,
   chat,
   onOpenTab,
-  onSendMessage
+  onSendMessage,
+  onSendFile
 }) => {
   const messages: TMessage[] = chat.messages;
   return (
@@ -38,7 +39,7 @@ export const ChatOpenUI: FC<TChatOpenUIProps> = ({
           ))}
         </ul>
         <div className={styles.message_input_wrapper}>
-          <MessageInput onSendMessage={onSendMessage} />
+          <MessageInput onSendMessage={onSendMessage} onSendFile={onSendFile} />
         </div>
       </div>
     </div>

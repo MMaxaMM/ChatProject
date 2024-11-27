@@ -72,6 +72,7 @@
   background-position: center;
   background-size: contain;
   background-color: inherit;
+  background-repeat: no-repeat;
   border: none;
   border-radius: 5px;
   cursor: pointer;
@@ -79,4 +80,18 @@
 
 .file_input__button:hover {
   background-color: #0000001a;
+}
+
+.progress {
+  display: inline-flex;
+  flex-wrap: nowrap;
+  column-gap: 20px;
+  align-items: center;
+}
+
+.progress_message {
+  font-family: sans-serif;
+  line-height: 24px;
+  color: rgb(236, 236,236);
+  resize: none;
 }

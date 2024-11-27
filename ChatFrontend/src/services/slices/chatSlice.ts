@@ -18,7 +18,9 @@ import {
   TPostMessageRequest,
   postChatMessageApi,
   deleteChaTRequest,
-  deleteChatApi
+  deleteChatApi,
+  TPostAudioRequest,
+  postAudioApi
 } from '@api';
 
 export type ChatState = {
@@ -27,6 +29,8 @@ export type ChatState = {
   chatRequest: boolean;
   currentChatId: number;
   currentChatType: ChatType;
+  progress: number | null;
+  error: string | null;
 };
 
 export const getChatHistory = createAsyncThunk(
@@ -66,12 +70,25 @@ export const deleteChat = createAsyncThunk(
   }
 );
 
+export const postAudio = createAsyncThunk(
+  'chat/postAudio',
+  async (data: TPostAudioRequest, { dispatch }) => {
+    const ans = await postAudioApi(data, (progress) => {
+      // Обновляем прогресс через дополнительный экшен
+      dispatch(setProgress(progress));
+    });
+    return ans;
+  }
+);
+
 const initialState: ChatState = {
   userId: null,
   currentChatId: -1,
   currentChatType: ChatType.typeChat,
   chats: [],
-  chatRequest: false
+  chatRequest: false,
+  progress: null,
+  error: null
 };
 
 const chatSlice = createSlice({
@@ -88,32 +105,21 @@ const chatSlice = createSlice({
         }
       });
     },
-    createChatStore: (state, action: PayloadAction<string>) => {
-      const newChat: TChat = {
-        user_id: state.userId ? state.userId : -1,
-        chat_id: state.chats.length,
-        chat_type: state.currentChatType,
-        content: action.payload,
-        date: new Date().toISOString(),
-        messages: [
-          {
-            role: 'user',
-            content: action.payload,
-            isNew: false
-          }
-        ]
-      };
-      state.chats.push(newChat);
-      state.currentChatId = newChat.chat_id;
+    setProgress(state, action) {
+      state.progress = action.payload;
     },
     setChatId: (state, action: PayloadAction<number>) => {
       state.currentChatId = action.payload;
+    },
+    setChatType: (state, action: PayloadAction<ChatType>) => {
+      state.currentChatType = action.payload;
     }
   },
   selectors: {
     getStoreChats: (state) => state.chats,
     getCurrentChatId: (state) => state.currentChatId,
-    getCurrentChatType: (state) => state.currentChatType
+    getCurrentChatType: (state) => state.currentChatType,
+    getProgress: (state) => state.progress
   },
   extraReducers: (builder) => {
     builder
@@ -189,13 +195,29 @@ const chatSlice = createSlice({
       .addCase(deleteChat.fulfilled, (state, action) => {
         state.chatRequest = false;
         state.chats.filter((chat) => chat.chat_id !== action.payload.chat_id);
+      })
+
+      .addCase(postAudio.pending, (state) => {
+        state.progress = 0;
+        state.error = null;
+      })
+      .addCase(postAudio.rejected, (state, action) => {
+        state.error = action.payload as string;
+      })
+      .addCase(postAudio.fulfilled, (state) => {
+        state.progress = 100;
       });
   }
 });
 
-export const { getStoreChats, getCurrentChatId, getCurrentChatType } =
-  chatSlice.selectors;
-export const { sendMessage, createChatStore, setChatId } = chatSlice.actions;
+export const {
+  getStoreChats,
+  getCurrentChatId,
+  getCurrentChatType,
+  getProgress
+} = chatSlice.selectors;
+export const { sendMessage, setChatId, setProgress, setChatType } =
+  chatSlice.actions;
 export const chatReducer = chatSlice.reducer;
 export const selectChatById = createSelector(
   [getStoreChats, (_, chatId) => chatId], // Аргументы

@@ -11,7 +11,8 @@ import { useState } from 'react';
 export const ChatUI: FC<TChatUIProps> = ({
   isAsideOpen,
   onOpenTab,
-  onSendMessage
+  onSendMessage,
+  onSendFile
 }) => {
   const [showCursor, setShowCursor] = useState(true);
 
@@ -63,7 +64,7 @@ export const ChatUI: FC<TChatUIProps> = ({
             onLoopDone={() => setShowCursor(false)}
           />
         </p>
-        <MessageInput onSendMessage={onSendMessage} />
+        <MessageInput onSendMessage={onSendMessage} onSendFile={onSendFile} />
       </div>
     </div>
   );
