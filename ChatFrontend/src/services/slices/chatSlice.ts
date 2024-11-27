@@ -1,4 +1,10 @@
-import { TChat, TMessage, ChatType, getChatTypeByIndex } from '@utils-types';
+import {
+  TChat,
+  TMessage,
+  ChatType,
+  getChatTypeByIndex,
+  getChatTypeFromString
+} from '@utils-types';
 import {
   createSlice,
   createAsyncThunk,
@@ -9,8 +15,10 @@ import {
   getChatsApi,
   getChatHistoryApi,
   createChatApi,
-  TPostMessageQuery,
-  postChatMessageApi
+  TPostMessageRequest,
+  postChatMessageApi,
+  deleteChaTRequest,
+  deleteChatApi
 } from '@api';
 
 export type ChatState = {
@@ -44,8 +52,16 @@ export const createChat = createAsyncThunk(
 
 export const postMessage = createAsyncThunk(
   'chat/postMessage',
-  async (data: TPostMessageQuery) => {
+  async (data: TPostMessageRequest) => {
     const ans = await postChatMessageApi(data);
+    return ans;
+  }
+);
+
+export const deleteChat = createAsyncThunk(
+  'chat/deleteChat',
+  async (data: deleteChaTRequest) => {
+    const ans = await deleteChatApi(data);
     return ans;
   }
 );
@@ -113,6 +129,7 @@ const chatSlice = createSlice({
         state.chats = action.payload.chats;
         state.chats.map((chat) => {
           chat.content = chat.messages ? chat.messages[0].content : 'Новый чат';
+          chat.chat_type = getChatTypeFromString(chat.chat_type);
         });
       })
 
@@ -161,6 +178,17 @@ const chatSlice = createSlice({
             chat.messages.push(message);
           }
         });
+      })
+
+      .addCase(deleteChat.pending, (state) => {
+        state.chatRequest = true;
+      })
+      .addCase(deleteChat.rejected, (state, action) => {
+        state.chatRequest = false;
+      })
+      .addCase(deleteChat.fulfilled, (state, action) => {
+        state.chatRequest = false;
+        state.chats.filter((chat) => chat.chat_id !== action.payload.chat_id);
       });
   }
 });

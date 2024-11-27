@@ -43,7 +43,6 @@ export const Chat: FC = () => {
   const onSelectChats = (selectedChat: string) => {
     const chatType = getChatTypeFromString(selectedChat);
     dispatch(createChat(chatType));
-    // dispatch(setChatId(-1));
   };
 
   useEffect(() => {

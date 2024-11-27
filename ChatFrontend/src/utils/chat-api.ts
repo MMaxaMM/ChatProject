@@ -38,28 +38,25 @@ export const createChatApi = (chatType: ChatType) =>
       authorization: `Bearer ${getCookie('accessToken')}`
     } as HeadersInit,
     body: JSON.stringify({
-      chat_id: getIndexByChatType(chatType)
+      chat_type: getIndexByChatType(chatType)
     })
   }).then((res) => checkResponse<TChatCreateResponse>(res));
 
-export const deleteChatApi = (chatId: number) =>
-  fetch(`${URL}/chat/delete`, {
-    method: 'POST',
+export type deleteChaTRequest = { chatId: number; chatType: ChatType };
+
+export const deleteChatApi = (data: deleteChaTRequest) =>
+  fetch(`${URL}/control/delete`, {
+    method: 'DELETE',
     headers: {
-      'Content-Type': 'application/json;charset=utf-8',
-      authorization: getCookie('accessToken')
+      authorization: `Bearer ${getCookie('accessToken')}`
     } as HeadersInit,
     body: JSON.stringify({
-      chat_id: chatId
+      chat_type: getIndexByChatType(data.chatType),
+      chat_id: data.chatId
     })
-  })
-    .then((res) => checkResponse<TServerResponse<{}>>(res))
-    .then((data) => {
-      if (data?.ok) return data;
-      return Promise.reject(data);
-    });
+  }).then((res) => checkResponse<{ chat_id: number }>(res));
 
-export type TPostMessageQuery = {
+export type TPostMessageRequest = {
   chat_id: number;
   message: TMessage;
 };
@@ -72,7 +69,7 @@ type TPostMessageResponse = {
 
 type TChatHistory = Omit<TChat, 'chatType'>;
 
-export const postChatMessageApi = (data: TPostMessageQuery) =>
+export const postChatMessageApi = (data: TPostMessageRequest) =>
   fetch(`${URL}/chat/message`, {
     method: 'POST',
     headers: {

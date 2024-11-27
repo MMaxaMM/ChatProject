@@ -6,7 +6,11 @@ import chatLogo from '../../../images/chatLogo.svg';
 import deleteIcon from '../../../images/deleteIcon.svg';
 import { useState } from 'react';
 
-export const ChatListItemUI: FC<TChatListItemUIProps> = ({ chat, onClick }) => {
+export const ChatListItemUI: FC<TChatListItemUIProps> = ({
+  chat,
+  onClick,
+  onDelete
+}) => {
   const { content, chat_id, chat_type } = chat;
   const [isHovered, setIsHovered] = useState(false);
   return (
@@ -23,6 +27,7 @@ export const ChatListItemUI: FC<TChatListItemUIProps> = ({ chat, onClick }) => {
           className={styles.delete_button}
           onMouseOver={() => setIsHovered(true)}
           onMouseOut={() => setIsHovered(false)}
+          onClick={onDelete}
         >
           <img src={!isHovered ? chatLogo : deleteIcon} />
         </button>
