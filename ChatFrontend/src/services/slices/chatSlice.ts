@@ -82,7 +82,8 @@ const chatSlice = createSlice({
         messages: [
           {
             role: 'user',
-            content: action.payload
+            content: action.payload,
+            isNew: false
           }
         ]
       };
@@ -111,7 +112,7 @@ const chatSlice = createSlice({
         state.chatRequest = false;
         state.chats = action.payload.chats;
         state.chats.map((chat) => {
-          chat.content = 'Новый чат';
+          chat.content = chat.messages ? chat.messages[0].content : 'Новый чат';
         });
       })
 
@@ -140,15 +141,6 @@ const chatSlice = createSlice({
         state.chatRequest = false;
         state.currentChatId = action.payload.chat_id;
         state.currentChatType = getChatTypeByIndex(action.payload.chat_type);
-        // const newChat: TChat = {
-        //   user_id: action.payload.user_id,
-        //   chat_id: action.payload.chat_id,
-        //   chat_type: getChatTypeByIndex(action.payload.chat_type),
-        //   content: 'Новый чат',
-        //   date: new Date().toISOString(),
-        //   messages: []
-        // };
-        // state.chats.push(newChat);
       })
 
       .addCase(postMessage.pending, (state) => {
@@ -161,7 +153,12 @@ const chatSlice = createSlice({
         state.chatRequest = false;
         state.chats.map((chat) => {
           if (chat.chat_id === action.payload.chat_id) {
-            chat.messages.push(action.payload.message);
+            const message: TMessage = {
+              role: action.payload.message.role,
+              content: action.payload.message.content,
+              isNew: true
+            };
+            chat.messages.push(message);
           }
         });
       });

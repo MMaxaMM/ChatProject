@@ -24,7 +24,7 @@ export const Chat: FC = () => {
     selectChatById(state, currentChatId)
   );
   const [isOpenModal, setIsOpenModal] = useState(false);
-  const index = parseInt(params.id ? params.id : '-1');
+  const [index, setIndex] = useState(parseInt(params.id ? params.id : '-1'));
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -48,7 +48,10 @@ export const Chat: FC = () => {
 
   useEffect(() => {
     dispatch(getChats());
-  }, []);
+    if (currentChatId !== -1) {
+      setIndex(currentChatId);
+    }
+  }, [currentChatId]);
 
   useEffect(() => {
     if (index !== -1) {
@@ -61,7 +64,8 @@ export const Chat: FC = () => {
   const onSendMessage = (message: string) => {
     const data: TMessage = {
       role: 'user',
-      content: message
+      content: message,
+      isNew: false
     };
     navigate(`/chat/${currentChatId}`);
     const query = { chat_id: currentChatId, message: data };
