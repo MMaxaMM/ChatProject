@@ -59,3 +59,24 @@
   fill: #fff;
   color: rgb(66, 66, 66);
 }
+
+.file_input {
+  display: none;
+}
+
+.file_input__button {
+  padding: 8px;
+  height: 32px;
+  width: 32px;
+  background-image: url('../../../images/uploadFilesLogo.svg');
+  background-position: center;
+  background-size: contain;
+  background-color: inherit;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.file_input__button:hover {
+  background-color: #0000001a;
+}

@@ -1,7 +1,7 @@
 import { FC, useEffect, useState } from 'react';
 import { ChatUI, ChatOpenUI } from '@ui-pages';
 import { ChatList } from '@components';
-import { TChat, TMessage, getChatTypeFromString } from '@utils-types';
+import { ChatType, TChat, TMessage, getChatTypeFromString } from '@utils-types';
 import { useSelector, useDispatch } from '@store';
 import {
   getStoreChats,
@@ -66,8 +66,11 @@ export const Chat: FC = () => {
       content: message,
       isNew: false
     };
-    navigate(`/chat/${currentChatId}`);
+    if (currentChatId === -1) {
+      dispatch(createChat(ChatType.typeChat));
+    }
     const query = { chat_id: currentChatId, message: data };
+    navigate(`/chat/${currentChatId}`);
     dispatch(sendMessage(query));
     dispatch(postMessage(query));
   };

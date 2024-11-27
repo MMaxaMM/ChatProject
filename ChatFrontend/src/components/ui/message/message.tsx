@@ -20,7 +20,6 @@ export const MessageUI: FC<TMessageUIProps> = ({ message }) => {
             typeSpeed={50} // Скорость ввода символов
             deleteSpeed={0} // Скорость удаления текста
             delaySpeed={10} // Задержка между текстами
-            // onDelay={() => setShowCursor(false)}
           />
         ) : (
           message.content

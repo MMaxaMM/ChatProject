@@ -6,12 +6,13 @@ import {
   KeyboardEvent,
   useState
 } from 'react';
-import { TMessageInputProps } from './type';
+import { TMessageInputProps, MultiRefHandle } from './type';
 import { MessageInputUI } from '@ui';
 
 export const MessageInput: FC<TMessageInputProps> = ({ onSendMessage }) => {
   const [message, setMessage] = useState<string>(''); // Состояние для текста
-  const textareaRef = useRef<HTMLTextAreaElement>(null); // Реф для textarea
+
+  const multiRef = useRef<MultiRefHandle>(null);
 
   // Функция, которая обновляет состояние при изменении textarea
   const handleChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
@@ -34,18 +35,36 @@ export const MessageInput: FC<TMessageInputProps> = ({ onSendMessage }) => {
   };
   // Подстраивает высоту textarea под содержимое
   useEffect(() => {
-    if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto'; // Сбрасываем высоту перед перерасчетом
-      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`; // Устанавливаем высоту в зависимости от контента
+    if (multiRef.current?.textRef) {
+      multiRef.current?.textRef
+        ? (multiRef.current.textRef.style.height = 'auto')
+        : undefined;
+      multiRef.current?.textRef
+        ? (multiRef.current.textRef.style.height = `${multiRef.current.textRef.scrollHeight}px`)
+        : undefined;
     }
   }, [message]);
+
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    setSelectedFile(file || null);
+  };
+
+  const handleClick = () => {
+    if (multiRef.current?.fileRef) {
+      multiRef.current?.fileRef.click(); // Триггерим клик по скрытому инпуту
+    }
+  };
   return (
     <MessageInputUI
-      ref={textareaRef}
+      ref={multiRef}
       message={message}
       handleChange={handleChange}
       handleKeyDown={handleKeyDown}
       handleSend={handleSend}
+      handleClickFile={handleClick}
+      handleFileChange={handleFileChange}
     />
   );
 };
