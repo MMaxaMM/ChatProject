@@ -129,7 +129,7 @@ const chatSlice = createSlice({
         state.chats = action.payload.chats;
         state.chats.map((chat) => {
           chat.content = chat.messages ? chat.messages[0].content : 'Новый чат';
-          chat.chat_type = getChatTypeFromString(chat.chat_type);
+          chat.chat_type = getChatTypeByIndex(parseInt(chat.chat_type));
         });
       })
 
