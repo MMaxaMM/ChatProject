@@ -7,7 +7,7 @@ import { setChatId } from '@slices';
 export const ChatListItem: FC<TChatListItemProps> = memo(({ chat }) => {
   const dispatch = useDispatch();
   const onClick = () => {
-    dispatch(setChatId(chat.chatId));
+    dispatch(setChatId(chat.chat_id));
   };
   return <ChatListItemUI chat={chat} onClick={onClick} />;
 });

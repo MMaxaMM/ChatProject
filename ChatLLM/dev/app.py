@@ -10,7 +10,7 @@ import llm_pb2_grpc as llm_grpc
 import time
 
 MAX_WORKERS = 5
-ADDRESS = "localhost:50100"
+ADDRESS = "0.0.0.0:50100"
 
 
 class LLMService(llm_grpc.LLMServiceServicer):

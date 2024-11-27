@@ -39,7 +39,7 @@ export const ChatListUI: FC<TChatListUIProps> = ({
         <h3 className={styles.chat_list_header}>Список чатов</h3>
         <ul className={styles.chat_list_content}>
           {chats.map((chat) => (
-            <ChatListItem chat={chat} key={chat.chatId} />
+            <ChatListItem chat={chat} key={chat.chat_id} />
           ))}
         </ul>
       </div>

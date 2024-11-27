@@ -1,7 +1,7 @@
 import { FC, useEffect, useState } from 'react';
 import { ChatUI, ChatOpenUI } from '@ui-pages';
 import { ChatList } from '@components';
-import { TChat, TMessage, ChatType } from '@utils-types';
+import { TChat, TMessage, getChatTypeFromString } from '@utils-types';
 import { useSelector, useDispatch } from '@store';
 import {
   getStoreChats,
@@ -9,14 +9,22 @@ import {
   createChat,
   getCurrentChatId,
   setChatId,
-  setChatType
+  getChats,
+  postMessage,
+  selectChatById,
+  getChatHistory
 } from '@slices';
 import { useParams, useNavigate } from 'react-router-dom';
 
 export const Chat: FC = () => {
+  const params = useParams();
   const [isOpen, setIsOpen] = useState(true);
+  const currentChatId = useSelector(getCurrentChatId);
+  const currentChat = useSelector((state) =>
+    selectChatById(state, currentChatId)
+  );
   const [isOpenModal, setIsOpenModal] = useState(false);
-  const index = useSelector(getCurrentChatId);
+  const index = parseInt(params.id ? params.id : '-1');
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -33,17 +41,20 @@ export const Chat: FC = () => {
   };
 
   const onSelectChats = (selectedChat: string) => {
-    const chatType = Object.values(ChatType).includes(selectedChat as ChatType)
-      ? (selectedChat as ChatType)
-      : ChatType.typeChat;
-    dispatch(setChatType(chatType));
-    navigate('/chat');
-    dispatch(setChatId(-1));
+    const chatType = getChatTypeFromString(selectedChat);
+    dispatch(createChat(chatType));
+    // dispatch(setChatId(-1));
   };
+
+  useEffect(() => {
+    dispatch(getChats());
+  }, []);
 
   useEffect(() => {
     if (index !== -1) {
       navigate(`/chat/${index}`);
+      dispatch(setChatId(index));
+      dispatch(getChatHistory(index));
     }
   }, [index]);
 
@@ -52,14 +63,16 @@ export const Chat: FC = () => {
       role: 'user',
       content: message
     };
-    if (index === -1) {
-      dispatch(createChat(message));
-    } else {
-      dispatch(sendMessage({ chatId: index, message: data }));
-    }
+    navigate(`/chat/${currentChatId}`);
+    const query = { chat_id: currentChatId, message: data };
+    dispatch(sendMessage(query));
+    dispatch(postMessage(query));
   };
   const chats: TChat[] = useSelector(getStoreChats);
-
+  console.log(`chat ${currentChat}`);
+  console.log(`chat id ${currentChatId}`);
+  console.log(`index ${index}`);
+  console.log(chats);
   return (
     <>
       <ChatList
@@ -71,10 +84,10 @@ export const Chat: FC = () => {
         onCreateChat={onCreateChat}
         onSelectChat={onSelectChats}
       />
-      {index >= 0 ? (
+      {index >= 0 && currentChat?.messages?.length ? (
         <ChatOpenUI
           isAsideOpen={isOpen}
-          chat={chats[index]}
+          chat={currentChat}
           onOpenTab={toggleOpen}
           onSendMessage={onSendMessage}
         />

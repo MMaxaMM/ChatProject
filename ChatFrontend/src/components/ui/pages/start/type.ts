@@ -1,5 +1,5 @@
 export type TStartUIProps = {
-  text: string;
+  text: string[];
   onLogin: () => void;
   onRegister: () => void;
 };

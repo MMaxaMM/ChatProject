@@ -13,30 +13,7 @@ export const Start: FC = () => {
     'Существует ли Ленинская комната и как её найти?'
   ];
 
-  const [text, setText] = useState('');
-  const [lineNumber, setLineNumber] = useState(0);
   const navigate = useNavigate();
-
-  const shuffle = useCallback(() => {
-    const index = Math.floor(Math.random() * lines.length);
-    setLineNumber(index);
-  }, []);
-  let currentIndex = -1;
-  useEffect(() => {
-    const interval = setInterval(shuffle, 4000);
-    const id = setInterval(() => {
-      currentIndex += 1;
-      setText((prev) => prev + lines[lineNumber][currentIndex]);
-      if (currentIndex === lines[lineNumber].length - 1) {
-        clearInterval(id);
-      }
-    }, 60);
-    return () => {
-      clearInterval(id);
-      clearInterval(interval);
-      setText('');
-    };
-  }, [lineNumber]);
 
   const onLogin = () => {
     navigate('/login', { replace: true });
@@ -50,7 +27,7 @@ export const Start: FC = () => {
 
   return (
     <>
-      <StartUI text={text} onLogin={onLogin} onRegister={onRegister} />
+      <StartUI text={lines} onLogin={onLogin} onRegister={onRegister} />
     </>
   );
 };
