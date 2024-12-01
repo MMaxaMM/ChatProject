@@ -24,7 +24,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\tllm.proto\x12\x03llm\"(\n\x07Message\x12\x0c\n\x04role\x18\x01 \x01(\t\x12\x0f\n\x07\x63ontent\x18\x02 \x01(\t\"@\n\nLLMRequest\x12\x1e\n\x08messages\x18\x01 \x03(\x0b\x32\x0c.llm.Message\x12\x12\n\nmax_tokens\x18\x02 \x01(\r\",\n\x0bLLMResponse\x12\x1d\n\x07message\x18\x01 \x01(\x0b\x32\x0c.llm.Message2;\n\nLLMService\x12-\n\x08Generate\x12\x0f.llm.LLMRequest\x1a\x10.llm.LLMResponseB\x16Z\x14MMaxaMM.llm.v1;llmv1b\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\tllm.proto\x12\x03llm\"(\n\x07Message\x12\x0c\n\x04role\x18\x01 \x01(\t\x12\x0f\n\x07\x63ontent\x18\x02 \x01(\t\"@\n\nLLMRequest\x12\x1e\n\x08messages\x18\x01 \x03(\x0b\x32\x0c.llm.Message\x12\x12\n\nmax_tokens\x18\x02 \x01(\r\"\x1e\n\x0bLLMResponse\x12\x0f\n\x07\x63ontent\x18\x01 \x01(\t2;\n\nLLMService\x12-\n\x08Generate\x12\x0f.llm.LLMRequest\x1a\x10.llm.LLMResponseB\x16Z\x14MMaxaMM.llm.v1;llmv1b\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -37,7 +37,7 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_LLMREQUEST']._serialized_start=60
   _globals['_LLMREQUEST']._serialized_end=124
   _globals['_LLMRESPONSE']._serialized_start=126
-  _globals['_LLMRESPONSE']._serialized_end=170
-  _globals['_LLMSERVICE']._serialized_start=172
-  _globals['_LLMSERVICE']._serialized_end=231
+  _globals['_LLMRESPONSE']._serialized_end=156
+  _globals['_LLMSERVICE']._serialized_start=158
+  _globals['_LLMSERVICE']._serialized_end=217
 # @@protoc_insertion_point(module_scope)

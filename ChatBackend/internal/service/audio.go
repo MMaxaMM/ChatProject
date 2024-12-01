@@ -4,8 +4,6 @@ import (
 	"chat"
 	audiov1 "chat/gen/audio"
 	"chat/internal/config"
-	"chat/internal/lib/slogx"
-	"chat/internal/logger"
 	minioclient "chat/internal/minio-client"
 	"chat/internal/models"
 	"chat/internal/repository"
@@ -32,14 +30,22 @@ func NewAudioService(
 func (s *AudioService) Recognize(request *models.AudioRequest) (*models.AudioResponse, error) {
 	const op = "service.Recognize"
 
+	userId := request.UserId
+	chatId := request.ChatId
+
 	objectName := uuid.New().String() + ".mp3"
 
-	objectPath, err := minioclient.UploadObject(
+	err := minioclient.UploadObject(
 		objectName,
 		&request.Object,
 		minioclient.AudioBucketName,
 		minioclient.AudioContentType,
 	)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", op, err)
+	}
+
+	URI, err := minioclient.GetURI(minioclient.AudioBucketName, objectName)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
@@ -55,7 +61,7 @@ func (s *AudioService) Recognize(request *models.AudioRequest) (*models.AudioRes
 
 	client := audiov1.NewAudioServiceClient(conn)
 
-	audioRequest := &audiov1.AudioRequest{Filepath: objectPath}
+	audioRequest := &audiov1.AudioRequest{URI: URI}
 	audioResponse, err := client.Recognize(context.Background(), audioRequest)
 	if err != nil {
 		go minioclient.DeleteObject(minioclient.AudioBucketName, objectName)
@@ -63,35 +69,36 @@ func (s *AudioService) Recognize(request *models.AudioRequest) (*models.AudioRes
 	}
 
 	response := &models.AudioResponse{
-		UserId: request.UserId,
-		ChatId: request.ChatId,
+		UserId: userId,
+		ChatId: chatId,
 		Message: models.Message{
 			Role:        models.RoleAssistant,
-			Content:     audioResponse.Result,
+			Content:     audioResponse.Content,
 			ContentType: models.TextType,
 		},
 	}
 
+	// Сохранение запроса пользователя
 	err = s.rep.SaveMessage(
-		request.UserId,
-		request.ChatId,
-		&models.Message{
-			Role:        models.RoleUser,
-			Content:     objectPath,
-			ContentType: models.AudioType,
-		},
+		userId,
+		chatId,
+		models.RoleUser,
+		objectName,
+		models.AudioType,
 	)
 	if err != nil {
-		go func() {
-			err = minioclient.DeleteObject(minioclient.AudioBucketName, objectName)
-			if err != nil {
-				logger.Logger.Warn("Faild to delete file from storfge", slogx.Error(err))
-			}
-		}()
+		minioclient.DeleteObject(minioclient.AudioBucketName, objectName)
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 
-	err = s.rep.SaveMessage(response.UserId, response.ChatId, &response.Message)
+	// Сохранение ответа сервиса
+	err = s.rep.SaveMessage(
+		userId,
+		chatId,
+		models.RoleAssistant,
+		audioResponse.Content,
+		models.TextType,
+	)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}

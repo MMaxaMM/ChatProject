@@ -24,7 +24,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0bvideo.proto\x12\x05video\" \n\x0cVideoRequest\x12\x10\n\x08\x66ilepath\x18\x01 \x01(\t\"!\n\rVideoResponse\x12\x10\n\x08\x66ilepath\x18\x01 \x01(\t2C\n\x0cVideoService\x12\x33\n\x06\x44\x65tect\x12\x13.video.VideoRequest\x1a\x14.video.VideoResponseB\x1aZ\x18MMaxaMM.video.v1;videov1b\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0bvideo.proto\x12\x05video\"\x1b\n\x0cVideoRequest\x12\x0b\n\x03URI\x18\x01 \x01(\t\"#\n\rVideoResponse\x12\x12\n\nobjectName\x18\x01 \x01(\t2C\n\x0cVideoService\x12\x33\n\x06\x44\x65tect\x12\x13.video.VideoRequest\x1a\x14.video.VideoResponseB\x1aZ\x18MMaxaMM.video.v1;videov1b\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -33,9 +33,9 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['DESCRIPTOR']._loaded_options = None
   _globals['DESCRIPTOR']._serialized_options = b'Z\030MMaxaMM.video.v1;videov1'
   _globals['_VIDEOREQUEST']._serialized_start=22
-  _globals['_VIDEOREQUEST']._serialized_end=54
-  _globals['_VIDEORESPONSE']._serialized_start=56
-  _globals['_VIDEORESPONSE']._serialized_end=89
-  _globals['_VIDEOSERVICE']._serialized_start=91
-  _globals['_VIDEOSERVICE']._serialized_end=158
+  _globals['_VIDEOREQUEST']._serialized_end=49
+  _globals['_VIDEORESPONSE']._serialized_start=51
+  _globals['_VIDEORESPONSE']._serialized_end=86
+  _globals['_VIDEOSERVICE']._serialized_start=88
+  _globals['_VIDEOSERVICE']._serialized_end=155
 # @@protoc_insertion_point(module_scope)

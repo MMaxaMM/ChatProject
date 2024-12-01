@@ -32,6 +32,10 @@ type Chat interface {
 	SendMessage(c *gin.Context)
 }
 
+type RAG interface {
+	SendMessageRAG(c *gin.Context)
+}
+
 type Audio interface {
 	Recognize(c *gin.Context)
 }
@@ -45,6 +49,7 @@ type Handler struct {
 	Middleware
 	Control
 	Chat
+	RAG
 	Audio
 	Video
 }
@@ -55,6 +60,7 @@ func NewHandler(service *service.Service, log *slog.Logger) *Handler {
 		Middleware: NewMiddlewareHandler(service, log),
 		Control:    NewControlHandler(service, log),
 		Chat:       NewChatHandler(service, log),
+		RAG:        NewRAGHandler(service, log),
 		Audio:      NewAudioHandler(service, log),
 		Video:      NewVideoHandler(service, log),
 	}
@@ -91,6 +97,15 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		chat.POST("/message", h.SendMessage)
 	}
 
+	rag := router.Group(
+		"/rag",
+		h.AccessControl,
+		h.UserIdentity,
+	)
+	{
+		rag.POST("/message", h.SendMessageRAG)
+	}
+
 	audio := router.Group(
 		"/audio",
 		h.AccessControl,
@@ -108,8 +123,6 @@ func (h *Handler) InitRoutes() *gin.Engine {
 	{
 		video.POST("/detect", h.Detect)
 	}
-
-	// TODO: rag
 
 	return router
 }

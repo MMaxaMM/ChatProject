@@ -14,6 +14,7 @@ type Config struct {
 	HTTPServer  HTTPServer `yaml:"http_server"`
 	Database    Database   `yaml:"database"`
 	LLM         LLM        `yaml:"llm"`
+	RAG         RAG        `yaml:"rag"`
 	Minio       Minio      `yaml:"minio"`
 	Audio       Audio      `yaml:"audio"`
 	Video       Video      `yaml:"video"`
@@ -36,6 +37,10 @@ type LLM struct {
 	Address      string `yaml:"address"`
 	HistoryLimit int    `yaml:"history_limit"`
 	MaxTokens    uint32 `yaml:"max_tokens"`
+}
+
+type RAG struct {
+	Address string `yaml:"address"`
 }
 
 type Audio struct {

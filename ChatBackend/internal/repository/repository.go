@@ -18,11 +18,16 @@ type Control interface {
 		visibleOnly bool,
 		limit int,
 	) ([]models.Message, error)
-	SaveMessage(userId int64, chatId int64, message *models.Message) error
+	SaveMessage(
+		userId int64,
+		chatId int64,
+		role string,
+		content string,
+		contentType models.ContentType,
+	) error
 	DeleteChat(userId int64, chatId int64) error
 	CreateChat(userId int64, chatType models.ChatType) (int64, error)
 	GetStart(userId int64) ([]models.ChatPreview, error)
-	GetURI(content string) string
 }
 
 type Repository struct {
