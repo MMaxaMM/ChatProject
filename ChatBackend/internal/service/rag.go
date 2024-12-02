@@ -2,7 +2,7 @@ package service
 
 import (
 	"chat"
-	llmv1 "chat/gen/llm"
+	ragv1 "chat/gen/rag"
 	"chat/internal/config"
 	"chat/internal/models"
 	"chat/internal/repository"
@@ -13,33 +13,20 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-var HistoryLimit int
-var MaxTokens uint32
-
-type ChatService struct {
-	cfg config.LLM
+type RAGService struct {
+	cfg config.RAG
 	rep *repository.Repository
 }
 
-func NewChatService(cfg config.LLM, rep *repository.Repository) *ChatService {
-	HistoryLimit = cfg.HistoryLimit
-	MaxTokens = cfg.MaxTokens
-
-	return &ChatService{cfg: cfg, rep: rep}
+func NewRAGService(cfg config.RAG, rep *repository.Repository) *RAGService {
+	return &RAGService{cfg: cfg, rep: rep}
 }
 
-func (s *ChatService) SendMessage(request *models.ChatRequest) (*models.ChatResponse, error) {
-	const op = "service.SendMessage"
+func (s *RAGService) SendMessageRAG(request *models.RAGRequest) (*models.RAGResponse, error) {
+	const op = "service.SendMessageRAG"
 
 	userId := request.UserId
 	chatId := request.ChatId
-
-	messages, err := s.rep.GetHistory(userId, chatId, false, HistoryLimit)
-	if err != nil {
-		return nil, fmt.Errorf("%s: %w", op, err)
-	}
-	request.Role = models.RoleUser
-	messages = append(messages, request.Message)
 
 	conn, err := grpc.NewClient(
 		s.cfg.Address,
@@ -50,25 +37,22 @@ func (s *ChatService) SendMessage(request *models.ChatRequest) (*models.ChatResp
 	}
 	defer conn.Close()
 
-	client := llmv1.NewLLMServiceClient(conn)
+	client := ragv1.NewRAGServiceClient(conn)
 
-	llmMessages := make([]*llmv1.Message, len(messages))
-	for idx, message := range messages {
-		llmMessages[idx] = &llmv1.Message{Role: message.Role, Content: message.Content}
-	}
-
-	llmRequest := &llmv1.LLMRequest{Messages: llmMessages, MaxTokens: MaxTokens}
-	llmResponse, err := client.Generate(context.Background(), llmRequest)
+	RAGResponse, err := client.Generate(
+		context.Background(),
+		&ragv1.RAGRequest{Content: request.Content},
+	)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w: %w", op, chat.ErrServiceNotAvailable, err)
 	}
 
-	response := &models.ChatResponse{
+	response := &models.RAGResponse{
 		UserId: userId,
 		ChatId: chatId,
 		Message: models.Message{
 			Role:        models.RoleAssistant,
-			Content:     llmResponse.Content,
+			Content:     RAGResponse.Content,
 			ContentType: models.TextType,
 		},
 	}
@@ -90,7 +74,7 @@ func (s *ChatService) SendMessage(request *models.ChatRequest) (*models.ChatResp
 		userId,
 		chatId,
 		models.RoleAssistant,
-		llmResponse.Content,
+		RAGResponse.Content,
 		models.TextType,
 	)
 	if err != nil {

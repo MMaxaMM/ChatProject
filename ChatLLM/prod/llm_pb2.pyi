@@ -22,7 +22,7 @@ class LLMRequest(_message.Message):
     def __init__(self, messages: _Optional[_Iterable[_Union[Message, _Mapping]]] = ..., max_tokens: _Optional[int] = ...) -> None: ...
 
 class LLMResponse(_message.Message):
-    __slots__ = ("message",)
-    MESSAGE_FIELD_NUMBER: _ClassVar[int]
-    message: Message
-    def __init__(self, message: _Optional[_Union[Message, _Mapping]] = ...) -> None: ...
+    __slots__ = ("content",)
+    CONTENT_FIELD_NUMBER: _ClassVar[int]
+    content: str
+    def __init__(self, content: _Optional[str] = ...) -> None: ...

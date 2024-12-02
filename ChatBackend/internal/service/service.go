@@ -26,6 +26,10 @@ type Chat interface {
 	SendMessage(request *models.ChatRequest) (*models.ChatResponse, error)
 }
 
+type RAG interface {
+	SendMessageRAG(request *models.RAGRequest) (*models.RAGResponse, error)
+}
+
 type Audio interface {
 	Recognize(request *models.AudioRequest) (*models.AudioResponse, error)
 }
@@ -39,6 +43,7 @@ type Service struct {
 	Middleware
 	Control
 	Chat
+	RAG
 	Audio
 	Video
 }
@@ -52,6 +57,7 @@ func NewService(
 		Middleware: NewMiddlewareService(),
 		Control:    NewControlService(rep),
 		Chat:       NewChatService(cfg.LLM, rep),
+		RAG:        NewRAGService(cfg.RAG, rep),
 		Audio:      NewAudioService(cfg.Audio, rep),
 		Video:      NewVideoService(cfg.Video, rep),
 	}

@@ -8,6 +8,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"log/slog"
 	"sort"
 	"strings"
 	"time"
@@ -99,10 +100,6 @@ func (r *ControlPostgres) GetStart(userId int64) ([]models.ChatPreview, error) {
 			}
 		}
 
-		if chatPreview.ContentType == models.AudioType || chatPreview.ContentType == models.VideoType {
-			chatPreview.Content = r.GetURI(chatPreview.Content)
-		}
-
 		chatPreviewSlice[idx] = *chatPreview
 	}
 
@@ -136,27 +133,40 @@ func (r *ControlPostgres) GetHistory(
 	}
 
 	for idx, message := range messages {
-		if message.ContentType == models.AudioType || message.ContentType == models.VideoType {
-			messages[idx].Content = r.GetURI(messages[idx].Content)
+		if message.ContentType == models.AudioType {
+			URI, err := minioclient.GetURI(minioclient.AudioBucketName, messages[idx].Content)
+			if err != nil {
+				logger.Logger.Warn("Failed to generate URI", slog.String("filename", messages[idx].Content))
+			}
+			messages[idx].Content = URI
+		}
+		if message.ContentType == models.VideoType {
+			URI, err := minioclient.GetURI(minioclient.VideoBucketName, messages[idx].Content)
+			if err != nil {
+				logger.Logger.Warn("Failed to generate URI", slog.String("filename", messages[idx].Content))
+			}
+			messages[idx].Content = URI
 		}
 	}
 
 	return messages, nil
 }
 
-func (r *ControlPostgres) SaveMessage(userId int64, chatId int64, message *models.Message) error {
+func (r *ControlPostgres) SaveMessage(
+	userId int64,
+	chatId int64,
+	role string,
+	content string,
+	contentType models.ContentType,
+) error {
 	const op = "repository.SaveChatItem"
 
 	query := fmt.Sprintf("INSERT INTO %s (user_id, chat_id, date, role, content, content_type) values ($1, $2, $3, $4, $5, $6)", messagesTable)
 
-	_, err := r.db.Exec(query, userId, chatId, time.Now(), message.Role, message.Content, message.ContentType)
+	_, err := r.db.Exec(query, userId, chatId, time.Now(), role, content, contentType)
 	if err != nil {
 		return fmt.Errorf("%s: %w", op, PostgresNewError(err))
 	}
 
 	return nil
-}
-
-func (r *ControlPostgres) GetURI(filepath string) string {
-	return fmt.Sprintf("http://%s/%s", r.filestorage, filepath)
 }

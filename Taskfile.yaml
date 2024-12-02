@@ -20,3 +20,8 @@ tasks:
       - python3 -m grpc_tools.protoc -I ./protos/ ./protos/video.proto --python_out=./ChatVideo/dev --grpc_python_out=./ChatVideo/dev --pyi_out=./ChatVideo/dev
       - python3 -m grpc_tools.protoc -I ./protos/ ./protos/video.proto --python_out=./ChatVideo/prod --grpc_python_out=./ChatVideo/prod --pyi_out=./ChatVideo/prod
       - protoc -I ./protos/ ./protos/video.proto --go_out=./ChatBackend/gen/video --go_opt=paths=source_relative --go-grpc_out=./ChatBackend/gen/video --go-grpc_opt=paths=source_relative
+  generate-rag:
+    cmds:
+      - python3 -m grpc_tools.protoc -I ./protos/ ./protos/rag.proto --python_out=./ChatRAG/dev --grpc_python_out=./ChatRAG/dev --pyi_out=./ChatRAG/dev
+      - python3 -m grpc_tools.protoc -I ./protos/ ./protos/rag.proto --python_out=./ChatRAG/prod --grpc_python_out=./ChatRAG/prod --pyi_out=./ChatRAG/prod
+      - protoc -I ./protos/ ./protos/rag.proto --go_out=./ChatBackend/gen/rag --go_opt=paths=source_relative --go-grpc_out=./ChatBackend/gen/rag --go-grpc_opt=paths=source_relative

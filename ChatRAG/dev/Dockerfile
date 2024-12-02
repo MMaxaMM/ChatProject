@@ -4,7 +4,7 @@ RUN apt-get update
 RUN apt-get -y install python3-pip
 RUN apt-get -y install nano
 
-WORKDIR /audio
+WORKDIR /rag
 COPY . .
 RUN pip3 install --no-cache-dir -r requirements.txt
 

@@ -9,9 +9,9 @@ service AudioService {
 }
 
 message AudioRequest {
-    string filepath = 1;
+    string URI = 1;
 }
 
 message AudioResponse {
-    string result = 1;
+    string content = 1;
 }

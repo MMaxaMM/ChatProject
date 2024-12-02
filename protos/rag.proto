@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package rag;
+
+option go_package = "MMaxaMM.rag.v1;ragv1";
+
+service RAGService {
+    rpc Generate (RAGRequest) returns (RAGResponse);
+}
+
+message RAGRequest {
+    string content = 1;
+}
+
+message RAGResponse {
+    string content = 1;
+}
