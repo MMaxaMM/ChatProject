@@ -29,9 +29,7 @@ export const Chat: FC = () => {
   const currentChatType = currentChat?.chat_type
     ? currentChat.chat_type
     : ChatType.typeChat;
-  console.log(currentChatType);
   const cT = useSelector(getCurrentChatType);
-  console.log(cT);
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [index, setIndex] = useState(parseInt(params.id ? params.id : '-1'));
   const navigate = useNavigate();
@@ -56,19 +54,19 @@ export const Chat: FC = () => {
 
   useEffect(() => {
     dispatch(getChats());
-    if (currentChat) {
+    if (currentChatId !== -1 && currentChat) {
       setIndex(currentChat.chat_id);
       dispatch(setChatType(currentChat.chat_type));
     }
   }, [currentChatId, currentChatType]);
-  console.log(currentChatId);
+  console.log(currentChat);
 
   useEffect(() => {
+    dispatch(getChatHistory(index));
     if (index !== -1) {
       navigate(`/chat/${index}`);
       dispatch(setChatId(index));
       dispatch(setChatType(currentChatType));
-      dispatch(getChatHistory(index));
     }
   }, [index]);
 
@@ -76,7 +74,8 @@ export const Chat: FC = () => {
     const data: TMessage = {
       role: 'user',
       content: message,
-      isNew: false
+      isNew: false,
+      content_type: 1
     };
     if (currentChatId === -1) {
       dispatch(createChat(ChatType.typeChat));
@@ -94,10 +93,19 @@ export const Chat: FC = () => {
       chat_id: currentChatId,
       formData: formData
     };
+    const data: TMessage = {
+      role: 'user',
+      content: URL.createObjectURL(file),
+      isNew: false,
+      content_type: 2
+    };
+    console.log(formData.get('audio'));
+    dispatch(sendMessage({ chat_id: currentChatId, message: data }));
     dispatch(postAudio(query));
   };
   const chats: TChat[] = useSelector(getStoreChats);
-  console.log(chats);
+  console.log(index);
+  console.log(currentChat?.messages);
   return (
     <>
       <ChatList

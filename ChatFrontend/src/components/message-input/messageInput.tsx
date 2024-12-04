@@ -10,6 +10,7 @@ import { TMessageInputProps, MultiRefHandle } from './type';
 import { MessageInputUI } from '@ui';
 import { useSelector } from '@store';
 import { getCurrentChatType, getProgress } from '@slices';
+import { ChatType } from '@utils-types';
 
 export const MessageInput: FC<TMessageInputProps> = ({
   onSendMessage,
@@ -66,7 +67,10 @@ export const MessageInput: FC<TMessageInputProps> = ({
     if (selectedFile) {
       onSendFile(selectedFile);
     }
+    setSelectedFile(null); // Очистка после отправки
   };
+  const onSend = chatType === ChatType.typeChat ? handleSend : handleUpload;
+
   return (
     <MessageInputUI
       ref={multiRef}
@@ -76,7 +80,7 @@ export const MessageInput: FC<TMessageInputProps> = ({
       message={message}
       handleChange={handleChange}
       handleKeyDown={handleKeyDown}
-      handleSend={handleUpload}
+      handleSend={onSend}
       handleClickFile={handleClick}
       handleFileChange={handleFileChange}
     />

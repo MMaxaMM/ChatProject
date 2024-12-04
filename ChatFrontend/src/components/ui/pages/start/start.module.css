@@ -41,6 +41,7 @@
   flex-direction: column;
   align-items: center;
   width: 100%;
+  row-gap: 20px;
 }
 
 .logo {
@@ -56,6 +57,7 @@
   font-weight: 600;
   line-height: 36px;
   color: rgb(236, 236,236);
+  margin-bottom: 20px;
 }
 
 .message_input {

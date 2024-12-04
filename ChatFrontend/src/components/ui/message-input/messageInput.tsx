@@ -44,14 +44,7 @@ export const MessageInputUI = forwardRef<MultiRefHandle, TMessageInputProps>(
             ChatType.typeAudio !== chatType && ChatType.typeVideo !== chatType
           }
         />
-        {progress !== null ? (
-          <div className={styles.progress}>
-            <progress value={progress} max='100' />
-            <span className={styles.progress_message}>{progress}%</span>
-          </div>
-        ) : (
-          <span className={styles.progress_message}>{selectedFile?.name}</span>
-        )}
+        <span className={styles.progress_message}>{selectedFile?.name}</span>
         {chatType === ChatType.typeChat && (
           <textarea
             ref={textRef}

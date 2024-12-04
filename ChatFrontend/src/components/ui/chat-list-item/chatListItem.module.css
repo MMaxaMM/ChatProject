@@ -7,6 +7,11 @@
 }
 
 .chat_list_item__title {
+  display: inline-block;
+  max-height: 20px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   color: #ececee;
   cursor: pointer;
   font-size: 14px;

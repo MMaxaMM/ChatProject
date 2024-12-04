@@ -2,6 +2,7 @@ export type TMessage = {
   role: string;
   content: string;
   isNew: boolean;
+  content_type: number;
 };
 
 export type TChat = {

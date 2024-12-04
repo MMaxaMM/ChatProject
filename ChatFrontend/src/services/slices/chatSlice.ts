@@ -134,8 +134,9 @@ const chatSlice = createSlice({
         state.chatRequest = false;
         state.chats = action.payload.chats;
         state.chats.map((chat) => {
-          chat.content = chat.messages ? chat.messages[0].content : 'Новый чат';
+          chat.content = chat.content ? chat.content : 'Новый чат';
           chat.chat_type = getChatTypeByIndex(parseInt(chat.chat_type));
+          chat.messages = chat.messages?.length ? chat.messages : [];
         });
       })
 
@@ -179,7 +180,8 @@ const chatSlice = createSlice({
             const message: TMessage = {
               role: action.payload.message.role,
               content: action.payload.message.content,
-              isNew: true
+              isNew: true,
+              content_type: 1
             };
             chat.messages.push(message);
           }
@@ -204,8 +206,19 @@ const chatSlice = createSlice({
       .addCase(postAudio.rejected, (state, action) => {
         state.error = action.payload as string;
       })
-      .addCase(postAudio.fulfilled, (state) => {
+      .addCase(postAudio.fulfilled, (state, action) => {
         state.progress = 100;
+        state.chats.map((chat) => {
+          if (chat.chat_id === action.payload.chat_id) {
+            const message: TMessage = {
+              role: action.payload.message.role,
+              content: action.payload.message.content,
+              isNew: true,
+              content_type: 1
+            };
+            chat.messages.push(message);
+          }
+        });
       });
   }
 });
