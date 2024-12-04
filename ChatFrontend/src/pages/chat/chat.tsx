@@ -15,7 +15,8 @@ import {
   getChatHistory,
   postAudio,
   setChatType,
-  getCurrentChatType
+  getCurrentChatType,
+  postVideo
 } from '@slices';
 import { useParams, useNavigate } from 'react-router-dom';
 
@@ -54,13 +55,16 @@ export const Chat: FC = () => {
 
   useEffect(() => {
     dispatch(getChats());
+  }, []);
+
+  useEffect(() => {
     if (currentChatId !== -1 && currentChat) {
       setIndex(currentChat.chat_id);
       dispatch(setChatType(currentChat.chat_type));
     }
-  }, [currentChatId, currentChatType]);
+  }, [currentChatId, currentChat]);
+  console.log(currentChatId);
   console.log(currentChat);
-
   useEffect(() => {
     dispatch(getChatHistory(index));
     if (index !== -1) {
@@ -88,7 +92,11 @@ export const Chat: FC = () => {
 
   const onSendFile = (file: File) => {
     const formData = new FormData();
-    formData.append('audio', file);
+    if (currentChatType === ChatType.typeAudio) {
+      formData.append('audio', file);
+    } else {
+      formData.append('video', file);
+    }
     const query = {
       chat_id: currentChatId,
       formData: formData
@@ -97,15 +105,14 @@ export const Chat: FC = () => {
       role: 'user',
       content: URL.createObjectURL(file),
       isNew: false,
-      content_type: 2
+      content_type: currentChatType === ChatType.typeAudio ? 2 : 3
     };
-    console.log(formData.get('audio'));
     dispatch(sendMessage({ chat_id: currentChatId, message: data }));
-    dispatch(postAudio(query));
+    currentChatType === ChatType.typeAudio
+      ? dispatch(postAudio(query))
+      : dispatch(postVideo(query));
   };
   const chats: TChat[] = useSelector(getStoreChats);
-  console.log(index);
-  console.log(currentChat?.messages);
   return (
     <>
       <ChatList

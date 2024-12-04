@@ -110,6 +110,22 @@ export const postAudioApi = (
     onProgress
   ).then((res) => checkResponse<TPostMessageResponse>(res));
 
+export const postVideoApi = (
+  data: TPostAudioRequest,
+  onProgress: (progress: number) => void
+) =>
+  fetchWithProgress(
+    `${URL}/video/recognize?chat_id=${data.chat_id}`,
+    {
+      method: 'POST',
+      headers: {
+        authorization: `Bearer ${getCookie('accessToken')}`
+      } as HeadersInit,
+      body: data.formData
+    },
+    onProgress
+  ).then((res) => checkResponse<TPostMessageResponse>(res));
+
 type TAuthResponse = {
   token: string;
 };

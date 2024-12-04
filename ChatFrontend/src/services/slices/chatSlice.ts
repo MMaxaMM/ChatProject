@@ -20,7 +20,8 @@ import {
   deleteChaTRequest,
   deleteChatApi,
   TPostAudioRequest,
-  postAudioApi
+  postAudioApi,
+  postVideoApi
 } from '@api';
 
 export type ChatState = {
@@ -48,8 +49,9 @@ export const getChats = createAsyncThunk('chat/start', async () => {
 
 export const createChat = createAsyncThunk(
   'chat/createChat',
-  async (chatType: ChatType) => {
+  async (chatType: ChatType, { dispatch }) => {
     const ans = await createChatApi(chatType);
+    dispatch(getChats());
     return ans;
   }
 );
@@ -74,6 +76,17 @@ export const postAudio = createAsyncThunk(
   'chat/postAudio',
   async (data: TPostAudioRequest, { dispatch }) => {
     const ans = await postAudioApi(data, (progress) => {
+      // Обновляем прогресс через дополнительный экшен
+      dispatch(setProgress(progress));
+    });
+    return ans;
+  }
+);
+
+export const postVideo = createAsyncThunk(
+  'chat/postVideo',
+  async (data: TPostAudioRequest, { dispatch }) => {
+    const ans = await postVideoApi(data, (progress) => {
       // Обновляем прогресс через дополнительный экшен
       dispatch(setProgress(progress));
     });
@@ -215,6 +228,28 @@ const chatSlice = createSlice({
               content: action.payload.message.content,
               isNew: true,
               content_type: 1
+            };
+            chat.messages.push(message);
+          }
+        });
+      })
+
+      .addCase(postVideo.pending, (state) => {
+        state.progress = 0;
+        state.error = null;
+      })
+      .addCase(postVideo.rejected, (state, action) => {
+        state.error = action.payload as string;
+      })
+      .addCase(postVideo.fulfilled, (state, action) => {
+        state.progress = 100;
+        state.chats.map((chat) => {
+          if (chat.chat_id === action.payload.chat_id) {
+            const message: TMessage = {
+              role: action.payload.message.role,
+              content: action.payload.message.content,
+              isNew: true,
+              content_type: 3
             };
             chat.messages.push(message);
           }

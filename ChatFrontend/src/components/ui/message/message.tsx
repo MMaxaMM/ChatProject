@@ -38,6 +38,12 @@ export const MessageUI: FC<TMessageUIProps> = ({ message }) => {
           Ваш браузер не поддерживает элемент <code>audio</code>.
         </audio>
       )}
+      {message.content_type === 3 && (
+        <video controls>
+          <source src={message.content} type='video/mp4' />
+          Ваш браузер не поддерживает элемент <code>video</code>.
+        </video>
+      )}
     </li>
   );
 };

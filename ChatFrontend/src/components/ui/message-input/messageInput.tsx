@@ -31,7 +31,7 @@ export const MessageInputUI = forwardRef<MultiRefHandle, TMessageInputProps>(
       <div className={styles.message_input}>
         <input
           type='file'
-          accept='audio/*'
+          accept='audio/*,video/*'
           ref={fileRef}
           className={styles.file_input} // Скрываем стандартный input
           onChange={handleFileChange}

@@ -25,13 +25,6 @@ export const MessageInput: FC<TMessageInputProps> = ({
     setMessage(event.target.value);
   };
 
-  const handleKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
-    if (event.key === 'Enter' && !event.shiftKey) {
-      event.preventDefault(); // Отключаем перенос строки на Enter
-      handleSend();
-    }
-  };
-
   const handleSend = () => {
     if (message.trim()) {
       // Проверка на пустой ввод
@@ -70,6 +63,12 @@ export const MessageInput: FC<TMessageInputProps> = ({
     setSelectedFile(null); // Очистка после отправки
   };
   const onSend = chatType === ChatType.typeChat ? handleSend : handleUpload;
+  const handleKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault(); // Отключаем перенос строки на Enter
+      onSend();
+    }
+  };
 
   return (
     <MessageInputUI

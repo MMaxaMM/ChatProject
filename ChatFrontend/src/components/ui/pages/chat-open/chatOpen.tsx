@@ -1,5 +1,5 @@
 import styles from './chatOpen.module.css';
-import { FC } from 'react';
+import { FC, useEffect, useRef } from 'react';
 import closeIcon from '../../../../images/closeIcon.svg';
 import { TChatOpenUIProps } from './type';
 import clsx from 'clsx';
@@ -14,6 +14,10 @@ export const ChatOpenUI: FC<TChatOpenUIProps> = ({
   onSendFile
 }) => {
   const messages: TMessage[] = chat.messages;
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
   return (
     <div
       className={clsx(styles.main, {
@@ -37,6 +41,7 @@ export const ChatOpenUI: FC<TChatOpenUIProps> = ({
           {messages.map((message, index) => (
             <Message message={message} key={index} />
           ))}
+          <div ref={messagesEndRef} />
         </ul>
         <div className={styles.message_input_wrapper}>
           <MessageInput onSendMessage={onSendMessage} onSendFile={onSendFile} />
