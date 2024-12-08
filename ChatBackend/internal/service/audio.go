@@ -4,6 +4,7 @@ import (
 	"chat"
 	audiov1 "chat/gen/audio"
 	"chat/internal/config"
+	"chat/internal/lib/markdown"
 	minioclient "chat/internal/minio-client"
 	"chat/internal/models"
 	"chat/internal/repository"
@@ -73,7 +74,7 @@ func (s *AudioService) Recognize(request *models.AudioRequest) (*models.AudioRes
 		ChatId: chatId,
 		Message: models.Message{
 			Role:        models.RoleAssistant,
-			Content:     audioResponse.Content,
+			Content:     markdown.Prepare(audioResponse.Content),
 			ContentType: models.TextType,
 		},
 	}

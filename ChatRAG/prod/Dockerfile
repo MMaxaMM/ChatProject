@@ -6,9 +6,8 @@ RUN apt-get -y install python3
 RUN apt-get -y install python3-pip
 RUN apt-get -y install python-concurrent.futures
 RUN apt-get -y install nano
-RUN export DEBIAN_FRONTEND=noninteractive && apt-get -y install ffmpeg
 
-WORKDIR /audio
+WORKDIR /rag
 COPY . .
 RUN pip3 install --no-cache-dir -r requirements.txt
 

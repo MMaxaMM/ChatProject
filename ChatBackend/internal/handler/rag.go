@@ -54,7 +54,7 @@ func (h *RAGHandler) SendMessageRAG(c *gin.Context) {
 		}
 		if errors.Is(err, chat.ErrServiceNotAvailable) {
 			log.Error("RAG service not available", slogx.Error(err))
-			NewErrorResponse(c, http.StatusInternalServerError, MsgServiceNotAvailable)
+			NewErrorResponse(c, http.StatusServiceUnavailable, MsgServiceNotAvailable)
 			return
 		}
 		log.Error("Messaging error", slogx.Error(err))

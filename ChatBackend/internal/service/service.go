@@ -17,7 +17,7 @@ type Middleware interface {
 
 type Control interface {
 	CreateChat(request *models.CreateRequest) (*models.CreateResponse, error)
-	DeleteChat(request *models.DeleteRequest) error
+	DeleteChat(request *models.DeleteRequest) (*models.DeleteResponse, error)
 	GetStart(request *models.StartRequest) (*models.StartResponse, error)
 	GetHistory(request *models.HistoryRequest) (*models.HistoryResponse, error)
 }

@@ -4,6 +4,7 @@ import (
 	"chat"
 	llmv1 "chat/gen/llm"
 	"chat/internal/config"
+	"chat/internal/lib/markdown"
 	"chat/internal/models"
 	"chat/internal/repository"
 	"context"
@@ -31,6 +32,7 @@ func NewChatService(cfg config.LLM, rep *repository.Repository) *ChatService {
 func (s *ChatService) SendMessage(request *models.ChatRequest) (*models.ChatResponse, error) {
 	const op = "service.SendMessage"
 
+	request.Content = markdown.Prepare(request.Content)
 	userId := request.UserId
 	chatId := request.ChatId
 
@@ -68,7 +70,7 @@ func (s *ChatService) SendMessage(request *models.ChatRequest) (*models.ChatResp
 		ChatId: chatId,
 		Message: models.Message{
 			Role:        models.RoleAssistant,
-			Content:     llmResponse.Content,
+			Content:     markdown.Prepare(llmResponse.Content),
 			ContentType: models.TextType,
 		},
 	}

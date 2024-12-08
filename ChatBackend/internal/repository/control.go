@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"chat/internal/lib/slogx"
 	"chat/internal/logger"
 	minioclient "chat/internal/minio-client"
 	"chat/internal/models"
@@ -10,7 +9,6 @@ import (
 	"fmt"
 	"log/slog"
 	"sort"
-	"strings"
 	"time"
 
 	"github.com/jmoiron/sqlx"
@@ -42,29 +40,9 @@ func (r *ControlPostgres) CreateChat(userId int64, chatType models.ChatType) (in
 func (r *ControlPostgres) DeleteChat(userId int64, chatId int64) error {
 	const op = "repository.DeleteChat"
 
-	objectPaths := new([]string)
-	query := fmt.Sprintf("SELECT content FROM %s WHERE (user_id=$1 AND chat_id=$2) AND (content_type=%d OR content_type=%d)", messagesTable, models.AudioType, models.VideoType)
-	err := r.db.Select(objectPaths, query, userId, chatId)
-	if err != nil {
-		return fmt.Errorf("%s: %w", op, PostgresNewError(err))
-	}
-	go func() {
-		for _, objectPath := range *objectPaths {
-			bucketNameAndObjectName := strings.Split(objectPath, "/")
+	query := fmt.Sprintf("DELETE FROM %s WHERE id=$1 AND user_id=$2", chatsTable)
 
-			err = minioclient.DeleteObject(
-				bucketNameAndObjectName[0],
-				bucketNameAndObjectName[1],
-			)
-			if err != nil {
-				logger.Logger.Warn("Faild to delete file from storfge", slogx.Error(err))
-			}
-		}
-	}()
-
-	query = fmt.Sprintf("DELETE FROM %s WHERE id=$1 AND user_id=$2", chatsTable)
-
-	_, err = r.db.Exec(query, chatId, userId)
+	_, err := r.db.Exec(query, chatId, userId)
 	if err != nil {
 		return fmt.Errorf("%s: %w", op, PostgresNewError(err))
 	}
@@ -98,6 +76,16 @@ func (r *ControlPostgres) GetStart(userId int64) ([]models.ChatPreview, error) {
 			} else {
 				return nil, fmt.Errorf("%s: %w", op, PostgresNewError(err))
 			}
+		}
+
+		// Выбор репрезентативного Content
+		switch chatPreview.ContentType {
+		case models.EmptyType:
+			chatPreview.Content = models.EmptyTypePlug
+		case models.AudioType:
+			chatPreview.Content = models.AudioTypePlug
+		case models.VideoType:
+			chatPreview.Content = models.VideoTypePlug
 		}
 
 		chatPreviewSlice[idx] = *chatPreview

@@ -1,7 +1,6 @@
 from concurrent import futures
 import grpc
 from llm_pb2 import (
-    Message,
     LLMRequest,
     LLMResponse
 )
@@ -26,8 +25,8 @@ class LLMService(llm_grpc.LLMServiceServicer):
 
         # Ответ сервиса
         context.set_code(grpc.StatusCode.OK)
-        message = Message(role="assistant", content="Ответ ассистента...")
-        return LLMResponse(message=message)
+        content="Ответ ассистента..."
+        return LLMResponse(content=content)
     
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=MAX_WORKERS))

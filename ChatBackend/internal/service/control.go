@@ -31,15 +31,17 @@ func (s *ControlService) CreateChat(request *models.CreateRequest) (*models.Crea
 	return response, nil
 }
 
-func (s *ControlService) DeleteChat(request *models.DeleteRequest) error {
+func (s *ControlService) DeleteChat(request *models.DeleteRequest) (*models.DeleteResponse, error) {
 	const op = "service.DeleteChat"
 
 	err := s.rep.DeleteChat(request.UserId, request.ChatId)
 	if err != nil {
-		return fmt.Errorf("%s: %w", op, err)
+		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 
-	return nil
+	response := &models.DeleteResponse{UserId: request.UserId, ChatId: request.ChatId}
+
+	return response, nil
 }
 
 func (s *ControlService) GetStart(request *models.StartRequest) (*models.StartResponse, error) {

@@ -61,24 +61,6 @@ func MakeBucket(bucketName string) error {
 		}
 	}
 
-	policy := fmt.Sprintf(`{
-		"Version": "2012-10-17",
-		"Statement": [
-			{
-				"Action": ["s3:GetObject"],
-				"Effect": "Allow",
-				"Principal": {"AWS": ["*"]},
-				"Resource": ["arn:aws:s3:::%s/*"],
-				"Sid": ""
-			}
-		]
-	}`, bucketName)
-
-	err = Client.SetBucketPolicy(bucketName, policy)
-	if err != nil {
-		return fmt.Errorf("%s: %w", op, err)
-	}
-
 	return nil
 }
 

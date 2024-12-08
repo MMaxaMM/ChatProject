@@ -4,6 +4,7 @@ import (
 	"chat"
 	ragv1 "chat/gen/rag"
 	"chat/internal/config"
+	"chat/internal/lib/markdown"
 	"chat/internal/models"
 	"chat/internal/repository"
 	"context"
@@ -25,6 +26,7 @@ func NewRAGService(cfg config.RAG, rep *repository.Repository) *RAGService {
 func (s *RAGService) SendMessageRAG(request *models.RAGRequest) (*models.RAGResponse, error) {
 	const op = "service.SendMessageRAG"
 
+	request.Content = markdown.Prepare(request.Content)
 	userId := request.UserId
 	chatId := request.ChatId
 
@@ -52,7 +54,7 @@ func (s *RAGService) SendMessageRAG(request *models.RAGRequest) (*models.RAGResp
 		ChatId: chatId,
 		Message: models.Message{
 			Role:        models.RoleAssistant,
-			Content:     RAGResponse.Content,
+			Content:     markdown.Prepare(RAGResponse.Content),
 			ContentType: models.TextType,
 		},
 	}

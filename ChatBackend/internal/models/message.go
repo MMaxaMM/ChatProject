@@ -9,10 +9,16 @@ const (
 type ContentType int
 
 const (
-	Empty     ContentType = 0
+	EmptyType ContentType = 0
 	TextType  ContentType = 1
 	AudioType ContentType = 2
 	VideoType ContentType = 3
+)
+
+const (
+	EmptyTypePlug = "Новый чат"
+	AudioTypePlug = "**Аудио**"
+	VideoTypePlug = "**Видео**"
 )
 
 type Message struct {

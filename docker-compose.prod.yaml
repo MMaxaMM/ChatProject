@@ -2,28 +2,65 @@ version: "3.9"
 
 services:
 
-  llm_server:
-    build:
-      context: ./LLMServerDev
-      dockerfile: Dockerfile
-    image: llm_server
-    container_name: llm_server
+  audio:
+    image: audio:latest
+    container_name: audio
     expose:
-      - 5000
+      - 50200
+    volumes:
+      - audio:/audio/audio #<---
+    environment:
+      - CONFIG_PATH=/audio/audio/config.yaml
+    restart: unless-stopped
+    networks:
+      - chatnetwork
+
+  video:
+    image: video:latest
+    container_name: video
+    expose:
+      - 50300
+    volumes:
+      - video:/video/video #<---
+    environment:
+      - MINIO_USER=minio
+      - MINIO_PASSWORD=11111111
+      - CONFIG_PATH=/video/video/config.yaml
+    restart: unless-stopped
+    networks:
+      - chatnetwork
+
+  rag:
+    image: rag:latest
+    container_name: rag
+    expose:
+      - 50400
+    volumes:
+      - rag:/rag/rag #<---
+    environment:
+      - CONFIG_PATH=/rag/rag/config.yaml
+    restart: unless-stopped
+    networks:
+    - chatnetwork
+
+  frontend: #<---
+    image: frontend:latest
+    container_name: frontend 
+    ports:
+      - "8080:8080" #<---
     restart: unless-stopped
     networks:
       - chatnetwork
 
   backend:
-    build:
-      context: ./ChatBackend
-      dockerfile: Dockerfile
-    image: backend
+    image: backend:latest
     container_name: backend
     volumes:
-      - ./config:/config
-    ports:
-      - "5050:5050"
+      - config:/config #<---
+    expose:
+      - 5050
+    environment:
+      - CONFIG_PATH=/config/backend.config.prod.yml
     restart: unless-stopped
     networks:
       - chatnetwork
@@ -36,11 +73,25 @@ services:
       POSTGRES_PASSWORD: postgres
       PGDATA: "/var/lib/postgresql/data/pgdata"
     volumes:
-      - ./ChatDatabase/pg-init:/docker-entrypoint-initdb.d
-      - ./ChatDatabase/pg-conf/postgresql.conf:/etc/postgresql.conf
-      - ./ChatDatabase/pg-conf/pg_hba.conf:/etc/pg_hba.conf
+      - pg-init:/docker-entrypoint-initdb.d #<---
+      - pg-conf/postgresql.conf:/etc/postgresql.conf #<---
+      - pg-conf/pg_hba.conf:/etc/pg_hba.conf #<---
     expose:
       - 5432
+    restart: unless-stopped
+    networks:
+      - chatnetwork
+
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    command: server --console-address ":9001" /data/
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: minio
+      MINIO_ROOT_PASSWORD: 11111111
     restart: unless-stopped
     networks:
       - chatnetwork
