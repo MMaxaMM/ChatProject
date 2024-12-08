@@ -19,6 +19,7 @@ import {
   postVideo
 } from '@slices';
 import { useParams, useNavigate } from 'react-router-dom';
+import { TPostMessageRequest } from '@api';
 
 export const Chat: FC = () => {
   const params = useParams();
@@ -62,32 +63,35 @@ export const Chat: FC = () => {
       setIndex(currentChat.chat_id);
       dispatch(setChatType(currentChat.chat_type));
     }
-  }, [currentChatId, currentChat]);
-  console.log(currentChatId);
-  console.log(currentChat);
+  }, [currentChatId]);
+
   useEffect(() => {
-    dispatch(getChatHistory(index));
     if (index !== -1) {
+      dispatch(getChatHistory(index));
       navigate(`/chat/${index}`);
       dispatch(setChatId(index));
       dispatch(setChatType(currentChatType));
     }
   }, [index]);
 
-  const onSendMessage = (message: string) => {
+  const onSendMessage = async (message: string) => {
     const data: TMessage = {
       role: 'user',
       content: message,
       isNew: false,
       content_type: 1
     };
+
     if (currentChatId === -1) {
-      dispatch(createChat(ChatType.typeChat));
+      const res = await dispatch(createChat(ChatType.typeChat)).unwrap();
+      const query = { chat_id: res.chat_id, message: data };
+      dispatch(sendMessage(query));
+      await dispatch(postMessage(query));
+    } else {
+      const query = { chat_id: currentChatId, message: data };
+      dispatch(sendMessage(query));
+      await dispatch(postMessage(query));
     }
-    const query = { chat_id: currentChatId, message: data };
-    navigate(`/chat/${currentChatId}`);
-    dispatch(sendMessage(query));
-    dispatch(postMessage(query));
   };
 
   const onSendFile = (file: File) => {
@@ -112,11 +116,9 @@ export const Chat: FC = () => {
       ? dispatch(postAudio(query))
       : dispatch(postVideo(query));
   };
-  const chats: TChat[] = useSelector(getStoreChats);
   return (
     <>
       <ChatList
-        chats={chats}
         isOpenModal={isOpenModal}
         onCloseModal={onCloseModal}
         isOpen={isOpen}

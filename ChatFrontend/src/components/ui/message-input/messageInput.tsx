@@ -44,8 +44,7 @@ export const MessageInputUI = forwardRef<MultiRefHandle, TMessageInputProps>(
             ChatType.typeAudio !== chatType && ChatType.typeVideo !== chatType
           }
         />
-        <span className={styles.progress_message}>{selectedFile?.name}</span>
-        {chatType === ChatType.typeChat && (
+        {chatType === ChatType.typeChat ? (
           <textarea
             ref={textRef}
             value={message}
@@ -55,6 +54,8 @@ export const MessageInputUI = forwardRef<MultiRefHandle, TMessageInputProps>(
             rows={1}
             className={styles.message_input__text}
           />
+        ) : (
+          <span className={styles.progress_message}>{selectedFile?.name}</span>
         )}
         <button
           onClick={handleSend}

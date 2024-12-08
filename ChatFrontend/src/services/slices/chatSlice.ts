@@ -51,7 +51,7 @@ export const createChat = createAsyncThunk(
   'chat/createChat',
   async (chatType: ChatType, { dispatch }) => {
     const ans = await createChatApi(chatType);
-    dispatch(getChats());
+    dispatch(createChatStore({ chatId: ans.chat_id, chatType: chatType }));
     return ans;
   }
 );
@@ -66,8 +66,9 @@ export const postMessage = createAsyncThunk(
 
 export const deleteChat = createAsyncThunk(
   'chat/deleteChat',
-  async (data: deleteChaTRequest) => {
+  async (data: deleteChaTRequest, { dispatch }) => {
     const ans = await deleteChatApi(data);
+    dispatch(getChats());
     return ans;
   }
 );
@@ -112,11 +113,29 @@ const chatSlice = createSlice({
       state,
       action: PayloadAction<{ chat_id: number; message: TMessage }>
     ) => {
+      console.log('message local');
       state.chats.map((chat) => {
         if (chat.chat_id === action.payload.chat_id) {
           chat.messages.push(action.payload.message);
+          console.log('message local paste');
         }
       });
+    },
+    createChatStore: (
+      state,
+      action: PayloadAction<{ chatId: number; chatType: ChatType }>
+    ) => {
+      console.log('local chat');
+      state.currentChatId = action.payload.chatId;
+      const chat: TChat = {
+        user_id: state.userId ? state.userId : 0,
+        chat_id: action.payload.chatId,
+        chat_type: action.payload.chatType,
+        date: new Date().toISOString(),
+        content: 'Новый чат',
+        messages: []
+      };
+      state.chats.push(chat);
     },
     setProgress(state, action) {
       state.progress = action.payload;
@@ -163,7 +182,10 @@ const chatSlice = createSlice({
         state.chatRequest = false;
         state.chats.map((chat) => {
           if (chat.chat_id === action.payload.chat_id) {
-            chat.messages = action.payload.messages;
+            chat.messages =
+              chat.messages.length > action.payload.messages.length
+                ? chat.messages
+                : action.payload.messages;
           }
         });
       })
@@ -176,7 +198,6 @@ const chatSlice = createSlice({
       })
       .addCase(createChat.fulfilled, (state, action) => {
         state.chatRequest = false;
-        state.currentChatId = action.payload.chat_id;
         state.currentChatType = getChatTypeByIndex(action.payload.chat_type);
       })
 
@@ -264,8 +285,13 @@ export const {
   getCurrentChatType,
   getProgress
 } = chatSlice.selectors;
-export const { sendMessage, setChatId, setProgress, setChatType } =
-  chatSlice.actions;
+export const {
+  sendMessage,
+  setChatId,
+  setProgress,
+  setChatType,
+  createChatStore
+} = chatSlice.actions;
 export const chatReducer = chatSlice.reducer;
 export const selectChatById = createSelector(
   [getStoreChats, (_, chatId) => chatId], // Аргументы

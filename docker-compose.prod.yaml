@@ -2,14 +2,24 @@ version: "3.9"
 
 services:
 
-  llm_server:
-    build:
-      context: ./LLMServerDev
-      dockerfile: Dockerfile
-    image: llm_server
-    container_name: llm_server
+  audio:
+    image: audio
+    container_name: audio
     expose:
-      - 5000
+      - 50200
+    volumes: 
+      - D:\Prog\5course\ChatProject\Docker\audio:\audio\audio
+    restart: unless-stopped
+    networks:
+      - chatnetwork
+
+  video:
+    image: video  
+    container_name: video
+    expose:
+      - 50300
+    volumes: 
+      - D:\Prog\5course\ChatProject\Docker\video:\video\video
     restart: unless-stopped
     networks:
       - chatnetwork
@@ -24,6 +34,8 @@ services:
       - ./config:/config
     ports:
       - "5050:5050"
+    environment:
+      - CONFIG_PATH=/config/backend.config.dev.yml
     restart: unless-stopped
     networks:
       - chatnetwork
@@ -41,6 +53,20 @@ services:
       - ./ChatDatabase/pg-conf/pg_hba.conf:/etc/pg_hba.conf
     expose:
       - 5432
+    restart: unless-stopped
+    networks:
+      - chatnetwork
+
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    command: server --console-address ":9001" /data/
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: minio
+      MINIO_ROOT_PASSWORD: 11111111
     restart: unless-stopped
     networks:
       - chatnetwork

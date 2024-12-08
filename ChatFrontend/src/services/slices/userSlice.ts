@@ -36,7 +36,10 @@ const userSlice = createSlice({
   name: 'userSlice',
   initialState,
   reducers: {},
-  selectors: {},
+  selectors: {
+    getIsAuthenticated: (state) => state.isAuthenticated,
+    getUserId: (state) => state.userId
+  },
   extraReducers: (builder) => {
     builder
       .addCase(registerUser.pending, (state) => {
@@ -68,4 +71,5 @@ const userSlice = createSlice({
   }
 });
 
+export const { getIsAuthenticated, getUserId } = userSlice.selectors;
 export const userReducer = userSlice.reducer;
