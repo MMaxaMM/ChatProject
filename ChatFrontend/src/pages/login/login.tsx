@@ -9,6 +9,7 @@ export const Login: FC = () => {
   const [user, setUser] = useState('');
   const [password, setPassword] = useState('');
   const dispatch = useDispatch();
+  const [error, setError] = useState<Error | null>(null);
 
   const handeleSubmit = (e: SyntheticEvent) => {
     e.preventDefault();
@@ -17,8 +18,9 @@ export const Login: FC = () => {
       .then(() => {
         navigate('/chat');
       })
-      .catch((err) => console.log(err));
+      .catch((err) => setError(err));
   };
+  console.log(error);
 
   const onChangePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value);
@@ -30,6 +32,7 @@ export const Login: FC = () => {
   return (
     <LoginUI
       user={user}
+      error={error?.message}
       password={password}
       handeleSubmit={handeleSubmit}
       setUsername={onChangeUsername}

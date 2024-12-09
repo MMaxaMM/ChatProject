@@ -9,6 +9,7 @@ export const Register: FC = () => {
   const [user, setUser] = useState('');
   const [password, setPassword] = useState('');
   const dispatch = useDispatch();
+  const [error, setError] = useState<Error | null>(null);
 
   const handeleSubmit = (e: SyntheticEvent) => {
     e.preventDefault();
@@ -17,7 +18,7 @@ export const Register: FC = () => {
       .then(() => {
         navigate('/login');
       })
-      .catch((err) => console.log(err));
+      .catch((err) => setError(err));
   };
 
   const onChangePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -31,6 +32,7 @@ export const Register: FC = () => {
   return (
     <RegisterUI
       user={user}
+      error={error?.message}
       password={password}
       handeleSubmit={handeleSubmit}
       setUsername={onChangeUsername}

@@ -222,13 +222,13 @@ input {
 
 .invalid-email-error-message {
   color: #d00e17;
-  display: none;
+  display: flex;
   margin: 4px 0 12px;
   font-size: 12px
 }
 
-.invalid-email-error-message.visible {
-  display: flex
+.error-icon {
+  margin-right: 10px;
 }
 
 .continue-btn {

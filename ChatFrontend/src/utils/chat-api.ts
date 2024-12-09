@@ -1,10 +1,16 @@
+import { error } from 'console';
 import { getCookie } from './cookie';
 import { ChatType, getIndexByChatType, TChat, TMessage, TUser } from './types';
 
 const URL = 'http://127.0.0.1:5050';
 
 const checkResponse = <T>(res: Response): Promise<T> =>
-  res.ok ? res.json() : res.json().then((err) => Promise.reject(err));
+  res.ok
+    ? res.json()
+    : res.json().then((err) => {
+        console.log(err);
+        return Promise.reject({ message: err.error } as Error);
+      });
 
 type TServerResponse<T> = {
   ok: boolean;
@@ -140,7 +146,12 @@ export const loginUserApi = (data: TUser) =>
   fetch(`${URL}/auth/sign-in`, {
     method: 'POST',
     body: JSON.stringify(data)
-  }).then((res) => checkResponse<TAuthResponse>(res));
+  })
+    .then((res) => checkResponse<TAuthResponse>(res))
+    .then((data) => {
+      if (data?.token) return data;
+      return Promise.reject(data);
+    });
 
 // Функция для fetch с отслеживанием прогресса
 async function fetchWithProgress(

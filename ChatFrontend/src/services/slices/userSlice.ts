@@ -28,14 +28,19 @@ export const registerUser = createAsyncThunk(
 
 export const loginUser = createAsyncThunk('user/login', async (data: TUser) => {
   const ans = await loginUserApi(data);
-  setCookie('accessToken', ans.token);
+  console.log(ans);
+  // setCookie('accessToken', ans.token);
   return;
 });
 
 const userSlice = createSlice({
   name: 'userSlice',
   initialState,
-  reducers: {},
+  reducers: {
+    logout: (state) => {
+      state = initialState;
+    }
+  },
   selectors: {
     getIsAuthenticated: (state) => state.isAuthenticated,
     getUserId: (state) => state.userId
@@ -62,6 +67,7 @@ const userSlice = createSlice({
       .addCase(loginUser.rejected, (state, action) => {
         state.loginUserRequest = false;
         state.isAuthChecked = false;
+        console.log(action);
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loginUserRequest = false;

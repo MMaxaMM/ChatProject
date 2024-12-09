@@ -7,6 +7,7 @@ import { TRegisterUIProps } from './type';
 
 export const RegisterUI: FC<TRegisterUIProps> = ({
   user,
+  error,
   password,
   handeleSubmit,
   setUsername,
@@ -42,10 +43,10 @@ export const RegisterUI: FC<TRegisterUIProps> = ({
             <label className={styles['email-label']} htmlFor='user-input'>
               Имя пользователя
             </label>
-            <div className={styles['invalid-email-error-message']}>
+            {/* <div className={styles['invalid-email-error-message']}>
               <img className={styles['error-icon']} src={error_icon} />
               Недопустимое имя пользователя.
-            </div>
+            </div> */}
           </div>
           <div className={styles['input-wrapper']}>
             <input
@@ -65,10 +66,12 @@ export const RegisterUI: FC<TRegisterUIProps> = ({
             <label className={styles['email-label']} htmlFor='password-input'>
               Придумайте пароль
             </label>
-            <div className={styles['invalid-email-error-message']}>
-              <img className={styles['error-icon']} src={error_icon} />
-              Недопустимый пароль.
-            </div>
+            {error && (
+              <div className={styles['invalid-email-error-message']}>
+                <img className={styles['error-icon']} src={error_icon} />
+                {error}
+              </div>
+            )}
           </div>
           <button className={styles['continue-btn']} type='submit'>
             Зарегистрироваться
