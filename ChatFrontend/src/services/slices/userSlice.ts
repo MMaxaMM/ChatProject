@@ -28,8 +28,7 @@ export const registerUser = createAsyncThunk(
 
 export const loginUser = createAsyncThunk('user/login', async (data: TUser) => {
   const ans = await loginUserApi(data);
-  console.log(ans);
-  // setCookie('accessToken', ans.token);
+  setCookie('accessToken', ans.token);
   return;
 });
 

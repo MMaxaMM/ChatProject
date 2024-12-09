@@ -5,12 +5,14 @@ import { useState, useEffect } from 'react';
 import { Typewriter } from 'react-simple-typewriter';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { useSelector } from '@store';
+import { getMessageRequest } from '@slices';
 export const MessageUI: FC<TMessageUIProps> = ({ message }) => {
   const [displayText, setDisplayText] = useState<string>(
     message.isNew ? '' : message.content
   ); // Текущий текст для отображения
   const [currentIndex, setCurrentIndex] = useState<number>(0); // Индекс текущего символа
-
+  const isLoading = useSelector(getMessageRequest);
   useEffect(() => {
     if (message.isNew && currentIndex < message.content.length) {
       const timer = setTimeout(() => {
@@ -25,6 +27,9 @@ export const MessageUI: FC<TMessageUIProps> = ({ message }) => {
     <li
       className={`${styles.message} ${message.role === 'user' ? styles.message_user : styles.message_ai}`}
     >
+      {isLoading && message.content_type === 0 && (
+        <div className={styles.dot_elastic} />
+      )}
       {message.content_type === 1 && (
         <ReactMarkdown
           children={displayText}

@@ -10,6 +10,7 @@ p {
   max-width: 70%;
   grid-column-start: 2;
   height: min-content;
+  align-items: center;
 }
 
 .message:has(audio) {
@@ -48,4 +49,91 @@ p {
   color: #ececec;
   line-height: 28px;
   display: inline-block;
+}
+
+.dot_elastic {
+  position: relative;
+  width: 10px;
+  height: 10px;
+  margin-left: 10px;
+  border-radius: 5px;
+  background-color: #ececec;
+  color: #ececec;
+  animation: dot_elastic 1s infinite linear;
+}
+.dot_elastic::before, .dot_elastic::after {
+  content: "";
+  display: inline-block;
+  position: absolute;
+  top: 0;
+}
+.dot_elastic::before {
+  left: -15px;
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  background-color: #ececec;
+  color: #ececec;
+  animation: dot_elastic-before 1s infinite linear;
+}
+.dot_elastic::after {
+  left: 15px;
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  background-color: #ececec;
+  color: #ececec;
+  animation: dot_elastic-after 1s infinite linear;
+}
+
+@keyframes dot_elastic-before {
+  0% {
+    transform: scale(1, 1);
+  }
+  25% {
+    transform: scale(1, 1.5);
+  }
+  50% {
+    transform: scale(1, 0.67);
+  }
+  75% {
+    transform: scale(1, 1);
+  }
+  100% {
+    transform: scale(1, 1);
+  }
+}
+@keyframes dot_elastic {
+  0% {
+    transform: scale(1, 1);
+  }
+  25% {
+    transform: scale(1, 1);
+  }
+  50% {
+    transform: scale(1, 1.5);
+  }
+  75% {
+    transform: scale(1, 1);
+  }
+  100% {
+    transform: scale(1, 1);
+  }
+}
+@keyframes dot_elastic-after {
+  0% {
+    transform: scale(1, 1);
+  }
+  25% {
+    transform: scale(1, 1);
+  }
+  50% {
+    transform: scale(1, 0.67);
+  }
+  75% {
+    transform: scale(1, 1.5);
+  }
+  100% {
+    transform: scale(1, 1);
+  }
 }

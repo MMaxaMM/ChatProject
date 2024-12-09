@@ -28,6 +28,7 @@ export type ChatState = {
   userId: number | null;
   chats: TChat[];
   chatRequest: boolean;
+  messageRequest: boolean;
   currentChatId: number;
   currentChatType: ChatType;
   progress: number | null;
@@ -102,7 +103,8 @@ const initialState: ChatState = {
   chats: [],
   chatRequest: false,
   progress: null,
-  error: null
+  error: null,
+  messageRequest: false
 };
 
 const chatSlice = createSlice({
@@ -113,7 +115,6 @@ const chatSlice = createSlice({
       state,
       action: PayloadAction<{ chat_id: number; message: TMessage }>
     ) => {
-      console.log('message local');
       state.chats.map((chat) => {
         if (chat.chat_id === action.payload.chat_id) {
           chat.messages.push(action.payload.message);
@@ -125,7 +126,6 @@ const chatSlice = createSlice({
       state,
       action: PayloadAction<{ chatId: number; chatType: ChatType }>
     ) => {
-      console.log('local chat');
       state.currentChatId = action.payload.chatId;
       const chat: TChat = {
         user_id: state.userId ? state.userId : 0,
@@ -142,6 +142,9 @@ const chatSlice = createSlice({
     },
     setChatId: (state, action: PayloadAction<number>) => {
       state.currentChatId = action.payload;
+      state.currentChatType =
+        state.chats.find((chat) => chat.chat_id === action.payload)
+          ?.chat_type || ChatType.typeAudio;
     },
     setChatType: (state, action: PayloadAction<ChatType>) => {
       state.currentChatType = action.payload;
@@ -151,7 +154,8 @@ const chatSlice = createSlice({
     getStoreChats: (state) => state.chats,
     getCurrentChatId: (state) => state.currentChatId,
     getCurrentChatType: (state) => state.currentChatType,
-    getProgress: (state) => state.progress
+    getProgress: (state) => state.progress,
+    getMessageRequest: (state) => state.messageRequest
   },
   extraReducers: (builder) => {
     builder
@@ -202,20 +206,32 @@ const chatSlice = createSlice({
       })
 
       .addCase(postMessage.pending, (state) => {
-        state.chatRequest = true;
+        state.messageRequest = true;
+        state.chats.map((chat) => {
+          if (chat.chat_id === state.currentChatId) {
+            const message: TMessage = {
+              role: 'assistant',
+              content: '',
+              isNew: false,
+              content_type: 0
+            };
+            chat.messages.push(message);
+          }
+        });
       })
       .addCase(postMessage.rejected, (state, action) => {
-        state.chatRequest = false;
+        state.messageRequest = false;
       })
       .addCase(postMessage.fulfilled, (state, action) => {
-        state.chatRequest = false;
+        state.messageRequest = false;
         state.chats.map((chat) => {
           if (chat.chat_id === action.payload.chat_id) {
+            chat.messages.pop();
             const message: TMessage = {
               role: action.payload.message.role,
               content: action.payload.message.content,
               isNew: true,
-              content_type: 1
+              content_type: action.payload.message.content_type
             };
             chat.messages.push(message);
           }
@@ -234,21 +250,36 @@ const chatSlice = createSlice({
       })
 
       .addCase(postAudio.pending, (state) => {
+        state.messageRequest = true;
         state.progress = 0;
         state.error = null;
+        state.chats.map((chat) => {
+          if (chat.chat_id === state.currentChatId) {
+            const message: TMessage = {
+              role: 'assistant',
+              content: '',
+              isNew: false,
+              content_type: 0
+            };
+            chat.messages.push(message);
+          }
+        });
       })
       .addCase(postAudio.rejected, (state, action) => {
         state.error = action.payload as string;
+        state.messageRequest = false;
       })
       .addCase(postAudio.fulfilled, (state, action) => {
         state.progress = 100;
+        state.messageRequest = false;
         state.chats.map((chat) => {
           if (chat.chat_id === action.payload.chat_id) {
+            chat.messages.pop();
             const message: TMessage = {
               role: action.payload.message.role,
               content: action.payload.message.content,
               isNew: true,
-              content_type: 1
+              content_type: action.payload.message.content_type
             };
             chat.messages.push(message);
           }
@@ -283,7 +314,8 @@ export const {
   getStoreChats,
   getCurrentChatId,
   getCurrentChatType,
-  getProgress
+  getProgress,
+  getMessageRequest
 } = chatSlice.selectors;
 export const {
   sendMessage,

@@ -28,10 +28,7 @@ export const Chat: FC = () => {
   const currentChat = useSelector((state) =>
     selectChatById(state, currentChatId)
   );
-  const currentChatType = currentChat?.chat_type
-    ? currentChat.chat_type
-    : ChatType.typeChat;
-  const cT = useSelector(getCurrentChatType);
+  const currentChatType = useSelector(getCurrentChatType);
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [index, setIndex] = useState(parseInt(params.id ? params.id : '-1'));
   const navigate = useNavigate();
@@ -61,7 +58,7 @@ export const Chat: FC = () => {
   useEffect(() => {
     if (currentChatId !== -1 && currentChat) {
       setIndex(currentChat.chat_id);
-      dispatch(setChatType(currentChat.chat_type));
+      console.log('bbbb');
     }
   }, [currentChatId]);
 
@@ -70,7 +67,7 @@ export const Chat: FC = () => {
       dispatch(getChatHistory(index));
       navigate(`/chat/${index}`);
       dispatch(setChatId(index));
-      dispatch(setChatType(currentChatType));
+      console.log('aaaa');
     }
   }, [index]);
 
