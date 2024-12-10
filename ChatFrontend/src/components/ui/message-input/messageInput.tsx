@@ -22,7 +22,6 @@ export const MessageInputUI = forwardRef<MultiRefHandle, TMessageInputProps>(
   ) => {
     const fileRef = useRef<HTMLInputElement>(null);
     const textRef = useRef<HTMLTextAreaElement>(null);
-
     useImperativeHandle(ref, () => ({
       fileRef: fileRef.current,
       textRef: textRef.current

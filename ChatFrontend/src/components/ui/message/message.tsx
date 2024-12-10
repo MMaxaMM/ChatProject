@@ -30,6 +30,13 @@ export const MessageUI: FC<TMessageUIProps> = ({ message }) => {
       {isLoading && message.content_type === 0 && (
         <div className={styles.dot_elastic} />
       )}
+      {message.content_type === -1 && (
+        <ReactMarkdown
+          children={displayText}
+          remarkPlugins={[remarkGfm]}
+          className={`${styles.message_text} ${styles.message_text_error}`}
+        />
+      )}
       {message.content_type === 1 && (
         <ReactMarkdown
           children={displayText}
@@ -44,7 +51,7 @@ export const MessageUI: FC<TMessageUIProps> = ({ message }) => {
         </audio>
       )}
       {message.content_type === 3 && (
-        <video controls>
+        <video controls width='320' height='180' className={styles.video}>
           <source src={message.content} type='video/mp4' />
           Ваш браузер не поддерживает элемент <code>video</code>.
         </video>

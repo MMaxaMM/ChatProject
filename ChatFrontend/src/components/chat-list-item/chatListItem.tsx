@@ -2,7 +2,7 @@ import { FC, memo } from 'react';
 import { ChatListItemUI } from '@ui';
 import { TChatListItemProps } from './type';
 import { useDispatch } from '@store';
-import { setChatId, deleteChat, setChatType } from '@slices';
+import { setChatId, deleteChat } from '@slices';
 import { useNavigate } from 'react-router-dom';
 
 export const ChatListItem: FC<TChatListItemProps> = memo(({ chat }) => {
@@ -10,7 +10,7 @@ export const ChatListItem: FC<TChatListItemProps> = memo(({ chat }) => {
   const navigate = useNavigate();
   const onClick = () => {
     dispatch(setChatId(chat.chat_id));
-    dispatch(setChatType(chat.chat_type));
+    // dispatch(setChatType(chat.chat_type));
   };
   const onDelete = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();

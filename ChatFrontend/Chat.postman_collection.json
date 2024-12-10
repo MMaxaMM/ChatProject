@@ -289,7 +289,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\"chat_id\": 1}",
+					"raw": "{\"chat_id\": 4}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -427,7 +427,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\"chat_id\": 1, \"message\": {\"role\": \"user\", \"content\": \"Привет как дела!\"}}",
+					"raw": "{\"chat_id\": 5, \"message\": {\"role\": \"user\", \"content\": \"Привет как дела!\"}}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -565,7 +565,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\"chat_type\": 1, \"chat_id\": 2}",
+					"raw": "{\"chat_id\": 4}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -845,7 +845,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\"chat_type\": 1}",
+					"raw": "{\"chat_type\": 2}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -922,6 +922,177 @@
 					"body": "{\n    \"user_id\": 1,\n    \"chat_type\": 1,\n    \"chat_id\": 1\n}"
 				}
 			]
+		},
+		{
+			"name": "Recognize",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "audio",
+							"type": "file",
+							"src": "/home/maxim/Рабочий стол/audio_test.mp3"
+						}
+					]
+				},
+				"url": {
+					"raw": "127.0.0.1:5050/audio/recognize?chat_id=3",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5050",
+					"path": [
+						"audio",
+						"recognize"
+					],
+					"query": [
+						{
+							"key": "chat_id",
+							"value": "3"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Detect",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "video",
+							"type": "file",
+							"src": "/home/maxim/Рабочий стол/H264.MP4"
+						}
+					]
+				},
+				"url": {
+					"raw": "127.0.0.1:5050/video/detect?chat_id=4",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5050",
+					"path": [
+						"video",
+						"detect"
+					],
+					"query": [
+						{
+							"key": "chat_id",
+							"value": "4"
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "OK",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "video",
+									"type": "file",
+									"src": "/home/maxim/Рабочий стол/test_video.mp4"
+								}
+							]
+						},
+						"url": {
+							"raw": "127.0.0.1:5050/video/detect?chat_id=3",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5050",
+							"path": [
+								"video",
+								"detect"
+							],
+							"query": [
+								{
+									"key": "chat_id",
+									"value": "3"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Access-Control-Allow-Origin",
+							"value": "*"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Date",
+							"value": "Sun, 17 Nov 2024 21:53:33 GMT"
+						},
+						{
+							"key": "Content-Length",
+							"value": "128"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"user_id\": 1,\n    \"chat_id\": 3,\n    \"message\": {\n        \"role\": \"assistant\",\n        \"content\": \"http://localhost:9000/video/not-exists.mp4\",\n        \"content_type\": 3\n    }\n}"
+				}
+			]
+		},
+		{
+			"name": "SendMessageRAG",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"chat_id\": 5, \"message\": {\"role\": \"user\", \"content\": \"Привет, что такое...?\"}}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:5050/rag/message",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5050",
+					"path": [
+						"rag",
+						"message"
+					]
+				}
+			},
+			"response": []
 		}
 	],
 	"auth": {

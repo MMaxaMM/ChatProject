@@ -4,7 +4,6 @@ import { ChatList } from '@components';
 import { ChatType, TChat, TMessage, getChatTypeFromString } from '@utils-types';
 import { useSelector, useDispatch } from '@store';
 import {
-  getStoreChats,
   sendMessage,
   createChat,
   getCurrentChatId,
@@ -14,12 +13,9 @@ import {
   selectChatById,
   getChatHistory,
   postAudio,
-  setChatType,
-  getCurrentChatType,
   postVideo
 } from '@slices';
 import { useParams, useNavigate } from 'react-router-dom';
-import { TPostMessageRequest } from '@api';
 
 export const Chat: FC = () => {
   const params = useParams();
@@ -28,16 +24,14 @@ export const Chat: FC = () => {
   const currentChat = useSelector((state) =>
     selectChatById(state, currentChatId)
   );
-  const currentChatType = useSelector(getCurrentChatType);
+  const currentChatType = currentChat?.chat_type;
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [index, setIndex] = useState(parseInt(params.id ? params.id : '-1'));
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
   const toggleOpen = () => {
     setIsOpen(!isOpen);
   };
-
   const onCloseModal = () => {
     setIsOpenModal(false);
   };
@@ -58,7 +52,6 @@ export const Chat: FC = () => {
   useEffect(() => {
     if (currentChatId !== -1 && currentChat) {
       setIndex(currentChat.chat_id);
-      console.log('bbbb');
     }
   }, [currentChatId]);
 
@@ -66,8 +59,8 @@ export const Chat: FC = () => {
     if (index !== -1) {
       dispatch(getChatHistory(index));
       navigate(`/chat/${index}`);
+      console.log(`ffff${index}`);
       dispatch(setChatId(index));
-      console.log('aaaa');
     }
   }, [index]);
 
@@ -108,6 +101,8 @@ export const Chat: FC = () => {
       isNew: false,
       content_type: currentChatType === ChatType.typeAudio ? 2 : 3
     };
+    console.log(currentChatType);
+    console.log(data);
     dispatch(sendMessage({ chat_id: currentChatId, message: data }));
     currentChatType === ChatType.typeAudio
       ? dispatch(postAudio(query))

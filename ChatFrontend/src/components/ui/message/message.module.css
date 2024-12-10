@@ -17,6 +17,10 @@ p {
   padding: 0;
 }
 
+.message:has(video) {
+  padding: 0;
+}
+
 .message_ai {
   justify-self: start;
   background-color: inherit;
@@ -49,6 +53,14 @@ p {
   color: #ececec;
   line-height: 28px;
   display: inline-block;
+}
+
+.message_text_error {
+  color: red;
+}
+
+.video {
+  border-radius: inherit;
 }
 
 .dot_elastic {

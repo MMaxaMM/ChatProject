@@ -17,8 +17,8 @@ audio:
 video:
   address: "video:50300"
 rag:
-  address: "rag:50400"
+  address: "lllm:50100"
 minio:
-  address: ":9000" #<---
+  address: "192.168.150.161:9000" #<---
   user: "minio"
   password: "11111111"

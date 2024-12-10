@@ -20,6 +20,8 @@ export const MessageInput: FC<TMessageInputProps> = ({
   const multiRef = useRef<MultiRefHandle>(null);
   const progress = useSelector(getProgress);
   const chatType = useSelector(getCurrentChatType);
+  useEffect(() => {}, [chatType]);
+  console.log(chatType);
   // Функция, которая обновляет состояние при изменении textarea
   const handleChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
     setMessage(event.target.value);

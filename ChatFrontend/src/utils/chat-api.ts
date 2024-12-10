@@ -84,6 +84,15 @@ export const postChatMessageApi = (data: TPostMessageRequest) =>
     body: JSON.stringify(data)
   }).then((res) => checkResponse<TPostMessageResponse>(res));
 
+export const postRAGMessageApi = (data: TPostMessageRequest) =>
+  fetch(`${URL}/rag/message`, {
+    method: 'POST',
+    headers: {
+      authorization: `Bearer ${getCookie('accessToken')}`
+    } as HeadersInit,
+    body: JSON.stringify(data)
+  }).then((res) => checkResponse<TPostMessageResponse>(res));
+
 export const getChatHistoryApi = (chatId: number) =>
   fetch(`${URL}/control/history`, {
     method: 'POST',
@@ -121,7 +130,7 @@ export const postVideoApi = (
   onProgress: (progress: number) => void
 ) =>
   fetchWithProgress(
-    `${URL}/video/recognize?chat_id=${data.chat_id}`,
+    `${URL}/video/detect?chat_id=${data.chat_id}`,
     {
       method: 'POST',
       headers: {

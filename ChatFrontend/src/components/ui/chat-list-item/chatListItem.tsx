@@ -9,6 +9,8 @@ import videoLogo from '../../../images/videoLogo.svg';
 import docLogo from '../../../images/docLogo.svg';
 import { useState } from 'react';
 import { ChatType } from '@utils-types';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 export const ChatListItemUI: FC<TChatListItemUIProps> = ({
   chat,
@@ -39,7 +41,11 @@ export const ChatListItemUI: FC<TChatListItemUIProps> = ({
       onClick={onClick}
     >
       <Link to={`/chat/${chat_id}`} className={styles.chat_list_item__title}>
-        <span>{content}</span>
+        <ReactMarkdown
+          children={content}
+          remarkPlugins={[remarkGfm]}
+          className={styles.message_text}
+        />
       </Link>
 
       {useMatch(`/chat/${chat_id}`) ? (

@@ -27,10 +27,10 @@ import {
 export type ChatState = {
   userId: number | null;
   chats: TChat[];
+  currentChatId: number;
+  currentChat: TChat | undefined;
   chatRequest: boolean;
   messageRequest: boolean;
-  currentChatId: number;
-  currentChatType: ChatType;
   progress: number | null;
   error: string | null;
 };
@@ -99,7 +99,7 @@ export const postVideo = createAsyncThunk(
 const initialState: ChatState = {
   userId: null,
   currentChatId: -1,
-  currentChatType: ChatType.typeChat,
+  currentChat: undefined,
   chats: [],
   chatRequest: false,
   progress: null,
@@ -126,7 +126,6 @@ const chatSlice = createSlice({
       state,
       action: PayloadAction<{ chatId: number; chatType: ChatType }>
     ) => {
-      state.currentChatId = action.payload.chatId;
       const chat: TChat = {
         user_id: state.userId ? state.userId : 0,
         chat_id: action.payload.chatId,
@@ -135,6 +134,7 @@ const chatSlice = createSlice({
         content: 'Новый чат',
         messages: []
       };
+      state.currentChat = chat;
       state.chats.push(chat);
     },
     setProgress(state, action) {
@@ -142,18 +142,16 @@ const chatSlice = createSlice({
     },
     setChatId: (state, action: PayloadAction<number>) => {
       state.currentChatId = action.payload;
-      state.currentChatType =
-        state.chats.find((chat) => chat.chat_id === action.payload)
-          ?.chat_type || ChatType.typeAudio;
-    },
-    setChatType: (state, action: PayloadAction<ChatType>) => {
-      state.currentChatType = action.payload;
+      state.currentChat = state.chats.find(
+        (chat) => chat.chat_id === action.payload
+      );
     }
   },
   selectors: {
     getStoreChats: (state) => state.chats,
     getCurrentChatId: (state) => state.currentChatId,
-    getCurrentChatType: (state) => state.currentChatType,
+    getCurrentChatType: (state) =>
+      state.currentChat ? state.currentChat.chat_type : ChatType.typeChat,
     getProgress: (state) => state.progress,
     getMessageRequest: (state) => state.messageRequest
   },
@@ -186,6 +184,7 @@ const chatSlice = createSlice({
         state.chatRequest = false;
         state.chats.map((chat) => {
           if (chat.chat_id === action.payload.chat_id) {
+            state.currentChat = chat;
             chat.messages =
               chat.messages.length > action.payload.messages.length
                 ? chat.messages
@@ -202,13 +201,13 @@ const chatSlice = createSlice({
       })
       .addCase(createChat.fulfilled, (state, action) => {
         state.chatRequest = false;
-        state.currentChatType = getChatTypeByIndex(action.payload.chat_type);
+        // state.currentChatType = getChatTypeByIndex(action.payload.chat_type);
       })
 
-      .addCase(postMessage.pending, (state) => {
+      .addCase(postMessage.pending, (state, action) => {
         state.messageRequest = true;
         state.chats.map((chat) => {
-          if (chat.chat_id === state.currentChatId) {
+          if (chat.chat_id === action.meta.arg.chat_id) {
             const message: TMessage = {
               role: 'assistant',
               content: '',
@@ -249,12 +248,12 @@ const chatSlice = createSlice({
         state.chats.filter((chat) => chat.chat_id !== action.payload.chat_id);
       })
 
-      .addCase(postAudio.pending, (state) => {
+      .addCase(postAudio.pending, (state, action) => {
         state.messageRequest = true;
         state.progress = 0;
         state.error = null;
         state.chats.map((chat) => {
-          if (chat.chat_id === state.currentChatId) {
+          if (chat.chat_id === action.meta.arg.chat_id) {
             const message: TMessage = {
               role: 'assistant',
               content: '',
@@ -268,6 +267,18 @@ const chatSlice = createSlice({
       .addCase(postAudio.rejected, (state, action) => {
         state.error = action.payload as string;
         state.messageRequest = false;
+        state.chats.map((chat) => {
+          if (chat.chat_id === action.meta.arg.chat_id) {
+            chat.messages.pop();
+            const message: TMessage = {
+              role: 'assistent',
+              content: action.error.message || '',
+              isNew: true,
+              content_type: -1
+            };
+            chat.messages.push(message);
+          }
+        });
       })
       .addCase(postAudio.fulfilled, (state, action) => {
         state.progress = 100;
@@ -286,22 +297,49 @@ const chatSlice = createSlice({
         });
       })
 
-      .addCase(postVideo.pending, (state) => {
+      .addCase(postVideo.pending, (state, action) => {
         state.progress = 0;
         state.error = null;
+        state.messageRequest = true;
+        state.chats.map((chat) => {
+          if (chat.chat_id === action.meta.arg.chat_id) {
+            const message: TMessage = {
+              role: 'assistant',
+              content: '',
+              isNew: false,
+              content_type: 0
+            };
+            chat.messages.push(message);
+          }
+        });
       })
       .addCase(postVideo.rejected, (state, action) => {
         state.error = action.payload as string;
+        state.messageRequest = false;
+        state.chats.map((chat) => {
+          if (chat.chat_id === action.meta.arg.chat_id) {
+            chat.messages.pop();
+            const message: TMessage = {
+              role: 'assistent',
+              content: action.error.message || '',
+              isNew: true,
+              content_type: -1
+            };
+            chat.messages.push(message);
+          }
+        });
       })
       .addCase(postVideo.fulfilled, (state, action) => {
+        state.messageRequest = true;
         state.progress = 100;
         state.chats.map((chat) => {
           if (chat.chat_id === action.payload.chat_id) {
+            chat.messages.pop();
             const message: TMessage = {
               role: action.payload.message.role,
               content: action.payload.message.content,
               isNew: true,
-              content_type: 3
+              content_type: action.payload.message.content_type
             };
             chat.messages.push(message);
           }
@@ -317,13 +355,8 @@ export const {
   getProgress,
   getMessageRequest
 } = chatSlice.selectors;
-export const {
-  sendMessage,
-  setChatId,
-  setProgress,
-  setChatType,
-  createChatStore
-} = chatSlice.actions;
+export const { sendMessage, setChatId, setProgress, createChatStore } =
+  chatSlice.actions;
 export const chatReducer = chatSlice.reducer;
 export const selectChatById = createSelector(
   [getStoreChats, (_, chatId) => chatId], // Аргументы
