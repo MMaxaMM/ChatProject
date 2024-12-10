@@ -20,4 +20,5 @@ type SignInRequest struct {
 
 type SignInResponse struct {
 	Token string `json:"token"`
+	Username string `json:"username"`
 }

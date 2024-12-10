@@ -5,14 +5,21 @@ import { TChatOpenUIProps } from './type';
 import clsx from 'clsx';
 import { Message, MessageInput } from '@components';
 import { TMessage } from '@utils-types';
+import { useSelector } from '@store';
+import { getUsername } from '@slices';
+import { UserModal } from '@components';
 
 export const ChatOpenUI: FC<TChatOpenUIProps> = ({
   isAsideOpen,
   chat,
+  isUserModalOpen,
+  onOpenUserModal,
+  onCloseUserModal,
   onOpenTab,
   onSendMessage,
   onSendFile
 }) => {
+  const username = useSelector(getUsername);
   const messages: TMessage[] = chat.messages;
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
@@ -32,9 +39,10 @@ export const ChatOpenUI: FC<TChatOpenUIProps> = ({
         >
           <img src={closeIcon} />
         </button>
-        <div className={styles.nav_user_logo}>
-          <div className={styles.nav_user_name}>D</div>
+        <div className={styles.nav_user_logo} onClick={onOpenUserModal}>
+          <div className={styles.nav_user_name}>{username[0]}</div>
         </div>
+        {isUserModalOpen && <UserModal onClose={onCloseUserModal} />}
       </nav>
       <div className={styles.content}>
         <ul className={styles.chat_list}>

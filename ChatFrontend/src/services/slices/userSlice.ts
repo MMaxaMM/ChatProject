@@ -1,10 +1,11 @@
 import { TUser } from '@utils-types';
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { setCookie } from '../../utils/cookie';
+import { setCookie, deleteCookie } from '../../utils/cookie';
 import { registerUserApi, loginUserApi } from '@api';
 
 export type UserState = {
   userId: number | null;
+  username: string;
   isAuthChecked: boolean;
   isAuthenticated: boolean;
   loginUserRequest: boolean;
@@ -12,6 +13,7 @@ export type UserState = {
 
 const initialState: UserState = {
   userId: null,
+  username: '',
   isAuthChecked: false,
   isAuthenticated: false,
   loginUserRequest: false
@@ -21,28 +23,45 @@ export const registerUser = createAsyncThunk(
   'user/register',
   async (data: TUser) => {
     const ans = await registerUserApi(data);
-    console.log(ans);
     return ans.user_id;
   }
 );
 
-export const loginUser = createAsyncThunk('user/login', async (data: TUser) => {
-  const ans = await loginUserApi(data);
-  setCookie('accessToken', ans.token);
-  return;
-});
+export const loginUser = createAsyncThunk(
+  'user/login',
+  async (data: TUser, { dispatch }) => {
+    const ans = await loginUserApi(data);
+    dispatch(setUsername(data.username));
+    setCookie('accessToken', ans.token);
+    localStorage.setItem('username', ans.username);
+    return ans;
+  }
+);
 
 const userSlice = createSlice({
   name: 'userSlice',
   initialState,
   reducers: {
     logout: (state) => {
-      state = initialState;
+      state.isAuthChecked = false;
+      state.isAuthenticated = false;
+      state.username = '';
+      state.userId = null;
+      deleteCookie('accessToken');
+      localStorage.clear();
+    },
+    setUsername: (state, action: PayloadAction<string>) => {
+      state.username = action.payload;
+    },
+    refreshUsername: (state) => {
+      const username = localStorage.getItem('username');
+      state.username = username ? username : '';
     }
   },
   selectors: {
     getIsAuthenticated: (state) => state.isAuthenticated,
-    getUserId: (state) => state.userId
+    getUserId: (state) => state.userId,
+    getUsername: (state) => state.username
   },
   extraReducers: (builder) => {
     builder
@@ -66,9 +85,9 @@ const userSlice = createSlice({
       .addCase(loginUser.rejected, (state, action) => {
         state.loginUserRequest = false;
         state.isAuthChecked = false;
-        console.log(action);
       })
       .addCase(loginUser.fulfilled, (state, action) => {
+        state.username = action.payload.username;
         state.loginUserRequest = false;
         state.isAuthenticated = true;
         state.isAuthChecked = true;
@@ -76,5 +95,7 @@ const userSlice = createSlice({
   }
 });
 
-export const { getIsAuthenticated, getUserId } = userSlice.selectors;
+export const { getIsAuthenticated, getUserId, getUsername } =
+  userSlice.selectors;
+export const { logout, setUsername, refreshUsername } = userSlice.actions;
 export const userReducer = userSlice.reducer;

@@ -13,7 +13,9 @@ import {
   selectChatById,
   getChatHistory,
   postAudio,
-  postVideo
+  postVideo,
+  postRAGMessage,
+  refreshUsername
 } from '@slices';
 import { useParams, useNavigate } from 'react-router-dom';
 
@@ -26,6 +28,7 @@ export const Chat: FC = () => {
   );
   const currentChatType = currentChat?.chat_type;
   const [isOpenModal, setIsOpenModal] = useState(false);
+  const [isOpenUserModal, setIsOpenUserModal] = useState(false);
   const [index, setIndex] = useState(parseInt(params.id ? params.id : '-1'));
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -40,6 +43,14 @@ export const Chat: FC = () => {
     setIsOpenModal(true);
   };
 
+  const onOpenUserModal = () => {
+    setIsOpenUserModal(true);
+  };
+
+  const onCloseUserModal = () => {
+    setIsOpenUserModal(false);
+  };
+
   const onSelectChats = (selectedChat: string) => {
     const chatType = getChatTypeFromString(selectedChat);
     dispatch(createChat(chatType));
@@ -47,6 +58,7 @@ export const Chat: FC = () => {
 
   useEffect(() => {
     dispatch(getChats());
+    dispatch(refreshUsername());
   }, []);
 
   useEffect(() => {
@@ -71,16 +83,16 @@ export const Chat: FC = () => {
       isNew: false,
       content_type: 1
     };
-
+    const post = ChatType.typeRAG ? postRAGMessage : postMessage;
     if (currentChatId === -1) {
       const res = await dispatch(createChat(ChatType.typeChat)).unwrap();
       const query = { chat_id: res.chat_id, message: data };
       dispatch(sendMessage(query));
-      await dispatch(postMessage(query));
+      await dispatch(post(query));
     } else {
       const query = { chat_id: currentChatId, message: data };
       dispatch(sendMessage(query));
-      await dispatch(postMessage(query));
+      await dispatch(post(query));
     }
   };
 
@@ -122,6 +134,9 @@ export const Chat: FC = () => {
         <ChatOpenUI
           isAsideOpen={isOpen}
           chat={currentChat}
+          isUserModalOpen={isOpenUserModal}
+          onCloseUserModal={onCloseUserModal}
+          onOpenUserModal={onOpenUserModal}
           onOpenTab={toggleOpen}
           onSendMessage={onSendMessage}
           onSendFile={onSendFile}
@@ -129,6 +144,9 @@ export const Chat: FC = () => {
       ) : (
         <ChatUI
           isAsideOpen={isOpen}
+          isUserModalOpen={isOpenUserModal}
+          onCloseUserModal={onCloseUserModal}
+          onOpenUserModal={onOpenUserModal}
           onSendMessage={onSendMessage}
           onOpenTab={toggleOpen}
           onSendFile={onSendFile}

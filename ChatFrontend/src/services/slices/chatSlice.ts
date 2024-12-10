@@ -21,7 +21,8 @@ import {
   deleteChatApi,
   TPostAudioRequest,
   postAudioApi,
-  postVideoApi
+  postVideoApi,
+  postRAGMessageApi
 } from '@api';
 
 export type ChatState = {
@@ -61,6 +62,14 @@ export const postMessage = createAsyncThunk(
   'chat/postMessage',
   async (data: TPostMessageRequest) => {
     const ans = await postChatMessageApi(data);
+    return ans;
+  }
+);
+
+export const postRAGMessage = createAsyncThunk(
+  'chat/postRAGMessage',
+  async (data: TPostMessageRequest) => {
+    const ans = await postRAGMessageApi(data);
     return ans;
   }
 );
@@ -135,6 +144,7 @@ const chatSlice = createSlice({
         messages: []
       };
       state.currentChat = chat;
+      state.currentChatId = chat.chat_id;
       state.chats.push(chat);
     },
     setProgress(state, action) {
@@ -332,6 +342,52 @@ const chatSlice = createSlice({
       .addCase(postVideo.fulfilled, (state, action) => {
         state.messageRequest = true;
         state.progress = 100;
+        state.chats.map((chat) => {
+          if (chat.chat_id === action.payload.chat_id) {
+            chat.messages.pop();
+            const message: TMessage = {
+              role: action.payload.message.role,
+              content: action.payload.message.content,
+              isNew: true,
+              content_type: action.payload.message.content_type
+            };
+            chat.messages.push(message);
+          }
+        });
+      })
+
+      .addCase(postRAGMessage.pending, (state, action) => {
+        state.messageRequest = true;
+        state.chats.map((chat) => {
+          if (chat.chat_id === action.meta.arg.chat_id) {
+            const message: TMessage = {
+              role: 'assistant',
+              content: '',
+              isNew: false,
+              content_type: 0
+            };
+            chat.messages.push(message);
+          }
+        });
+      })
+      .addCase(postRAGMessage.rejected, (state, action) => {
+        state.error = action.payload as string;
+        state.messageRequest = false;
+        state.chats.map((chat) => {
+          if (chat.chat_id === action.meta.arg.chat_id) {
+            chat.messages.pop();
+            const message: TMessage = {
+              role: 'assistent',
+              content: action.error.message || '',
+              isNew: true,
+              content_type: -1
+            };
+            chat.messages.push(message);
+          }
+        });
+      })
+      .addCase(postRAGMessage.fulfilled, (state, action) => {
+        state.messageRequest = false;
         state.chats.map((chat) => {
           if (chat.chat_id === action.payload.chat_id) {
             chat.messages.pop();

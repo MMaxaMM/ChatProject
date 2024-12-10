@@ -39,6 +39,8 @@ func (s *AuthService) CreateUser(request *models.SignUpRequest) (*models.SignUpR
 func (s *AuthService) GenerateToken(request *models.SignInRequest) (*models.SignInResponse, error) {
 	const op = "service.GenerateToken"
 
+	username := request.Username
+
 	passwordHash := generatePasswordHash(request.Password)
 	userId, err := s.rep.GetUserId(request.Username, passwordHash)
 	if err != nil {
@@ -58,7 +60,7 @@ func (s *AuthService) GenerateToken(request *models.SignInRequest) (*models.Sign
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 
-	response := models.SignInResponse{Token: signedToken}
+	response := models.SignInResponse{Token: signedToken, Username: username}
 
 	return &response, nil
 }

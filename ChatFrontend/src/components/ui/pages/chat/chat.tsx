@@ -7,20 +7,22 @@ import clsx from 'clsx';
 import { MessageInput } from '@components';
 import { Typewriter } from 'react-simple-typewriter';
 import { useState } from 'react';
+import { useSelector } from '@store';
+import { getUsername } from '@slices';
+import { UserModal } from '@components';
 
 export const ChatUI: FC<TChatUIProps> = ({
   isAsideOpen,
+  isUserModalOpen,
+  onOpenUserModal,
+  onCloseUserModal,
   onOpenTab,
   onSendMessage,
   onSendFile
 }) => {
   const [showCursor, setShowCursor] = useState(true);
+  const username = useSelector(getUsername);
 
-  const handleType = (count: number) => {
-    // Скрываем курсор, когда текущая фраза закончена
-    console.log(count);
-    setShowCursor(count === 0);
-  };
   return (
     <div
       className={clsx(styles.main, {
@@ -40,9 +42,10 @@ export const ChatUI: FC<TChatUIProps> = ({
             Открыть боковую панель
           </span>
         </div>
-        <div className={styles.nav_user_logo}>
-          <div className={styles.nav_user_name}>D</div>
+        <div className={styles.nav_user_logo} onClick={onOpenUserModal}>
+          <div className={styles.nav_user_name}>{username[0]}</div>
         </div>
+        {isUserModalOpen && <UserModal onClose={onCloseUserModal} />}
       </nav>
       <div className={styles.content}>
         <img src={logo} className={styles.logo} />

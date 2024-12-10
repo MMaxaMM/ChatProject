@@ -43,7 +43,7 @@ export const MessageInputUI = forwardRef<MultiRefHandle, TMessageInputProps>(
             ChatType.typeAudio !== chatType && ChatType.typeVideo !== chatType
           }
         />
-        {chatType === ChatType.typeChat ? (
+        {chatType === ChatType.typeChat || chatType === ChatType.typeRAG ? (
           <textarea
             ref={textRef}
             value={message}

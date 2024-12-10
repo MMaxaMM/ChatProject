@@ -143,6 +143,7 @@ export const postVideoApi = (
 
 type TAuthResponse = {
   token: string;
+  username: string;
 };
 
 export const registerUserApi = (data: TUser) =>

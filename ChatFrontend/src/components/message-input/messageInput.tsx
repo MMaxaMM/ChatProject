@@ -64,7 +64,10 @@ export const MessageInput: FC<TMessageInputProps> = ({
     }
     setSelectedFile(null); // Очистка после отправки
   };
-  const onSend = chatType === ChatType.typeChat ? handleSend : handleUpload;
+  const onSend =
+    chatType === ChatType.typeChat || ChatType.typeRAG
+      ? handleSend
+      : handleUpload;
   const handleKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault(); // Отключаем перенос строки на Enter

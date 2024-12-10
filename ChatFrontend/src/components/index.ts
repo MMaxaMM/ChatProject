@@ -4,3 +4,4 @@ export * from './message';
 export * from './message-input';
 export * from './chat-type-modal';
 export * from './protected-route';
+export * from './user-modal';

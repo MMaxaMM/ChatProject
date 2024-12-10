@@ -9,7 +9,7 @@ import rag_pb2_grpc as rag_grpc
 import time
 
 MAX_WORKERS = 5
-ADDRESS = "localhost:50400"
+ADDRESS = "0.0.0.0:50400"
 
 
 class RAGService(rag_grpc.RAGServiceServicer):
@@ -23,7 +23,7 @@ class RAGService(rag_grpc.RAGServiceServicer):
 
         # Ответ сервиса
         context.set_code(grpc.StatusCode.OK)
-        return RAGResponse(content="Ответ ассистента...")
+        return RAGResponse(content="Я нашел следующие документы...")
     
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=MAX_WORKERS))
