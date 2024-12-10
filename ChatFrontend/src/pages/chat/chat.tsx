@@ -82,7 +82,7 @@ export const Chat: FC = () => {
       isNew: false,
       content_type: 1
     };
-    const post = ChatType.typeRAG ? postMessage : postRAGMessage;
+    const post = ChatType.typeRAG ? postRAGMessage : postMessage;
     console.log(post);
     if (currentChatId === -1) {
       const res = await dispatch(createChat(ChatType.typeChat)).unwrap();

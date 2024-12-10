@@ -30,7 +30,12 @@
   margin: 0 8px;
 }
 
-.modal-buttons button {
+.modal-buttons {
+  display: flex;
+  position: relative;
+}
+
+.modal-button {
   padding: 12px;
   width: 100%;
   margin: 0 8px;
@@ -41,6 +46,7 @@
   background-color: inherit;
   display: flex;
   align-items: center;
+  box-sizing: border-box;
   column-gap: 10px;
 }
 

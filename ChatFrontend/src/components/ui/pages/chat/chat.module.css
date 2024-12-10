@@ -120,6 +120,7 @@
 	height: 32px;
   justify-content: center;
   align-items: center;
+  cursor: pointer;
 }
 
 .nav_user_name {

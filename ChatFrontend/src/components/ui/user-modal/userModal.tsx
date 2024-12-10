@@ -18,7 +18,7 @@ export const UserModalUI: FC<TUserModalUIProps> = memo(
         </h2>
 
         <div className={styles['modal-buttons']}>
-          <button onClick={onLogout}>
+          <button onClick={onLogout} className={styles['modal-button']}>
             <img src={exitIcon} className={styles.chat_type_image} />
             Выйти
           </button>
