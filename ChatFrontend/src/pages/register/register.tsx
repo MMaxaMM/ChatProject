@@ -1,6 +1,6 @@
 import { FC, SyntheticEvent, useState } from 'react';
 import { RegisterUI } from '@ui-pages';
-import { registerUser } from '@slices';
+import { loginUser, registerUser } from '@slices';
 import { useDispatch } from '../../services/store';
 import { useNavigate } from 'react-router-dom';
 
@@ -13,10 +13,16 @@ export const Register: FC = () => {
 
   const handeleSubmit = (e: SyntheticEvent) => {
     e.preventDefault();
-    dispatch(registerUser({ username: user, password: password }))
+    const data = { username: user, password: password };
+    dispatch(registerUser(data))
       .unwrap()
       .then(() => {
-        navigate('/login');
+        dispatch(loginUser(data))
+          .unwrap()
+          .then(() => {
+            navigate('/chat');
+          })
+          .catch((err) => setError(err));
       })
       .catch((err) => setError(err));
   };
