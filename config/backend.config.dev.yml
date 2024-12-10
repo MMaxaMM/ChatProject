@@ -1,5 +1,4 @@
 env: "dev-windows" # dev-linux / dev-windows / prod
-filestorage: "localhost:9000"
 http_server:
   address: ":5050"
 database:
@@ -17,7 +16,9 @@ audio:
   address: "audio:50200"
 video:
   address: "video:50300"
+rag:
+  address: "rag:50400"
 minio:
-  address: "minio:9000"
+  address: ":9000" #<---
   user: "minio"
   password: "11111111"

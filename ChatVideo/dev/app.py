@@ -7,6 +7,7 @@ from video_pb2 import (
 import video_pb2_grpc as video_grpc
 
 import time
+from  urllib.parse import urlparse
 
 MAX_WORKERS = 5
 ADDRESS = "[::]:50300"
@@ -16,15 +17,15 @@ class VideoService(video_grpc.VideoServiceServicer):
     def Detect(self, request:VideoRequest, context:grpc.ServicerContext) -> VideoResponse:
         # Запрос пользователя
         print("Пришел запрос от пользователя")
-        print(request.filepath)
+        print(request.URI)
 
         # Заглушка для модели
         time.sleep(5)
 
         # Ответ сервиса
         context.set_code(grpc.StatusCode.OK)
-        filepath = "video/not-exists.mp4"
-        return VideoResponse(filepath=filepath)
+        objectName = urlparse(request.URI).path.split("/")[-1]
+        return VideoResponse(objectName=objectName)
     
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=MAX_WORKERS))

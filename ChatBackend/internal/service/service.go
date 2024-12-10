@@ -17,13 +17,17 @@ type Middleware interface {
 
 type Control interface {
 	CreateChat(request *models.CreateRequest) (*models.CreateResponse, error)
-	DeleteChat(request *models.DeleteRequest) error
+	DeleteChat(request *models.DeleteRequest) (*models.DeleteResponse, error)
 	GetStart(request *models.StartRequest) (*models.StartResponse, error)
 	GetHistory(request *models.HistoryRequest) (*models.HistoryResponse, error)
 }
 
 type Chat interface {
 	SendMessage(request *models.ChatRequest) (*models.ChatResponse, error)
+}
+
+type RAG interface {
+	SendMessageRAG(request *models.RAGRequest) (*models.RAGResponse, error)
 }
 
 type Audio interface {
@@ -39,6 +43,7 @@ type Service struct {
 	Middleware
 	Control
 	Chat
+	RAG
 	Audio
 	Video
 }
@@ -52,6 +57,7 @@ func NewService(
 		Middleware: NewMiddlewareService(),
 		Control:    NewControlService(rep),
 		Chat:       NewChatService(cfg.LLM, rep),
+		RAG:        NewRAGService(cfg.RAG, rep),
 		Audio:      NewAudioService(cfg.Audio, rep),
 		Video:      NewVideoService(cfg.Video, rep),
 	}

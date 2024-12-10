@@ -1,0 +1,8 @@
+grpcio==1.67.1
+grpcio-tools==1.67.1
+pymilvus
+transformers
+sentence_transformers
+llama-index
+llama-index-retrievers-bm25
+tqdm

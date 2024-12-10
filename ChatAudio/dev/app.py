@@ -16,16 +16,16 @@ class AudioService(audio_grpc.AudioServiceServicer):
     def Recognize(self, request:AudioRequest, context:grpc.ServicerContext) -> AudioResponse:
         # Запрос пользователя
         print("Пришел запрос от пользователя")
-        print(request.filepath)
+        print(request.URI)
 
         # Заглушка для модели
         time.sleep(5)
 
         # Ответ сервиса
         context.set_code(grpc.StatusCode.OK)
-        result = '''`SPEAKER_00`: Привет, как дела?
-        `SPEAKER_01`: Привет, хорошо!'''
-        return AudioResponse(result=result)
+        content = '''**SPEAKER_00**: Привет, как дела?
+        **SPEAKER_01**: Привет, хорошо!'''
+        return AudioResponse(content=content)
     
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=MAX_WORKERS))

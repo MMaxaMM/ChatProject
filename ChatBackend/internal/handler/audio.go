@@ -72,7 +72,7 @@ func (h *AudioHandler) Recognize(c *gin.Context) {
 		}
 		if errors.Is(err, chat.ErrServiceNotAvailable) {
 			log.Error("Audio service not available", slogx.Error(err))
-			NewErrorResponse(c, http.StatusInternalServerError, MsgServiceNotAvailable)
+			NewErrorResponse(c, http.StatusServiceUnavailable, MsgServiceNotAvailable)
 			return
 		}
 		log.Error("Recognize error", slogx.Error(err))

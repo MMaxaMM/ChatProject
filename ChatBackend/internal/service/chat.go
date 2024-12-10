@@ -4,6 +4,7 @@ import (
 	"chat"
 	llmv1 "chat/gen/llm"
 	"chat/internal/config"
+	"chat/internal/lib/markdown"
 	"chat/internal/models"
 	"chat/internal/repository"
 	"context"
@@ -13,8 +14,8 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-var DefaultHistoryLimit int = 10
-var DefaultMaxTokens uint32 = 512
+var HistoryLimit int
+var MaxTokens uint32
 
 type ChatService struct {
 	cfg config.LLM
@@ -22,8 +23,8 @@ type ChatService struct {
 }
 
 func NewChatService(cfg config.LLM, rep *repository.Repository) *ChatService {
-	DefaultHistoryLimit = cfg.HistoryLimit
-	DefaultMaxTokens = cfg.MaxTokens
+	HistoryLimit = cfg.HistoryLimit
+	MaxTokens = cfg.MaxTokens
 
 	return &ChatService{cfg: cfg, rep: rep}
 }
@@ -31,11 +32,15 @@ func NewChatService(cfg config.LLM, rep *repository.Repository) *ChatService {
 func (s *ChatService) SendMessage(request *models.ChatRequest) (*models.ChatResponse, error) {
 	const op = "service.SendMessage"
 
-	messages, err := s.rep.GetHistory(request.UserId, request.ChatId, false, DefaultHistoryLimit)
+	request.Content = markdown.Prepare(request.Content)
+	userId := request.UserId
+	chatId := request.ChatId
+
+	messages, err := s.rep.GetHistory(userId, chatId, false, HistoryLimit)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
-	request.Message.ContentType = models.TextType
+	request.Role = models.RoleUser
 	messages = append(messages, request.Message)
 
 	conn, err := grpc.NewClient(
@@ -54,28 +59,42 @@ func (s *ChatService) SendMessage(request *models.ChatRequest) (*models.ChatResp
 		llmMessages[idx] = &llmv1.Message{Role: message.Role, Content: message.Content}
 	}
 
-	llmRequest := &llmv1.LLMRequest{Messages: llmMessages, MaxTokens: DefaultMaxTokens}
+	llmRequest := &llmv1.LLMRequest{Messages: llmMessages, MaxTokens: MaxTokens}
 	llmResponse, err := client.Generate(context.Background(), llmRequest)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w: %w", op, chat.ErrServiceNotAvailable, err)
 	}
 
 	response := &models.ChatResponse{
-		UserId: request.UserId,
-		ChatId: request.ChatId,
+		UserId: userId,
+		ChatId: chatId,
 		Message: models.Message{
-			Role:        llmResponse.Message.Role,
-			Content:     llmResponse.Message.Content,
+			Role:        models.RoleAssistant,
+			Content:     markdown.Prepare(llmResponse.Content),
 			ContentType: models.TextType,
 		},
 	}
 
-	err = s.rep.SaveMessage(request.UserId, request.ChatId, &request.Message)
+	// Сохранение запроса пользователя
+	err = s.rep.SaveMessage(
+		userId,
+		chatId,
+		models.RoleUser,
+		request.Content,
+		models.TextType,
+	)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 
-	err = s.rep.SaveMessage(response.UserId, response.ChatId, &response.Message)
+	// Сохранение ответа сервиса
+	err = s.rep.SaveMessage(
+		userId,
+		chatId,
+		models.RoleAssistant,
+		llmResponse.Content,
+		models.TextType,
+	)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}

@@ -19,5 +19,5 @@ message LLMRequest {
 }
 
 message LLMResponse {
-    Message message = 1;
+    string content = 1;
 }

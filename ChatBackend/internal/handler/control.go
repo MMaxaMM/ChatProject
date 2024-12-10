@@ -79,7 +79,7 @@ func (h *ControlHandler) DeleteChat(c *gin.Context) {
 		slog.Int64("chat_id", request.ChatId),
 	)
 
-	err = h.service.DeleteChat(request)
+	response, err := h.service.DeleteChat(request)
 	if err != nil {
 		log.Error("Failed to delete chat", slogx.Error(err))
 		NewErrorResponse(c, http.StatusInternalServerError, MsgInternal)
@@ -88,7 +88,7 @@ func (h *ControlHandler) DeleteChat(c *gin.Context) {
 
 	log.Info("Chat was deleted")
 
-	c.Status(http.StatusOK)
+	c.JSON(http.StatusOK, response)
 }
 
 func (h *ControlHandler) GetStart(c *gin.Context) {

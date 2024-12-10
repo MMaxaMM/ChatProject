@@ -1,7 +1,10 @@
 grpcio==1.67.1
 grpcio-tools==1.67.1
 transformers==4.45.2
-ultralytics==8.3.20
-opencv-python==4.10.0.84
 minio==7.2.10
+ultralytics==8.3.38
+lapx>=0.5.2
+facenet-pytorch==2.6.0
+faiss-cpu
+tqdm
 uuid

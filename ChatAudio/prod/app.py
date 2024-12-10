@@ -23,24 +23,25 @@ import yaml
 import warnings
 warnings.filterwarnings("ignore")
 
-MAX_WORKERS = 5 # default
-ADDRESS = "[::]:50200" # default
-FILESTORAGE = "minio:9000" # default
-
-WHISPER_PATH = "models/whisper-large-v3-turbo"
-DIARIZATION_PATH = "models/config.yaml"
+DEFAULT_CONFIG = {
+    "MAX_WORKERS": 5,
+    "ADDRESS": "0.0.0.0:50200",
+    "WHISPER_PATH": "/audio/audio/models/whisper-large-v3-turbo",
+    "DIARIZATION_PATH": "/audio/audio/models/config.yaml",
+}
 
 class AudioService(audio_grpc.AudioServiceServicer):
-    def __init__(self):
+    def __init__(self, config):
+        self.config = config
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
         self.dtype = torch.float16 if torch.cuda.is_available() else torch.float32
 
-        self.whisper_pipeline = InitWhisper(self.device, self.dtype)
-        self.diarization_pipeline = InitDiarization(self.device)
+        self.whisper_pipeline = InitWhisper(self.device, self.dtype, self.config)
+        self.diarization_pipeline = InitDiarization(self.device, self.config)
 
     def Recognize(self, request:AudioRequest, context:grpc.ServicerContext) -> AudioResponse:
         print("### A request came from the user ###")
-        audio_io = io.BytesIO(requests.get(f"http://{FILESTORAGE}/{request.filepath}").content)
+        audio_io = io.BytesIO(requests.get(request.URI).content)
 
         waveform, sample_rate = torchaudio.load(audio_io)
 
@@ -54,24 +55,24 @@ class AudioService(audio_grpc.AudioServiceServicer):
         for speech_turn, _, speaker in diarization.itertracks(yield_label=True):
             segment = audio[int(speech_turn.start * sr) : int(speech_turn.end * sr)]
             result = self.whisper_pipeline(segment)
-            dialog.append(f"`{speaker}`: {result['text']}")
+            dialog.append(f"**{speaker}**: {result['text']}")
 
         print("### Done ###")
 
         result = '\n'.join(dialog)
         context.set_code(grpc.StatusCode.OK)
-        return AudioResponse(result=result)    
+        return AudioResponse(content=result)    
 
-def InitWhisper(device, dtype):
+def InitWhisper(device, dtype, config):
     print("### Whisper initialization ###")
 
     model = AutoModelForSpeechSeq2Seq.from_pretrained(
-        WHISPER_PATH, 
+        config["WHISPER_PATH"], 
         torch_dtype=dtype, 
         use_safetensors=True,
     ).to(device)
 
-    processor = AutoProcessor.from_pretrained(WHISPER_PATH)
+    processor = AutoProcessor.from_pretrained(config["WHISPER_PATH"])
 
     whisper_pipeline = pipeline(
         "automatic-speech-recognition",
@@ -84,23 +85,23 @@ def InitWhisper(device, dtype):
 
     return whisper_pipeline
 
-def InitDiarization(device):
+def InitDiarization(device, config):
     print("### Diarization initialization ###")
 
-    diarization_pipeline = Pipeline.from_pretrained(DIARIZATION_PATH, use_auth_token="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").to(torch.device(device))
+    diarization_pipeline = Pipeline.from_pretrained(config["DIARIZATION_PATH"]).to(torch.device(device))
     return diarization_pipeline
 
-def serve():
+def Serve(config):
     print("### Starting Audio service ###")
-    print(f"### Address: {ADDRESS} ###")
+    print(f'### Address: {config["ADDRESS"]} ###')
 
-    server = grpc.server(futures.ThreadPoolExecutor(max_workers=MAX_WORKERS))
+    server = grpc.server(futures.ThreadPoolExecutor(max_workers=config["MAX_WORKERS"]))
 
-    service = AudioService()
+    service = AudioService(config)
     print(f"### Device: {service.device} ###")
 
     audio_grpc.add_AudioServiceServicer_to_server(service, server)
-    server.add_insecure_port(ADDRESS)
+    server.add_insecure_port(config["ADDRESS"])
 
     print("### Audio service is running ###")
 
@@ -113,17 +114,27 @@ def LoadConfig(config_path):
             config = yaml.load(file, Loader=yaml.FullLoader)
     except:
         print(f"### Failed to load configuration file: {config_path} ###")
-        return
+        print("### Load default configurations ###")
+        return DEFAULT_CONFIG
     
-    MAX_WORKERS = config.get('max_workers', MAX_WORKERS)
-    ADDRESS = config.get('address', ADDRESS)
-    FILESTORAGE = config.get('filestorage', FILESTORAGE)
+    config = dict()
+    config["MAX_WORKERS"] = config.get('max_workers', DEFAULT_CONFIG["MAX_WORKERS"])
+    config["ADDRESS"] = config.get('address', DEFAULT_CONFIG["ADDRESS"])
+    config["WHISPER_PATH"] = config.get('whisper_path', DEFAULT_CONFIG["WHISPER_PATH"])
+    config["DIARIZATION_PATH"] = config.get('diarization_path', DEFAULT_CONFIG["DIARIZATION_PATH"])
+
+    return config
+
     
 if __name__ == "__main__":
     config_path = os.getenv("CONFIG_PATH")
+    config = None
+
     if config_path is None:
         print("### The environment variable CONFIG_PATH is not set ###")
         print("### Load default configurations ###")
+        config = DEFAULT_CONFIG
+    else:
+        config = LoadConfig(config_path)
 
-    LoadConfig(config_path)
-    serve()
+    Serve(config)

@@ -1,0 +1,24 @@
+env: "dev-linux" # dev-linux / dev-windows / prod
+http_server:
+  address: ":5050"
+database:
+  username: "backend"
+  password: "f*c$;d3EQACG8KW"
+  host: "database"
+  port: "5432"
+  dbname: "Chat"
+  sslmode: "disable"
+llm:
+  address: "llm:50100"
+  history_limit: 15
+  max_tokens: 1024
+audio:
+  address: "audio:50200"
+video:
+  address: "video:50300"
+rag:
+  address: "rag:50400"
+minio:
+  address: ":9000" #<---
+  user: "minio"
+  password: "11111111"

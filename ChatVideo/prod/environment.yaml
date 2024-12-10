@@ -1,0 +1,6 @@
+name: video
+channels:
+  - defaults
+dependencies:
+- menpo 
+- opencv

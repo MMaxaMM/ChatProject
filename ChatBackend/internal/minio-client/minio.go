@@ -4,6 +4,7 @@ import (
 	"chat/internal/config"
 	"chat/internal/models"
 	"fmt"
+	"time"
 
 	"github.com/minio/minio-go"
 )
@@ -19,6 +20,8 @@ const (
 	AudioContentType ContentType = "audio/mpeg"
 	VideoContentType ContentType = "video/mp4"
 )
+
+const expires = time.Second * 60 * 5
 
 var Client *minio.Client
 
@@ -58,24 +61,6 @@ func MakeBucket(bucketName string) error {
 		}
 	}
 
-	policy := fmt.Sprintf(`{
-		"Version": "2012-10-17",
-		"Statement": [
-			{
-				"Action": ["s3:GetObject"],
-				"Effect": "Allow",
-				"Principal": {"AWS": ["*"]},
-				"Resource": ["arn:aws:s3:::%s/*"],
-				"Sid": ""
-			}
-		]
-	}`, bucketName)
-
-	err = Client.SetBucketPolicy(bucketName, policy)
-	if err != nil {
-		return fmt.Errorf("%s: %w", op, err)
-	}
-
 	return nil
 }
 
@@ -84,7 +69,7 @@ func UploadObject(
 	object *models.Object,
 	bucketName string,
 	contentType ContentType,
-) (string, error) {
+) error {
 	const op = "minioclient.UploadObject"
 
 	_, err := Client.PutObject(
@@ -95,10 +80,10 @@ func UploadObject(
 		minio.PutObjectOptions{ContentType: string(contentType)},
 	)
 	if err != nil {
-		return "", fmt.Errorf("%s: %w", op, err)
+		return fmt.Errorf("%s: %w", op, err)
 	}
 
-	return fmt.Sprintf("%s/%s", bucketName, objectName), nil
+	return nil
 }
 
 func DeleteObject(
@@ -113,4 +98,18 @@ func DeleteObject(
 	}
 
 	return nil
+}
+
+func GetURI(
+	bucketName string,
+	objectName string,
+) (string, error) {
+	const op = "minioclient.GetURI"
+
+	URI, err := Client.PresignedGetObject(bucketName, objectName, expires, nil)
+	if err != nil {
+		return "", fmt.Errorf("%s: %w", op, err)
+	}
+
+	return URI.String(), nil
 }
