@@ -71,7 +71,6 @@ export const Chat: FC = () => {
     if (index !== -1) {
       dispatch(getChatHistory(index));
       navigate(`/chat/${index}`);
-      console.log(`ffff${index}`);
       dispatch(setChatId(index));
     }
   }, [index]);
@@ -83,7 +82,8 @@ export const Chat: FC = () => {
       isNew: false,
       content_type: 1
     };
-    const post = ChatType.typeRAG ? postRAGMessage : postMessage;
+    const post = ChatType.typeRAG ? postMessage : postRAGMessage;
+    console.log(post);
     if (currentChatId === -1) {
       const res = await dispatch(createChat(ChatType.typeChat)).unwrap();
       const query = { chat_id: res.chat_id, message: data };

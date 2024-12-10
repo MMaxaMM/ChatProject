@@ -60,7 +60,9 @@ export const MessageInputUI = forwardRef<MultiRefHandle, TMessageInputProps>(
           onClick={handleSend}
           className={styles.message_input__button}
           disabled={
-            ChatType.typeChat === chatType ? !message.trim() : !selectedFile
+            chatType === ChatType.typeRAG || chatType === ChatType.typeChat
+              ? !message.trim()
+              : !selectedFile
           } // Кнопка отключена, если сообщение пустое
         >
           <img src={arrowStart} className={styles.message_input__button_icon} />

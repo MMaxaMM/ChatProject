@@ -20,8 +20,6 @@ export const MessageInput: FC<TMessageInputProps> = ({
   const multiRef = useRef<MultiRefHandle>(null);
   const progress = useSelector(getProgress);
   const chatType = useSelector(getCurrentChatType);
-  useEffect(() => {}, [chatType]);
-  console.log(chatType);
   // Функция, которая обновляет состояние при изменении textarea
   const handleChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
     setMessage(event.target.value);
@@ -64,10 +62,13 @@ export const MessageInput: FC<TMessageInputProps> = ({
     }
     setSelectedFile(null); // Очистка после отправки
   };
+  console.log(chatType);
+  console.log(chatType === ChatType.typeChat || chatType === ChatType.typeRAG);
   const onSend =
-    chatType === ChatType.typeChat || ChatType.typeRAG
+    chatType === ChatType.typeRAG || chatType === ChatType.typeChat
       ? handleSend
       : handleUpload;
+  console.log(onSend);
   const handleKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault(); // Отключаем перенос строки на Enter
