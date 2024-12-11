@@ -38,6 +38,18 @@ services:
     networks:
       - chatnetwork
 
+  rag:
+    build:
+      context: ./ChatRAG/dev
+      dockerfile: Dockerfile
+    image: rag
+    container_name: rag
+    expose:
+      - 50400
+    restart: unless-stopped
+    networks:
+      - chatnetwork
+
   backend:
     build:
       context: ./ChatBackend

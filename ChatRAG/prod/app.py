@@ -80,11 +80,11 @@ class DocumentDB:
         return self
 
     def insert(self, document) -> int:
-        result = self.cursor.execute("INSERT INTO Documents (document) VALUES (?) RETURNING id", (document, ))
-        id = result.fetchone() or (0, )
+        cursor = self.cursor.execute("INSERT INTO Documents (document) VALUES (?)", (document, ))
+        document_id = cursor.lastrowid
         self.documentdb.commit()
 
-        return id[0]
+        return document_id
 
     def select(self, id) -> str:
         result = self.cursor.execute("SELECT document FROM Documents WHERE id = ?", (id, ))
@@ -230,13 +230,13 @@ class HFLLM:
         self.model_name = model_name
         self.device = device
         self.max_new_tokens = max_new_tokens
-        self.pipeline = pipeline("text-generation", model=self.model_name, device=self.device)
+        self.pipeline = pipeline("text-generation", model=self.model_name, device=self.device, torch_dtype=torch.bfloat16)
 
     def generate(self, messages):
         with torch.no_grad():
             result = self.pipeline(messages, max_new_tokens=self.max_new_tokens)
 
-        return result[0]["generated_text"]
+        return result[0]["generated_text"][1]["content"]
     
 class RAG:
     def __init__(self, llm_model, retriever_tool, verbose=True):

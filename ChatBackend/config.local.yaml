@@ -19,6 +19,6 @@ video:
 rag:
   address: "localhost:50400"
 minio:
-  address: "localhost:9000"
+  address: "192.168.97.108:9000"
   user: "minio"
   password: "11111111"

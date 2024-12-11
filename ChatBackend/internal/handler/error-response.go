@@ -7,13 +7,13 @@ import (
 type ErrorMessage string
 
 const (
-	MsgInternal            ErrorMessage = "unknown internal server error"
-	MsgBadRequest          ErrorMessage = "bad request"
-	MsgBadAuthHeader       ErrorMessage = "incorrect authorization header"
-	MsgUserExsists         ErrorMessage = "user whit that username already exists"
-	MsgUserNotFound        ErrorMessage = "incorrect username or password"
-	MsgServiceNotAvailable ErrorMessage = "service not available"
-	MsgTokenExpired        ErrorMessage = "jwt token expired"
+	MsgInternal            ErrorMessage = "Unknown internal server error"
+	MsgBadRequest          ErrorMessage = "Bad request"
+	MsgBadAuthHeader       ErrorMessage = "Incorrect authorization header"
+	MsgUserExsists         ErrorMessage = "User whit that username already exists"
+	MsgUserNotFound        ErrorMessage = "Incorrect username or password"
+	MsgServiceNotAvailable ErrorMessage = "Service not available"
+	MsgTokenExpired        ErrorMessage = "JWT token expired"
 )
 
 type ErrorResponse struct {

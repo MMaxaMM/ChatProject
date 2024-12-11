@@ -68,13 +68,14 @@ func (s *AudioService) Recognize(request *models.AudioRequest) (*models.AudioRes
 		go minioclient.DeleteObject(minioclient.AudioBucketName, objectName)
 		return nil, fmt.Errorf("%s: %w: %w", op, chat.ErrServiceNotAvailable, err)
 	}
+	audioResponse.Content = markdown.Prepare(audioResponse.Content)
 
 	response := &models.AudioResponse{
 		UserId: userId,
 		ChatId: chatId,
 		Message: models.Message{
 			Role:        models.RoleAssistant,
-			Content:     markdown.Prepare(audioResponse.Content),
+			Content:     audioResponse.Content,
 			ContentType: models.TextType,
 		},
 	}
@@ -97,7 +98,7 @@ func (s *AudioService) Recognize(request *models.AudioRequest) (*models.AudioRes
 		userId,
 		chatId,
 		models.RoleAssistant,
-		audioResponse.Content,
+		response.Content,
 		models.TextType,
 	)
 	if err != nil {

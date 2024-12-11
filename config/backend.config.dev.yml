@@ -13,12 +13,12 @@ llm:
   history_limit: 15
   max_tokens: 1024
 audio:
-  address: "audio:50200"
+  address: "192.168.97.108:50200"
 video:
-  address: "video:50300"
+  address: "192.168.97.108:50300"
 rag:
   address: "rag:50400"
 minio:
-  address: ":9000" #<---
+  address: "192.168.97.108:9000" #<---
   user: "minio"
   password: "11111111"

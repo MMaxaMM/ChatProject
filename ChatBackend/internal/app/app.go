@@ -25,6 +25,12 @@ func NewApp(cfg *config.Config, log *slog.Logger) *App {
 }
 
 func (a *App) MustRun() {
+	// Подготовка окружения
+	tempDir := os.TempDir()
+	if err := os.MkdirAll(tempDir, 1777); err != nil {
+		a.log.Error("Failed to create temporary directory", slogx.Error(err))
+		os.Exit(1)
+	}
 
 	// Инициализация базы данных
 	db, err := repository.NewPostgresDB(&repository.Config{

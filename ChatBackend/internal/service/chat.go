@@ -64,13 +64,14 @@ func (s *ChatService) SendMessage(request *models.ChatRequest) (*models.ChatResp
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w: %w", op, chat.ErrServiceNotAvailable, err)
 	}
+	llmResponse.Content = markdown.Prepare(llmResponse.Content)
 
 	response := &models.ChatResponse{
 		UserId: userId,
 		ChatId: chatId,
 		Message: models.Message{
 			Role:        models.RoleAssistant,
-			Content:     markdown.Prepare(llmResponse.Content),
+			Content:     llmResponse.Content,
 			ContentType: models.TextType,
 		},
 	}
@@ -92,7 +93,7 @@ func (s *ChatService) SendMessage(request *models.ChatRequest) (*models.ChatResp
 		userId,
 		chatId,
 		models.RoleAssistant,
-		llmResponse.Content,
+		response.Content,
 		models.TextType,
 	)
 	if err != nil {

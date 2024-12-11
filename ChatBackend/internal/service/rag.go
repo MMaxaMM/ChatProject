@@ -48,13 +48,14 @@ func (s *RAGService) SendMessageRAG(request *models.RAGRequest) (*models.RAGResp
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w: %w", op, chat.ErrServiceNotAvailable, err)
 	}
+	RAGResponse.Content = markdown.Prepare(RAGResponse.Content)
 
 	response := &models.RAGResponse{
 		UserId: userId,
 		ChatId: chatId,
 		Message: models.Message{
 			Role:        models.RoleAssistant,
-			Content:     markdown.Prepare(RAGResponse.Content),
+			Content:     RAGResponse.Content,
 			ContentType: models.TextType,
 		},
 	}
@@ -76,7 +77,7 @@ func (s *RAGService) SendMessageRAG(request *models.RAGRequest) (*models.RAGResp
 		userId,
 		chatId,
 		models.RoleAssistant,
-		RAGResponse.Content,
+		response.Content,
 		models.TextType,
 	)
 	if err != nil {
